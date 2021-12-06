@@ -1,6 +1,6 @@
 package my.day01;
 
-//import java.lang.*;	Ç×»ó »ı·«µÇ¾îÀÖÀ½
+//import java.lang.*;	í•­ìƒ ìƒëµë˜ì–´ìˆìŒ
 import java.util.Date;
 
 public class HelloTest {
@@ -8,11 +8,11 @@ public class HelloTest {
 	public static void main(String[] args) {
 		
 		System.out.println("Hello World");
-		System.out.println("¾È³çÇÏ¼¼¿ä~~");
+		System.out.println("ì•ˆë…•í•˜ì„¸ìš”~~");
 		
 		Date now = new Date();
 		
-		System.out.println("ÇöÀç½Ã°¢ : " + now);
+		System.out.println("í˜„ì¬ì‹œê°„ : " + now);
 	}
 
 }
