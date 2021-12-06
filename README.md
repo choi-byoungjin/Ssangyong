@@ -25,15 +25,24 @@ https://docs.oracle.com/javase/8/docs/api/index.html
 
 작업관리자 Java Update Scheduler 사용 안 함 설정 필요 - 버전 변경 방지
 
-환경 변수 설정
-
-CLASSPATH 점 하나는 현재 디렉토리를 말한다.
+- 환경 변수 설정
+  - CLASSPATH 점 하나는 class파일을 현재 디렉토리에 만드는 것을 말한다.
+  - %JAVA_HOME%\bin = cmd에서 자바컴파일러 명령어 바로 쓸 수 있게 컴파일러의 경로 설정을 미리 해두는 것
 
 javac.exe = 자바 컴파일러
 
 cd = change directory
 
-%JAVA_HOME%\bin = cmd에서 명령어 바로 쓸 수 있게 경로 설정을 미리 해두는 것
+HelloExam.java파일 참조
 
-NCS폴더 생성
+- 컴파일이란
+고급언어를 저급언어(기계어)로 바꿔주는 것
+1. 고급언어(java파일)
+2. ASCII 코드로 10진수로 변경
+3. 10진수를 2진수(기계어)로 변경
+4. class 파일 생성됨
 
+java EE = enterprice edition = java + web
+
+소스파일은 src
+클래스파일은 bin
