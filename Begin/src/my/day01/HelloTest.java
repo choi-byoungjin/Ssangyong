@@ -10,7 +10,8 @@ public class HelloTest {
 		System.out.println("Hello World");
 		System.out.println("안녕하세요~~");
 		
-		Date now = new Date();
+		//java.util.Date now = new java.util.Date(); // import 를 할 필요가 없는 경우
+		Date now = new Date();						 //import 를 해야 할 경우
 		
 		System.out.println("현재시간 : " + now);
 	}
