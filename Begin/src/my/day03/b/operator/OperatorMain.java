@@ -193,5 +193,206 @@ public class OperatorMain {
 			z=y++; // z=y; z=10; y++; y=y+1, y=11;
 			System.out.println("z => " + z);
 			System.out.println("y => " + y);
+			
+			
+			// #### 3. bit별 not 연산자 ####
+			// 		~
+			System.out.println("\n==== 3. bit별 not 연산자 ~ ====");
+			/*
+	           주어진 정수값을 32bit 형태의 2진수로 바꾸어서 나타내는데 
+	           0 bit 는 1 bit로 바꾸고, 1 bit 는 0 bit 로 바꾸어주는 것이다.
+	       */
+			int m = 42;
+			System.out.println("~m : " + ~m); // ~m : -43
+			/*
+			  	00000000 00000000 00000000 00101010	 <== 42
+			  	11111111 11111111 11111111 11010101	 <== ~42
+			  	
+			  	
+			 	첫번째 bit는 부호비트로 사용되어지는데
+			 	0 은 +임(양수)을 의미하고,
+			 	1 은 -임(음수)을 의미한다.
+			 	
+			 	1010101
+			 	
+			 	첫번째 값만 - 를 붙이고, 나머지 값은 + 로 연산을 하면 된다.
+			 	-1*(2의6승) + 1*(2의4승) + 1*(2의2승) + 1*(2의0승)
+			 	-64 + 16 + 4 + 1 ==> -43
+			 */
+			
+			
+			// #### 4. 논리 부정 연산자 ####
+			//		!
+			System.out.println("\n==== 4. 논리 부정 연산자 ! ====");
+			boolean bool = false;
+			System.out.println("bool : " + bool ); // bool : false
+			System.out.println("!bool : " + !bool); // !bool : true
+			
+			
+			// #### 5. bit 연산자 ####
+			//		&(엠퍼센트) |(vertical line) ^
+			System.out.println("\n==== 5. bit 연산자 & | ^ ====");
+			/*
+	            & (and 연산자) => 2개 bit 모두 1 일때만 1, 나머지는 0 
+	            | (or 연산자)  => 2개 bit 중에서 적어도 1개가 1이면 1, 모두 0이어야만 0 
+	            ^ (xor 연산자) => 2개 bit 중에서 서로 달라야만 1, 같으면 0 
+	            
+	            & | ^ 연산자는 연산되어지는 대상이 정수일때만 사용가능함.   
+	       */
+			int x1=3, y1=5;
+			System.out.println("x1 & y1 => " + (x1 & y1)); // x1 & y1 => 1
+			/*
+			 *   00000011 <== 3
+			 * & 00000101 <== 5
+			 * -----------
+			 *   00000001
+			 */
+			
+			
+			System.out.println("x1 | y1 => " + (x1 | y1)); // x1 | y1 => 7
+			/*
+			 *   00000011 <== 3
+			 * | 00000101 <== 5
+			 * -----------
+			 *   00000111
+			 */
+			
+			
+			System.out.println("x1 ^ y1 => " + (x1 ^ y1)); // x1 ^ y1 => 6
+			/*
+			 *   00000011 <== 3
+			 * ^ 00000101 <== 5
+			 * -----------
+			 *   00000110
+			 */
+			
+			
+			// #### 6. 논리연산자 ####
+			//		&	|	&&	||
+			System.out.println("\n==== 6. 논리연산자 & | && || ====");
+			/*
+			 * 수학에서는 T ∧ T ∧ F ==> F
+			 * 수학에서는 T ∧ T ∧ T ==> T
+			 * 
+			 * 수학에서는 T ∨ T ∨ F ==> T
+			 * 수학에서는 T ∨ T ∨ T ==> T
+			 * 수학에서는 F ∨ F ∨ F ==> F
+			 * 
+			 */
+			
+			int c=50, d=60, e=70;
+			
+			bool = (c > d) && (d < e) && (c == 3);
+				//  false  &&  스킵(연산하지않음)
+			System.out.println("bool => " + bool); // bool => false
+			
+			bool = (c > d) || (d < e) || (c == 3);
+				//	false  ||  true   ||  스킵
+			System.out.println("bool => " + bool); // bool => true
+			
+			
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~");
+			
+			bool = (c > d) & (d < e) & (c == 3);
+				//  false  &  true	 &	false 스킵하지않음
+			System.out.println("bool => " + bool); // bool => false 
+			
+			bool = (c > d) | (d < e) | (c == 3);
+				//	false  |  true   |  false
+			System.out.println("bool => " + bool); // bool => true
+			
+			
+			System.out.println("\n~~~~~~~~~~ 퀴즈1 ~~~~~~~~~~\n");
+			int i = 1;
+			int j = i++; // j=i; i++;
+						 // j=1; i => 2
+			
+			if ((i > ++j) & (i++ == j)) {	// j => 2
+			//	 2 > 2	  &    2 == 2
+			//	 false	  &     true		// i => 3
+				i = i + j;
+			}
+			
+			System.out.println("i=" + i);	// i=?
+			
+			
+			i=1;
+			j=i++;	// j=1; i++;
+					// j=1; i => 2
+			
+			if((i > ++j) && (i++ == j)) {	// j => 2
+			//	2 > 2	 && 	스킵
+				i = i + j;
+			}
+			
+			System.out.println("i=" + i);	// i=?
+
+			
+			System.out.println("\n~~~~~~~~~~ 퀴즈2 ~~~~~~~~~~\n");
+			
+			int m1=0, n1=1;
+			
+			if((m1++ == 0) | (n1++ == 2)) {
+			//	   0 == 0  |     1 == 2	
+			//	   true	   |	 false		// m1 => 1, n1 => 2
+				m1 = 42;
+			}//m1 => 42, n1 => 2
+			
+			System.out.println("m1 => " + m1 +", n1 =>" + n1);	// m1 => ?, n1 => ?
+			
+			m1=0;
+			n1=1;
+			
+			if((m1++ == 0) || (n1++ == 2)) {
+			//	   0 == 0  ||     1 == 2
+			//	  true 	   || 	  스킵		// m1 => 1
+				m1 = 42;
+			}//m1 => 42, n1 => 1
+			
+			System.out.println("m1 => " + m1 +", n1 =>" + n1);	// m1 => ?, n1 => ?
+			
+			
+			// #### 7. 비교연산자 ####
+			//		== 같다, != 같지않다	>	<	>=	<=	
+			
+			
+			// #### 8. 할당연산자(연산후 대입 연산자) ####
+			//		+=	-=	*=	/=	%=
+			System.out.println("\n ==== 8. 할당연산자(연산후 대입 연산자) +=	-=	*=	/=	%= ====");
+			
+			int no = 1;
+			no += 3; // no = no + 3; 와 같은 것이다.
+			System.out.println("no=" + no); // no=4
+			
+			no -= 2; // no = no - 2; 와 같은 것이다.
+			System.out.println("no=" + no); // no=2
+			
+			no *= 5; // no = no * 5; 와 같은 것이다.
+			System.out.println("no=" + no); // no=10
+			
+			no /= 4; // no = no / 4; 와 같은 것이다.
+			System.out.println("no=" + no); // no=2
+			
+			no %= 3; // no = no % 3; 와 같은 것이다.
+			System.out.println("no=" + no); // no=2
+			
+			
+			// #### 9. 삼항연산자 ####
+			/*
+	          변수선언 = (조건식)?값1:값2;
+	          
+	           변수를 선언하고 나서 값을 부여하고자 할때 사용되어지는데 
+	           조건식이 참 이라면 변수에 값1 을 대입해주고, 
+	           만약에 조건식이 거짓 이라면 변수에 값2 를 대입해준다.   
+	         */
+			System.out.println("\n==== 9. 삼항연산자 ====");
+			
+			int num1 = 50, num2 = 60;
+			int num3 = (num1 > num2) ? num1 : num2;
+			//				false
+			// num3 = num2
+			
+			System.out.println("num3 => " + num3);
+			// num3 => 60
 	}
 }
