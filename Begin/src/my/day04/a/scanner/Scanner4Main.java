@@ -10,13 +10,29 @@ public class Scanner4Main {
 		
 		Scanner sc = new Scanner(System.in);
 		
-		System.out.print("1. 첫번째 정수 : ");
-		String inputStr = sc.nextLine();	// "10"
+		String inputStr = ""; // 메인 메소드 안 전체에서 사용하기위해 선언해둠
 		
-		Integer.parseInt(inputStr);
+		try {
+			System.out.print("1. 첫번째 정수 : ");
+			inputStr = sc.nextLine();	// "10"
+												// "안녕하세요"
+			
+			int num1 = Integer.parseInt(inputStr);
+			
+			System.out.print("2. 두번째 정수 : ");
+			inputStr = sc.nextLine();	// "20"
+												// "좋은하루"
+			
+			int num2 = Integer.parseInt(inputStr);
+			
+			System.out.println(">> 더한 결과 : " + num1 + " + " + num2 + " = " + (num1 + num2));
+			
+		} catch(NumberFormatException e) {
+			System.out.println(">> "+inputStr+" 은(는) 정수가 아니므로 정수로 입력하세요!! <<");
+		}
 		
 		sc.close();
-
-	}
+		
+	} // end of main(String[] args)--------------------------------------------------
 
 }
