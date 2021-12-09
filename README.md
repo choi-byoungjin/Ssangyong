@@ -87,7 +87,8 @@ String을 포함한 클래스 타입은 자동적으로 null로 초기화가 된
   
   - 문자형(char)  
     - 자바는 유니코드 체계를 사용하므로 문자형 타입인 char는 2byte이며, 범위는 0~65535 이다.  
-    - int(4byte) 아래의 크기인 byte(1byte), short(2byte), char(2byte) 타입이 사칙연산을 만나면 자동적으로 int 타입으로 자동 형변환이 발생된다.
+    - int(4byte) 아래의 크기인 byte(1byte), short(2byte), char(2byte) 타입이 
+    연산을 만나면 자동적으로 int 타입으로 자동 형변환이 발생된다.
   - boolean타입
     - 참(true) 또는 거짓(false)을 담아준다
     - 크기가 1byte이다.
@@ -190,3 +191,28 @@ String을 포함한 클래스 타입은 자동적으로 null로 초기화가 된
   - 변수를 선언하고 나서 값을 부여하고자 할 때 사용되어지는데  
   조건이 참이라면 변수에 값1을 대입해주고,  
   만약에 조건식이 거짓이라면 변수에 값2를 대입해준다.
+
+
+## 12월 09일 (4일차)
+
+numberformatexception은 java.lang 패키지
+InputMismatchException은 java.util 패키지
+sc.nextLine();으로 비워줘야 함
+중괄호 범위를 고려해서 변수를 선언해야 함
+
+문자열을 비교할 때는 ==, != 이 아닌 equals를 사용한다.
+스위치문에는 byte, short, int, char, String 만 들어올 수 있다.
+
+### Scanner
+
+- sc.nextLine(); 은 키보드로부터 입력받은 문장을 읽어들이는 것인데  
+엔터(종결신호)까지 모두 읽어들인 후 스캐너 버퍼에 아무것도 남기지 않는다.
+
+- sc.nextInt(); 는 정수를 읽어들이는 것인데 종결자가 공백 또는 엔터이다.  
+종결자 앞까지 입력해준 정수를 읽어온다.  
+sc.nextInt(); 를 사용하면 스캐너(sc)버퍼에는 종결자가 삭제되는 것이 아니라 그대로 남아있게 되므로 sc.nextLint();를 통해 남아있던 찌꺼기를 비우는 것이 필요하다.
+
+- sc.nextDouble(); 는 실수를 읽어들이는 것이다.
+- sc.next(); 는 단어를 읽어들이는 것이다.
+
+- Integer.parseInt(inputStr); 은 문자열 inputStr 을 int로 바꾸어주는 것이다.
