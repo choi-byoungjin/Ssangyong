@@ -16,16 +16,20 @@ public class Scanner5Main {
 			inputStr = sc.nextLine();	// "25"
 										// "똘똘이"
 			
-			// "문자열" 을 int 타입으로 형변환 시켜주는 것
+			// "문자열" 을 int 타입으로 형변환 시켜주는 방법
 			int num1 = Integer.parseInt(inputStr);
 			
 			System.out.println(">> 두번째 정수 입력 : ");
 			inputStr = sc.nextLine();	// "2"
 										// "안녕"
 			
-			// "문자열" 을 int 타입으로 형변환 시켜주는 것
+			
 			int num2 = Integer.parseInt(inputStr);
 			
+		//  [참고] int 타입을 문자열로 형변환 시켜주는 방법
+			String str_num1 = Integer.toString(num1);
+			String str_num2 = String.valueOf(num2);
+				
 			System.out.println(">> 사칙연산(+ - * /) 선택 : "); // "+"
 															 // "-"
 															 // "*"
