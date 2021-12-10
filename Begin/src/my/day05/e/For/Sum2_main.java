@@ -33,11 +33,16 @@ public class Sum2_main {
 				
 				int cnt = endNo - startNo + 1;
 				int sum = 0; // 누적의 합을 저장시켜주는 변수. 0으로 초기화 함.
-				
 				int start = startNo;	// 누적때문에 넘겨줘야함
-				for (int i = 0; i < cnt; i++) {
+				String str = "";
+				
+				for (int i = 0; i < cnt; i++) { // i<3
 					
-					sum += start++;		// sum = sum + startNo
+					String str_add = (i<cnt-1) ? "+" : "";
+					
+					str += start + str_add;
+					
+					sum += start++;			// sum = sum + startNo
 					
 											// sum = 0+3;
 											// sum = 0+3+4;
@@ -45,7 +50,7 @@ public class Sum2_main {
 				} // end of for ------------------------------------------------------------
 				
 				System.out.println(startNo+" 부터 "+endNo+" 까지의 누적의 합은 "+sum+" 입니다.");
-				
+				System.out.println(str+" = "+sum);
 				break;
 				
 			} catch(NumberFormatException e) {
