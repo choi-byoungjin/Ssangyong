@@ -88,7 +88,7 @@ String을 포함한 클래스 타입은 자동적으로 null로 초기화가 된
   - 문자형(char)  
     - 자바는 유니코드 체계를 사용하므로 문자형 타입인 char는 2byte이며, 범위는 0~65535 이다.  
     - int(4byte) 아래의 크기인 byte(1byte), short(2byte), char(2byte) 타입이 
-    연산을 만나면 자동적으로 int 타입으로 자동 형변환이 발생된다.
+    사칙연산을 만나면 자동적으로 int 타입으로 자동 형변환이 발생된다.
   - boolean타입
     - 참(true) 또는 거짓(false)을 담아준다
     - 크기가 1byte이다.
@@ -195,13 +195,18 @@ String을 포함한 클래스 타입은 자동적으로 null로 초기화가 된
 
 ## 12월 09일 (4일차)
 
-numberformatexception은 java.lang 패키지
-InputMismatchException은 java.util 패키지
-sc.nextLine();으로 비워줘야 함
-중괄호 범위를 고려해서 변수를 선언해야 함
+- numberformatexception은 java.lang 패키지  
+- InputMismatchException은 java.util 패키지  
+- 중괄호 범위를 고려해서 변수를 선언해야 함  
 
-문자열을 비교할 때는 ==, != 이 아닌 equals를 사용한다.
-스위치문에는 byte, short, int, char, String 만 들어올 수 있다.
+- 문자열을 비교할 때는 ==, != 이 아닌 equals를 사용한다.  
+  - 문자열1.equals(문자열2)
+- 스위치문에는 byte, short, int, char, String 만 들어올 수 있다.  
+- int 타입을 문자열로 형변환 시켜주는 방법
+  - String str_num1 = Integer.toString(num1)
+  - String str_num2 = String.valueOf(num2)
+
+- main() 메소드내에서 return; 은 main()메소드에서 작업중인 것을 종료해라는 말이다.
 
 ### Scanner
 
@@ -216,3 +221,24 @@ sc.nextInt(); 를 사용하면 스캐너(sc)버퍼에는 종결자가 삭제되�
 - sc.next(); 는 단어를 읽어들이는 것이다.
 
 - Integer.parseInt(inputStr); 은 문자열 inputStr 을 int로 바꾸어주는 것이다.
+
+
+### Wrapper
+
+- 기본자료형(원시형)은 데이터 저장 및 4칙연산에서만 사용하는 것이고,  
+Wrapper 클래스는 데이터 저장 및 4칙연산 뿐만 아니라 아주 다양한 기능의 메소드가 제공되므로 다방면으로 사용되어진다.
+
+- Boxing vs UnBoxing
+  - Boxing(박싱, 포장을 하는것)
+    - 기본자료형(boolean, byte, short, int, long, char, float, double)으로 되어진 변수를  
+    객체타입인 Wrapper 클래스(Boolean, Byte, Short, Int, Long, Char, Float, Double)  
+    타입의 객체로 만들어주는 것을 말한다.
+  
+  - UnBoxing(언박싱, 포장을 푸는 것)
+    - Wrapper 클래로 되어져 있는 객체를 기본자료형으로 만들어주는 것을 말한다.
+
+
+## 12월 10일 (5일차)
+
+new로 선언할 경우 메모리 주소를 비교하고
+new로 선언하지 않을 경우 값을 비교한다.
