@@ -1,4 +1,4 @@
-package my.day04.b.scanner;
+package my.day05.c.Switch;
 
 public class Sungjuk {
 	
@@ -64,6 +64,36 @@ public class Sungjuk {
 			hakjum = "F";
 		}
 		
+		// 선물은 
+		// 학점이 "A" 이라면 "놀이공원이용권,치킨,피자,아이스크림"
+		// 학점이 "B" 이라면 "치킨,피자,아이스크림"
+		// 학점이 "C" 이라면 "피자,아이스크림"
+		// 학점이 "D" 이라면 "아이스크림"
+		// 학점이 "F" 이라면 "꿀밤3대"
+		
+		String gift = "";
+		
+		switch (hakjum) {
+			case "A":
+				gift += "놀이공원이용권,"; // gift = gift + "놀이공원이용권";
+			
+			case "B":
+				gift += "치킨,";
+				
+			case "C":
+				gift += "피자,";
+				
+			case "D":
+				gift += "아이스크림";
+				break;	// break; 를 만나야만 switch case문을 벗어난다.
+				
+			case "F":
+				gift += "꿀밤3대";
+
+			default:
+				break;
+		}// end of switch-------------------------------------------------------
+		
 		System.out.println("\n === \""+name+"\"님의 성적결과 === \n"
 						+ "1. 학번 : " + hakbun + "\n"
 						+ "2. 성명 : " + name + "\n"
@@ -74,6 +104,7 @@ public class Sungjuk {
 						+ "7. 평균 : " + avg + "\n"
 						+ "8. 학점 : " + hakjum + "\n"
 						+ "9. 나이 : " + age + "세\n"
+						+ "10. 선물 : " + gift + "\n"
 						);
 		
 	}// end of void showInfo()-------------------------------------------

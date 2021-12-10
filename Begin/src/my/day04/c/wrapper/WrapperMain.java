@@ -1,4 +1,7 @@
 package my.day04.c.wrapper;
+
+import java.util.Scanner;
+
 /*
 === *** wrapper 클래스 *** ===
 
@@ -84,7 +87,63 @@ public class WrapperMain {
 		
 		System.out.println(Character.toLowerCase('A' + 1));
 		// 98
-
+		
+		Scanner sc = new Scanner(System.in);
+		
+		
+		System.out.print(">> 아무글자 1개를 입력하세요 => ");		// 아스키코드 사용
+		
+		String inputStr = sc.nextLine(); // 		 "abcdefg"
+										 //  index => 0123456
+		
+	//	char ch_1 = inputStr.charAt(3);	 // 'd'
+		char ch_1 = inputStr.charAt(0);	 // 'a'
+		
+	//	System.out.println(ch_1);	// "a"
+	
+	// char 타입은 비교연산자( ==  !=  >  <  >=  <= )를 만나면 자동적으로 int 타입으로 형변환 되어진다. 
+		
+		String result = "";
+				
+		if( 65 <= ch_1 && ch_1 <=90 )	// 대문자인지 알아본다.
+			result = "대문자";
+		
+		else if( 97 <= ch_1 && ch_1 <= 122 )	//소문자인지 알아본다.
+			result = "소문자";
+		
+		else if( 48 <= ch_1 && ch_1 <=57 )
+			result = "숫자";
+		
+		else
+			result = "특수문자";
+			
+		System.out.println(ch_1+"는 "+result+" 입니다.");
+		// a는 소문자 입니다.
+		
+		
+		System.out.print(">> 또 아무글자 1개를 입력하세요 => ");	// Wrapper 클래스 사용
+		
+		inputStr = sc.nextLine(); 
+		ch_1 = inputStr.charAt(0);
+		
+		result = "";
+		
+		if( Character.isUpperCase(ch_1) )	// 대문자인지 알아본다.
+			result = "대문자";
+		
+		else if( Character.isLowerCase(ch_1) )	//소문자인지 알아본다.
+			result = "소문자";
+		
+		else if( Character.isDigit(ch_1) )
+			result = "숫자";
+		
+		else
+			result = "특수문자";
+			
+		System.out.println(ch_1+"는 "+result+" 입니다.");
+		
+		
+		sc.close();
 	}
 
 }

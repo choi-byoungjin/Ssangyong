@@ -1,7 +1,5 @@
 package my.day03.b.operator;
 
-import java.util.Iterator;
-
 public class OperatorMain {
 
 	public static void main(String[] args) {
