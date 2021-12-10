@@ -131,5 +131,112 @@ public class ForTest1_main {
        17.안녕 ORACLE~~
        19.안녕 ORACLE~~
      */
+		
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		for(int i=10; i>0; i--) {
+			System.out.println(i + ".안녕 ORACLE^^");
+	    }		
+	/*
+       10.안녕 ORACLE^^
+       9.안녕 ORACLE^^
+       8.안녕 ORACLE^^
+       7.안녕 ORACLE^^
+       6.안녕 ORACLE^^
+       5.안녕 ORACLE^^
+       4.안녕 ORACLE^^
+       3.안녕 ORACLE^^
+       2.안녕 ORACLE^^
+       1.안녕 ORACLE^^
+     */
+		
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		for(int i=10; i>0; i-=1) {
+			System.out.println(i + ".안녕 스프링^^");
+	    }		
+	/*
+       10.안녕 스프링^^
+       9.안녕 스프링^^
+       8.안녕 스프링^^
+       7.안녕 스프링^^
+       6.안녕 스프링^^
+       5.안녕 스프링^^
+       4.안녕 스프링^^
+       3.안녕 스프링^^
+       2.안녕 스프링^^
+       1.안녕 스프링^^
+     */
+		
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		for(int i=10; i>0; i--) {
+			if(i%2 != 0)	// i%2 은 i를 2로 나누었을때의 나머지를 나타내는 것이다.
+			System.out.println(i + ".안녕 Spring~~");
+	    }
+	/*
+       9.안녕 Spring~~
+       7.안녕 Spring~~
+       5.안녕 Spring~~
+       3.안녕 Spring~~
+       1.안녕 Spring~~
+     */
+		
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		for(int i=10; i>0; i-=2) {
+			if(i%2 != 0)	// i%2 은 i를 2로 나누었을때의 나머지를 나타내는 것이다.
+				System.out.println(i + ".안녕하세요~~");
+	    }
+	/*
+       9.안녕하세요~~
+       7.안녕하세요~~
+       5.안녕하세요~~
+       3.안녕하세요~~
+       1.안녕하세요~~
+     */
+		
+		
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		for(int i=10; i>0; i--) {
+			System.out.println(--i + ".Hello~~");
+	    }
+	/*
+       9.Hello~~
+       7.Hello~~
+       5.Hello~~
+       3.Hello~~
+       1.Hello~~
+     */
+		
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		for(int i=0, j=9; i<5; i++, j-=2) {
+			System.out.println(j + ".헬로~~");
+	    }
+	/*
+       9.헬로~~
+       7.헬로~~
+       5.헬로~~
+       3.헬로~~
+       1.헬로~~
+     */
+		
+		System.out.println("================================");
+		
+		int n = 0;
+		
+		for (; n < 5; n++) {
+			System.out.println((n+1) + ".반복문");
+		}// end of for----------------------------------------
+		
+		System.out.println(">> 반복횟수 : "+ n +" <<");
+		
+	/*
+	 * 1.반복문
+	 * 2.반복문
+	 * 3.반복문
+	 * 4.반복문
+	 * 5.반복문
+	 * 
+	 * >> 반복횟수 : 5 <<
+	 */
+		
 	}
+	
 }
