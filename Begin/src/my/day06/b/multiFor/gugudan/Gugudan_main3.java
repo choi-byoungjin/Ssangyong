@@ -27,7 +27,15 @@ public class Gugudan_main3 {
 	*/
 	
 	public static void main(String[] args) {
-		
+		for (int dan  = 1; dan <10; dan +=3) {
+			for (int jul = 1; jul <= 9; jul++) {
+				for (int i = dan+1; i <= 3+dan; i++) {
+					System.out.print(i+"*"+jul+"="+(i*jul)+"\t");
+				}
+			System.out.println();
+			}
+		System.out.println();
+		}
 
 	}
 
