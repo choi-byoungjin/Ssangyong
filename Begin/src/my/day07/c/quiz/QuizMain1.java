@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import javax.net.ssl.HostnameVerifier;
 
-public class QuizMain {
+public class QuizMain1 {
 	
 	/*      
 	   === 홀수 및 짝수의 합 구하기 ===
@@ -67,12 +67,18 @@ public class QuizMain {
 				}
 				
 				// == 홀수 및 짝수의 합을 구한다. ==
+				String str_holsu = "", str_jjaksu = "";
+				
 				while(true) {
 					
-					holSum += holsu_start_no;
-					holsu_start_no += 2;
+					String str_add = ("".equals(str_holsu))?"":"+1";
+					
+					holSum += holsu_start_no;		// 숫자 덧셈
+					str_holsu += str_add+holsu_start_no;	// 문자열결합
+					holsu_start_no += 2;			// 숫자 덧셈
 					
 					jjakSum += jjaksu_start_no;
+					str_jjaksu += str_add+jjaksu_start_no;
 					jjaksu_start_no += 2;
 					
 					if(holsu_start_no > secondNo && jjaksu_start_no > secondNo) {
@@ -82,10 +88,10 @@ public class QuizMain {
 				
 				System.out.println("\n>>> 결과 <<<");
 				System.out.println(strFirstNo+"부터"+strSecondNo+"까지의 홀수의 합 : "+holSum);
-				
+				System.out.println(str_holsu+"="+holSum);
 				System.out.println("");
-				
 				System.out.println(strFirstNo+"부터"+strSecondNo+"까지의 짝수의 합 : "+jjakSum);
+				System.out.println(str_jjaksu+"="+jjakSum);
 				
 				sc.close();
 				break;
