@@ -35,7 +35,7 @@ public class _2FactorialMain {
 					result *= i;	// result = result * i;
 									// result = 1*5;
 									// result = 1*5*4;
-									// result = 1*5*4*3;
+									// result = 1*5*4*3; 
 									// result = 1*5*4*3*2;
 									// result = 1*5*4*3*2*1;
 				}// end of for -----------------------------------------
