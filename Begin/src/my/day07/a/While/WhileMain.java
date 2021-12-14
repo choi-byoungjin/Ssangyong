@@ -92,6 +92,45 @@ public class WhileMain {
 			System.out.println("5*" + loop + "=" + (5*loop));
 		}
 		
+		System.out.println("\n=== 6단 ===");
+		
+		loop=0;
+		while(true) {
+			if(++loop >9) break;
+			System.out.println("6*" + loop + "=" + (6*loop));
+		}
+		
+		System.out.println("\n=== 7단 ===");
+		
+		loop=0;
+		while(!(++loop > 9)) {	// while문의 탈출조건을 쓴다. //!(++loop > 9)이 거짓이면, (++loop > 9)이 참이면 빠져나온다
+			System.out.println("7*" + loop + "=" + (7*loop));
+		}
+		
+		System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+		
+		System.out.printf("%35s\n", "=== 구구단 ===");
+		
+		// 9행 8열
+		// jul dan
+		int jul=0, dan=1;
+		
+		while(!(++jul > 9)) { // 9행
+			
+			while(!(++dan > 9)) { // 8행
+				String str = (dan<9) ? "\t" : "\n";
+				System.out.print(dan + "*" + jul + "=" + (dan*jul)+str);
+				// 2*1=2	3*1=3	4*1=4........8*1=8	9*1=9
+				// 2*2=4	3*2=6	4*2=8........8*2=16 9*2=18
+				// ...........................................
+				// 2*9=18	3*9=27	4*9=36.......8*9=72	9*9=81
+				
+			}// end of while -----------------------------------------------------------
+			
+			dan=1; // 다시한번 초기화
+			
+		}// end of while -----------------------------------------------------------
+		
 		System.out.println("\n>> 프로그램 종료 <<");
 
 	}// end of main ---------------------------------------------
