@@ -6,7 +6,8 @@ public class Member {
 	String id;
 	String passwd;
 	String name;
-	
+	int point;	// 해당 인스턴스만 사용한다.
+	static int count;	// 다 같이 사용한다.
 	
 	// method
 	public String showInfo() {
