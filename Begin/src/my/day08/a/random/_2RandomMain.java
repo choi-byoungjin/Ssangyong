@@ -1,70 +1,58 @@
 package my.day08.a.random;
 
+import java.util.Random;
 import java.util.Scanner;
 
-public class _1MathRandomMain {
+public class _2RandomMain {
 
 	public static void main(String[] args) {
 		
 		// === 랜덤한 정수를 뽑아낸다.
-		double random = Math.random();
-		System.out.println("random => " + random);
-		/*
-	        java.lang.Math.random() 메소드는 
-	        0.0 이상 1.0 미만의 실수(double)값을 랜덤하게 나타내어주는 메소드이다. 
-	           즉,  0.0 <= 임의의 난수(실수) < 1.0 
-	           
-	        1 부터 10까지중 랜덤한 정수를 얻어와 본다.
-	        
-	        	랜덤한 정수 = (int)(Math.random()*구간범위)+시작값;
-	        
-	        0.0        (int)(0.0*(10-1+1))+1         ==>  1
-	        0.23346438 (int)(0.23346438*(10-1+1))+1  ==>  3
-	        0.67835431 (int)(0.67835431*(10-1+1))+1  ==>  7
-	        0.99999999 (int)(0.99999999*(10-1+1))+1  ==> 10
-	        
-	        3 부터 7까지중 랜덤한 정수를 얻어와 본다.
-	        
-	        0.0        (int)(0.0*(7-3+1))+3         ==>  3
-	        0.23346438 (int)(0.23346438*(7-3+1))+3  ==>  4
-	        0.67835431 (int)(0.67835431*(7-3+1))+3  ==>  6
-	        0.99999999 (int)(0.99999999*(7-3+1))+3  ==>  7
-		 */
+		
+		// 보안상 Math.random() 보다는 new Random(); 을 사용하는 것이 더 안전하다.
+		
+		Random rnd = new Random();
+		
+		// int rndNum = rnd.nextint(마지막수 - 처음수 + 1) + 처음수;
 		
 		// 1 부터 10까지중 랜덤한 정수를 얻어와 본다.
-		int rand1 = (int)(Math.random()*(10-1+1))+1;
+		int rand1 = rnd.nextInt(10 - 1 + 1)+1;
 		System.out.println("1 부터 10 까지의 랜덤한 정수 => " + rand1);
 		
 		// 3 부터 7까지중 랜덤한 정수를 얻어와 본다.
-		int rand2 = (int)(Math.random()*(7-3+1))+3;
+		int rand2 = rnd.nextInt(7 - 3 + 1)+3;
 		System.out.println("3 부터 7 까지의 랜덤한 정수 => " + rand2);
+		
 		
 		
 		
 		
 		System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		////////////////////////////////////////////////////////
-		
-		double db_random = Math.random();
 
 		// 1 부터 45까지중 랜덤한 정수를 얻어와 본다.
-		int rand3 = (int)(Math.random()*(45-1+1))+45;
+		int rand3 = rnd.nextInt(45 - 1 + 1) + 1;
 		System.out.println("1 부터 45 까지의 랜덤한 정수 => " + rand3);
 		
 		// 'A' 부터 'Z'까지의 랜덤한 알파벳 대문자 한개를 얻어와 본다.
-		int upper_int = (int)(db_random*('Z'-'A'+1))+'A';
+		int upper_int = rnd.nextInt('Z' - 'A' + 1)+'A';
 		System.out.println("'A' 부터 'Z'까지의 랜덤한 알파벳 대문자 => " + (char)upper_int);
 		
 		// 'a' 부터 'z'까지의 랜덤한 알파벳 소문자 한개를 얻어와 본다.
-		int lower_int = (int)(db_random*('z'-'a'+1))+'a';
+		int lower_int = rnd.nextInt('z' - 'a' + 1)+'a';	// rnd.nextInt 자체가 랜덤하게 나온다.
 		System.out.println("'a' 부터 'z'까지의 랜덤한 알파벳 소문자 => " + (char)lower_int);
+
+		// 대,소문자를 같게하고자 한다. 예: 대문자 P 가 나오면 소문자 p 가 나오도록 하고 싶다.
+		upper_int = rnd.nextInt('Z' - 'A' + 1)+'A';
+		System.out.println("'A' 부터 'Z'까지의 랜덤한 알파벳 대문자 => " + (char)upper_int);
+		System.out.println("'a' 부터 'z'까지의 랜덤한 알파벳 소문자 => " + (char)(upper_int+32));
+		
 		
 		
 		
 		
 		
 		System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-		
 		///////////////////////////////////////////////////////////////////////
 		
 		// 인증키는 랜덤한 숫자 3개(0~9)와 랜덤한 소문자 4개로 만들어진다.
@@ -72,11 +60,11 @@ public class _1MathRandomMain {
 		
 		String key = "";
 		for(int i = 0; i < 3; i++) {
-			int num = (int)(Math.random()*(9-0+1))+0;
+			int num = rnd.nextInt(9 - 0 + 1) + 0;
 			key += num;
 		}	
 		for(int i = 0; i < 4; i++) {
-			int num = (int)(Math.random()*('z'-'a'+1))+'a';
+			int num = rnd.nextInt('z' - 'a' + 1) + 'a';
 			key += (char)num;
 		}	
 		
@@ -105,7 +93,7 @@ public class _1MathRandomMain {
 				}
 				else {
 					// PC에서 랜덤하게 1 또는 10 까지중 하나만 가지도록 만들자.
-					int pc_choice_no = (int)(Math.random()*(10-1+1))+1;
+					int pc_choice_no = rnd.nextInt(10-1+1)+1;
 					
 					String result = "";
 					
@@ -138,6 +126,7 @@ public class _1MathRandomMain {
 				
 			} catch(NumberFormatException e) {
 				System.out.println(">> [경고] 정수만 입력하세요!! << \n");
+				
 				break;
 			}
 			
