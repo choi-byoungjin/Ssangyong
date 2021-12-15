@@ -1,7 +1,20 @@
 package my.day08.b.array;
 
-public class ArrayMain_1 {
-
+public class ArrayMain {
+	
+	// 메소드 파라미터 가변인수 사용하기
+	public int hapage(int ... point) {
+		
+		int total = 0;
+		for (int i = 0; i < point.length; i++) {
+			total += point[i];
+		}
+		
+		return total;		
+	}// end of public int hapage(int ... point) -------------- 
+	
+	
+	
 	public static void main(String[] args) {
 		
 		/*
@@ -84,10 +97,6 @@ public class ArrayMain_1 {
 		   
 		   
 		   
-		   
-		   
-		   
-		   
 		   System.out.println("\n===========================\n");
 		   
 		   /*
@@ -161,6 +170,61 @@ public class ArrayMain_1 {
 		   avg = Math.round((double)sum/subjectArr3.length*10)/10.0;
 
 		   System.out.println("평균 : " + avg);
+
+		   
+		   System.out.println("\n===========================\n");
+		   
+		   /* 
+		    * 위의 1. == 배열의 선언 ==
+		    * 	  2. == 선언되어진 배열을 메모리에 할당을 해준다. == 을
+		    *     3. == 선언되어진 배열에 값을 넣어주기 ==
+		    * 각각 따로 하지 않고 아래와 같이 동시에 할 수 있다.
+		    * new int[] 은 생략이 가능하다!!!
+		    */
+		   int[] subjectArr4 = {100,90,95,70,98,100,90};
+			
+		   System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+		   
+		   for(int i=0; i<subjectArr4.length; i++) {
+			   int val = subjectArr4[i];
+			   System.out.println("subjectArr4["+i+"] => " + val);
+		   }// end of for ---------------------------------------------
+
+		   System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+		   sum = 0;
+		   for (int i = 0; i < subjectArr4.length; i++) {
+			   sum += subjectArr4[i];
+		   }// end of for -------------------------------------------------
+		   System.out.println("총점 : " + sum);
+
+		   avg = Math.round((double)sum/subjectArr4.length*10)/10.0;
+
+		   System.out.println("평균 : " + avg);
+
+		   System.out.println("\n===========================\n");
+
+		   // >>> 확장된 for문(== 개선된 for문, == for each문) <<< //
+		   int total = 0;
+		   for(int subj : subjectArr4) { // 100,90,95,70,98,100,90
+			   // subjectArr4 배열의 길이(지금은 7) 만큼 반복한다.
+			   // 반복하면서 배열방에 들어있던 값을 차례 차례 int subj 변수 속에 넣어준다.
+			   System.out.println(subj);
+			   total += subj;
+		   }
+		   
+		   System.out.println("총점(total) : " + total);
+		   // 총점(total) : 643
+		   
+		   System.out.println("\n ===== 메소드 파라미터 가변인수 사용하기 ===== \n");
+		   
+		   ArrayMain am1 = new ArrayMain();
+		   
+		   System.out.println("총점(100,90,95,70,98,100,90) : " + am1.hapage(100,90,95,70,98,100,90));
+		   // 총점(100,90,95,70,98,100,90) : 643
+		   
+		   System.out.println("총점(90,95,70,98,90) : " + am1.hapage(90,95,70,98,90));
+		   // 총점(90,95,70,98,90) : 443
 
 	}// end of main(String[] args) ------------------------------------
 
