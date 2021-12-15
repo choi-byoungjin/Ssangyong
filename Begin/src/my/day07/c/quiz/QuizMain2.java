@@ -27,8 +27,45 @@ public class QuizMain2 {
  */
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		
+		System.out.println("\n=========1. for 문을 사용해서 출력============\n");
+		
+		
+		for (int i = 9; i > 0; i--) {
+			for (int j = 0; j <= i; j++) {
+				if (j==i) {
+					System.out.println(10-j);
+				}
+				else {
+					System.out.print("*");
+				}
+			}
+		}
+		
+		System.out.println("\n=========2. while 문을 사용해서 출력============\n");
+		
+		int i = 1;
+		while (i < 10) {
+			int j = 10;
+			while (j > i) {
+				System.out.print("*");
+				j--;
+			}
+			System.out.println(i);
+			i++;
+		}
+		
+		System.out.println("\n=========3. do~while 문을 사용해서 출력============\n");
+		
+		i = 1;
+		do {
+			int j = 10;
+			do{
+				System.out.print("*");
+				j--;
+			}while (j > i);
+			System.out.println(i);
+			i++;
+		}while (i < 10);
 	}
-
 }
