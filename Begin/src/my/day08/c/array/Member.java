@@ -7,7 +7,7 @@ public class Member {
 	String passwd;
 	String name;
 	int point;	// 해당 인스턴스만 사용한다.
-	static int count;	// 다 같이 사용한다.
+	static int count = 2;	// 다 같이 사용한다.
 	
 	// method
 	// 특정사용자의 개인정보를 보여주도록 하는 메소드
