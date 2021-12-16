@@ -10,5 +10,4 @@ public class ArrayMain {
 			System.out.println((i+1)+"번째 인수의 값은 ["+args[i]+"] 입니다.");
 		}
 	}// run comfiguration에서 (x)=argument로 값 입력 가능
-
 }
