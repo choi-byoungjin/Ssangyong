@@ -1,5 +1,7 @@
 package my.day08.a.random;
 
+import java.util.Scanner;
+
 public class _4BinggoMain {
 
 	/*
@@ -34,8 +36,49 @@ public class _4BinggoMain {
 	*/   
 	
 	public static void main(String[] args) {
+				
+		Scanner sc = new Scanner(System.in);
 		
-
+		int pc_choice_no = (int)(Math.random()*(100-1+1))+1;
+		//System.out.println(pc_choice_no);
+		int count = 1;
+		String result = "";
+			do {
+			
+				try {
+					System.out.print("1부터 100사이의 숫자입력 => ");
+					String choice = sc.nextLine();
+					int user_choice_no = Integer.parseInt(choice);
+					
+					if(user_choice_no > 100 || user_choice_no < 1) {
+						System.out.println(">> [경고] 1 부터 100 사이의 값만 입력하세요 << \n");
+					}
+					else {
+						
+						if(pc_choice_no < user_choice_no) {
+							result = ">> "+ user_choice_no + "보다 작은 값입니다.\n";
+							++count;
+						}
+						else if(pc_choice_no > user_choice_no) {
+							result = ">> " +user_choice_no + "보다 큰 값입니다.\n";
+							++count;
+						}
+						else {
+							System.out.println("#### 빙고!!  "+ count +"번만에 맞추었습니다. #### ");
+							break;
+						}
+						System.out.println(result);
+					}
+				} catch(NumberFormatException e) {
+					System.out.println(">> [경고] 정수만 입력하세요!! << \n");
+					break;
+				}
+				
+			} while (true);
+			// end of do~while ------------------------------------------------
+			
+			sc.close();
+			System.out.println(">> 프로그램 종료 <<");
 	}
 
 }
