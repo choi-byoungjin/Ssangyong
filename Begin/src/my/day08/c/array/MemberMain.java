@@ -220,8 +220,8 @@ public class MemberMain {
 						//Member mbr = new Member(); // 기본생성자
 						
 						if(loginMbr != null) {
-							System.out.println("=="+loginMbr.name+" 님 회원정보 변경하기 ==\n");
-							System.out.print("1.비밀번호 : ");
+							System.out.println("\n=="+loginMbr.name+" 님 회원정보 변경하기 ==");
+							/*System.out.print("1.비밀번호 : ");
 							String passwd = sc.nextLine();
 							
 							if(!(MyUtil.isCheckPasswd(passwd))) {
@@ -242,8 +242,40 @@ public class MemberMain {
 							}
 							else {
 								loginMbr.name = name;
-								break;
+								//break;
 							}
+							*/
+							 String passwd = "";
+		                     String name = "";
+		                     
+		                     for(;;) {
+		                        System.out.print("1. 비밀번호 : ");
+		                        passwd = sc.nextLine();
+		                        if( !MyUtil.isCheckPasswd(passwd) ) {
+		                           System.out.println(">> [경고] 비밀번호는 8글자 이상 15글자 이하에 대,소문자,숫자,특수문자가 혼합되어져야만 합니다. <<\n"); 
+		                        }
+		                        else {
+		                           break;
+		                        }
+		                     }// end of for-----------------
+		                     
+		                     for(;;) {
+		                        System.out.print("2. 성명 : ");
+		                        name = sc.nextLine();
+		                        if( name.length() == 0 ) {
+		                           System.out.println(">> [경고] 성명을 입력하세요!! <<\n"); 
+		                        }
+		                        else {
+		                           break;
+		                        }
+		                     }// end of for-----------------
+		                     
+		                     loginMbr.passwd = passwd;
+		                     loginMbr.name = name;
+		                     
+		                     System.out.println(">> 비밀번호 및 성명이 변경완료 되었습니다. <<\n");
+		                     
+
 						} else {
 							System.out.println(">> [경고] 메뉴에 없는 번호입니다. << \n");
 						}
