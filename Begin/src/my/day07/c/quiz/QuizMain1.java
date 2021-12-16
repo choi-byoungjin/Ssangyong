@@ -71,16 +71,19 @@ public class QuizMain1 {
 				
 				while(true) {
 					
-					String str_add = ("".equals(str_holsu))?"":"+1";
+					String str_add = ("".equals(str_holsu))?"":"+";
 					
-					holSum += holsu_start_no;		// 숫자 덧셈
-					str_holsu += str_add+holsu_start_no;	// 문자열결합
-					holsu_start_no += 2;			// 숫자 덧셈
+					if(holsu_start_no <= secondNo) {
+						holSum += holsu_start_no;		// 숫자 덧셈
+						str_holsu += str_add+holsu_start_no;	// 문자열결합
+						holsu_start_no += 2;			// 숫자 덧셈
+					}
 					
-					jjakSum += jjaksu_start_no;
-					str_jjaksu += str_add+jjaksu_start_no;
-					jjaksu_start_no += 2;
-					
+					if(jjaksu_start_no <= secondNo) {
+						jjakSum += jjaksu_start_no;
+						str_jjaksu += str_add+jjaksu_start_no;
+						jjaksu_start_no += 2;
+					}
 					if(holsu_start_no > secondNo && jjaksu_start_no > secondNo) {
 						break;
 					}
