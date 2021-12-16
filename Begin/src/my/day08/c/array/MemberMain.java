@@ -43,11 +43,26 @@ public class MemberMain {
 		Scanner sc = new Scanner(System.in);
 		int menuNo = 0;
 		
-		do {
+		Member loginMbr = null;	// 로그인 성공시에 넣을 곳, 초기화
 		
-			System.out.println("\n========= >> 메뉴 << =========== \n"
-							+  "1.회원가입   2.로그인   3.로그아웃   \n"
-							+  "4.모든회원조회   5.내정보조회   6.프로그램종료\n"
+		do {
+			String loginMsg = "";
+			String login_logout = "";
+			String myInfoSearch = "";
+			String myInfoUpdate = "";
+			
+			if(loginMbr == null) {	// 로그인을 하지 않았으면
+				login_logout = "로그인";
+			} else { 				// 로그인을 했으면
+				loginMsg = "["+loginMbr.name+"님 로그인중]";
+				login_logout = "로그아웃";
+				myInfoSearch = "4.내정보조회   ";
+				myInfoUpdate = "5.내정보수정   ";
+			}
+			
+			System.out.println("\n========= >> 메뉴 " + loginMsg + "<< =========== \n"
+							+  "1.회원가입   2."+login_logout+" \n"
+							+  "3.모든회원조회   "+ myInfoSearch + myInfoUpdate +"6.프로그램종료\n"
 							+  "=================================");
 			
 			System.out.print("▷ 선택하세요 => ");
@@ -56,7 +71,7 @@ public class MemberMain {
 				menuNo = Integer.parseInt(sc.nextLine());
 				// "똘똘이"	5	1	2	3
 				
-				if( !(1 <= menuNo && menuNo <= 3) ) {
+				if( !(1 <= menuNo && menuNo <= 6) ) {
 					System.out.println(">> [경고] 메뉴에 없는 번호입니다. <<\n");
 					continue;
 				}
@@ -139,47 +154,105 @@ public class MemberMain {
 						
 						break; // switch의 break; 이다.
 						
-					case 2:	// 로그인
+					case 2:	// 로그인 또는 로그아웃
 						
-						System.out.print("▷ID : ");
-						String id = sc.nextLine();
-						
-						System.out.print("▷암호 : ");
-						String passwd = sc.nextLine();
-						
-						boolean isLoginSuccess = false;
-						for (int i = 0; i < Member.count; i++) {
-							if(mbrArr[i].id.equals(id) && mbrArr[i].passwd.equals(passwd)) {
-							// 로그인시 입력해준 id와 passwd가 배열속의 Member 객체에 존재하는 경우
-								isLoginSuccess = true;
-								break;
+						if(loginMbr == null) { // 로그인 시도를 해야한다.
+							System.out.print("▷ID : ");
+							String id = sc.nextLine();
+							
+							System.out.print("▷암호 : ");
+							String passwd = sc.nextLine();
+							
+							boolean isLoginSuccess = false;
+							for (int i = 0; i < Member.count; i++) {
+								if(mbrArr[i].id.equals(id) && mbrArr[i].passwd.equals(passwd)) {
+								// 로그인시 입력해준 id와 passwd가 배열속의 Member 객체에 존재하는 경우
+									isLoginSuccess = true;
+									loginMbr = mbrArr[i]; // 로그인 성공시 loginMbr에 넣어준다
+									// 로그인을 하면 point를 10점씩 올려주고자 한다.
+									
+									loginMbr.point += 10; // 로그인을 하면 point를 10점씩 올려주고자 한다.
+									break; // for문의 break;이다
+								}
+							}// end of for ------------------------------------------------------
+							
+							
+							if(isLoginSuccess == true) {
+								System.out.println(">> 로그인 성공 <<\n");	
+							} else {// 로그아웃 시도를 해야한다.
+								System.out.println(">> 로그인 실패 <<\n");
 							}
-						}// end of for ------------------------------------------------------
-						
-						
-						if(isLoginSuccess == true) {
-							System.out.println(">> 로그인 성공 <<\n");
 						} else {
-							System.out.println(">> 로그인 실패 <<\n");
+							loginMbr = null; // 객체 인스턴스 없에준다
+							System.out.println(">> 로그아웃 되었습니다. <<\n");
+						}
+						
+						break; // switch의 break; 이다.
+						
+					case 3:	// 모든회원조회
+						
+						if(loginMbr != null) {
+							System.out.println("------------------------------------------");
+							System.out.println("아이디\t성명\t포인트");
+							System.out.println("------------------------------------------");
+							
+							String str_allMember_info = "";
+							for (int i = 0; i < Member.count; i++) {	// 가입한 인원수만큼만 반복한다.
+								str_allMember_info += mbrArr[i].showInfo()+ "\n";	// 멤버 객체 // showInfo 리턴타입 String이므로 계속 쌓아간다
+								
+							}// end of for ----------------------------------------
+							System.out.println(str_allMember_info);
+							
+						} else {
+							System.out.println(">> [경고] 먼저 로그인 하십시오. << \n");
 						}
 						break; // switch의 break; 이다.
 						
-					case 4:	// 모든회원조회
+					case 4: // 내정보조회
+						if(loginMbr != null) {
+							System.out.println(loginMbr.showMyInfo()+"\n");
+						} else {
+							System.out.println(">> [경고] 메뉴에 없는 번호입니다. << \n");
+						}
+						break; // switch의 break; 이다.
 						
-						System.out.println("------------------------------------------");
-						System.out.println("아이디\t성명\t포인트");
-						System.out.println("------------------------------------------");
+					case 5: // 내정보수정
+						//Member mbr = new Member(); // 기본생성자
 						
-						String str_allMember_info = "";
-						for (int i = 0; i < Member.count; i++) {	// 가입한 인원수만큼만 반복한다.
-							str_allMember_info += mbrArr[i].showInfo()+ "\n";	// 멤버 객체 // showInfo 리턴타입 String이므로 계속 쌓아간다
+						if(loginMbr != null) {
+							System.out.println("=="+loginMbr.name+" 님 회원정보 변경하기 ==\n");
+							System.out.print("1.비밀번호 : ");
+							String passwd = sc.nextLine();
 							
-						}// end of for ----------------------------------------
-						
-						System.out.println(str_allMember_info);
+							if(!(MyUtil.isCheckPasswd(passwd))) {
+								System.out.println(">> [경고] 비밀번호는 8글자 이상 15글자 이하에 대, 소문자, 숫자, 특수문자가 혼합되어져야만 합니다. <<\n");
+								break;
+							}
+							else {
+								loginMbr.passwd = passwd;
+								//break;
+							}
+							
+							System.out.print("2.성명 : ");
+							String name = sc.nextLine();
+							
+							if(name.length() == 0) {
+								System.out.println(">> [경고] 성명은 필수입력 사항입니다. <<\n");
+								break;
+							}
+							else {
+								loginMbr.name = name;
+								break;
+							}
+						} else {
+							System.out.println(">> [경고] 메뉴에 없는 번호입니다. << \n");
+						}
 						
 						break; // switch의 break; 이다.
 						
+					case 6: // 프로그램 종료
+						
+						break;
 				}// end of switch (menuNo) ------------------------------------
 					
 			} catch(NumberFormatException e){
