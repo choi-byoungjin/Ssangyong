@@ -1,6 +1,6 @@
 package my.day10.b.multiDimension;
 
-public class TwoDimensionArray_main {
+public class TwoDimensionArray_main1 {
 
 	public static void main(String[] args) {
 		
@@ -170,9 +170,15 @@ public class TwoDimensionArray_main {
 		
 		
 		System.out.println("\n===== 과목별 평균 =====\n"
-						+  "---------------------\n"
-						+  "국어   영어   수학\n"
-						+  "---------------------");
+						+  "--------------");
+		
+		result = "";
+		for(String subject : subjectNameArr) {
+			result += subject + "  ";
+		}
+		
+		System.out.println(result+"\n--------------");
+		
 		
 		result = "";
 		
@@ -183,7 +189,7 @@ public class TwoDimensionArray_main {
 				guamokSum += jumsuArr[j][i];
 			}// end of for --------------------------------------------------
 			
-			result += Math.round( (double)guamokSum/jumsuArr.length*10 )/10.0 + "  ";
+			result += Math.round( (double)guamokSum/jumsuArr.length*10 )/10.0 + " ";
 			
 		}// end of for -----------------------------------------------------
 		
