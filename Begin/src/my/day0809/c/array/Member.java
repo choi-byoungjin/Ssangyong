@@ -1,4 +1,4 @@
-package my.day08.c.array;
+package my.day0809.c.array;
 
 public class Member {
 	

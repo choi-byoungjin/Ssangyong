@@ -24,3 +24,4 @@ void 타입
 for문 vs while문
 유효성 검사
 가변인자
+인덱스
