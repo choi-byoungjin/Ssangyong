@@ -122,7 +122,7 @@ public class TwoDimensionArray_main {
 			
 		}// end of for ----------------------------------------------------
 		
-		System.out.println("과목별 총점");
+		System.out.println(">> 과목별 총점 <<");
 		for(int total : subjectTotalArr){
 			System.out.println(total);
 		}// end of for ----------------------------------------------------
@@ -132,7 +132,63 @@ public class TwoDimensionArray_main {
 		 	315
 		 	286
 		 */
-	
+		
+		String[] nameArr = {"이순신","엄정화","서강준","이혜리"};
+		String[] subjectNameArr = {"국어","영어","수학"};
+		/*
+			=== 학생별 총점 ===
+			이순신 : 240
+			엄정화 : 241
+			서강준 : 245
+			이혜리 : 190
+		 */
+
+		System.out.println("\n===== 학생별 점수 집계 =====\n"
+						+  "-----------------------------------\n"
+						+  "학생명   국어   영어   수학   총점   평균\n"
+						+  "-----------------------------------");
+		
+		
+		// 1. 각 학생별로 총점을 나타내어 보자.
+		String result = "";
+		
+		for (int i = 0; i < jumsuArr.length; i++) {
+			
+			String guamokJumsu = "";
+			int sum = 0;
+			for(int j=0; j<jumsuArr[i].length; j++) {
+				guamokJumsu += " "+jumsuArr[i][j]+ "   ";
+				sum += jumsuArr[i][j];
+			}// end of for ----------------------------------------------------
+		
+			result += nameArr[i] + " : " + guamokJumsu + sum + "   " + Math.round((double)sum/3*10)/10.0 + "\n";
+			
+		}// end of for ----------------------------------------------------
+		
+		System.out.println(result);
+
+		
+		
+		System.out.println("\n===== 과목별 평균 =====\n"
+						+  "---------------------\n"
+						+  "국어   영어   수학\n"
+						+  "---------------------");
+		
+		result = "";
+		
+		for (int i = 0; i < jumsuArr[0].length; i++) {
+			
+			int guamokSum = 0;
+			for (int j = 0; j < jumsuArr.length; j++) {
+				guamokSum += jumsuArr[j][i];
+			}// end of for --------------------------------------------------
+			
+			result += Math.round( (double)guamokSum/jumsuArr.length*10 )/10.0 + "  ";
+			
+		}// end of for -----------------------------------------------------
+		
+		System.out.println(result);
+		
 	}// end of main(String[] args) ----------------------------------------------
 
 }
