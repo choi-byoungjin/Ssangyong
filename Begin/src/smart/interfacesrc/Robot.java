@@ -10,7 +10,6 @@ public class Robot implements Toggle, PushButton {
 		System.out.println("["+PushButton.name+"]");
 	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
 		System.out.println("[Robot Class]");
 		Robot r = new Robot();

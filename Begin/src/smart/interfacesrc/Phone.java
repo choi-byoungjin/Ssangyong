@@ -11,7 +11,6 @@ public class Phone implements Switch {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		System.out.println("[Phone Class]");
 
 		Phone p = new Phone();
