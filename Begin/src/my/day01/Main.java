@@ -19,16 +19,16 @@ public class Main {
 		// @다음에 나오는 16진수의 값은 메모리(RAM)상의 위치(주소)를 가리키는 것이다.
 		
 		// 또 1명의 새로운 회원이 필요하다.
-		Member emojhmbr = new Member();
+		Member eomjhmbr = new Member();
 		// emojhmbr 을 Member 클래스의 객체(==인스턴스)라고 부른다.
 		
-		emojhmbr.id = "eomjh";
-		emojhmbr.pwd = "qwer1234";
-		emojhmbr.name = "엄정화";
-		emojhmbr.email = "eomjh@gmail.com";
+		eomjhmbr.id = "eomjh";
+		eomjhmbr.pwd = "qwer1234";
+		eomjhmbr.name = "엄정화";
+		eomjhmbr.email = "eomjh@gmail.com";
 		
-		System.out.println("emojhmbr : " + emojhmbr);
-		// emojhmbr : my.day01.Member@7de26db8
+		System.out.println("eomjhmbr : " + eomjhmbr);
+		// eomjhmbr : my.day01.Member@7de26db8
 		
 		/*
 		 	== RAM(메모리) ==
@@ -61,7 +61,7 @@ public class Main {
 		
 		lssmbr.showInfo();	//lssmbr 인스턴스(객체)에 대한 회원정보 출력하기
 		
-		emojhmbr.showInfo(); //emojhmbr 인스턴스(객체)에 대한 회원정보 출력하기
+		eomjhmbr.showInfo(); //eomjhmbr 인스턴스(객체)에 대한 회원정보 출력하기
 		
 		///////////////////////////////////////////////////////////////////////////////////
 		
@@ -70,14 +70,14 @@ public class Main {
 		lssmbr.address = "인천광역시 송도구";
 		
 		lssmbr.showInfo();
-		emojhmbr.showInfo();
+		eomjhmbr.showInfo();
 		
 		System.out.println("\n###################################\n");
 		
-		emojhmbr.address = "서울특별시 마포구";
+		eomjhmbr.address = "서울특별시 마포구";
 		
 		lssmbr.showInfo();
-		emojhmbr.showInfo();
+		eomjhmbr.showInfo();
 		
 		System.out.println("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 		
@@ -85,7 +85,7 @@ public class Main {
 		// static 변수는 클래스명.static변수명 으로 사용한다.
 		
 		lssmbr.showInfo();
-		emojhmbr.showInfo();
+		eomjhmbr.showInfo();
 		
 	}
 
