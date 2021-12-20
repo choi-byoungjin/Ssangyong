@@ -2,6 +2,7 @@ package my.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class MyUtil {
 
@@ -83,5 +84,27 @@ public class MyUtil {
 		return Integer.parseInt(str);
 		
 	}// end of delComma(String str)-----------------------------------------------------
+	
+	
+	
+	// === 주민번호 7자리를 입력받아서 올바른 데이터인지 검사해주는 메소드 생성 === //
+	public static boolean isCheckJubun(String jubun) {
+		
+		if(jubun == null)
+			return false;
+		
+		// 정규표현식(Regular Expression)이란?
+	    // ==> 특정한 규칙을 가진 문자열의 집합을 표현하기 위해 쓰이는 형식언어
+		
+		// == 1. 정규표현식(Regular Expression) 패턴을 작성한다. == //
+		Pattern.compile("^[0123456789][0-9][01][0-9][0-3][0-9][1-4]$");	// 출발은 첫번째가 0123456789중 하나
+		// ^ 은 시작을 의미한다.
+		// $ 는 끝을 의미한다.
+		// [] 는 글자 1개가 들어오는 것을 의미한다.
+		// [0123456789] 은 0 또는 1 또는 2 또는 ..... 8 또는 9 만 들어온다는 뜻이다.
+		// [0123456789] 은 [0-9] 와 같다.
+		
+		
+	}// end of isCheckJubun(String jubun) ----------------------------------------------
 
 }
