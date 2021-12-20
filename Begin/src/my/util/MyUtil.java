@@ -65,5 +65,23 @@ public class MyUtil {
 		}
 
 	}// end of public static boolean isCheckPasswd(String passwd) ----------------------
+	
+	// === ,가 들어있는 숫자로 되어진 문자열을 ,를 제거해서 정수로 리턴시켜주는 메소드 생성하기 === //
+	public static int delComma(String str) {
+		
+		do {
+			
+			int commaIndex = str.indexOf(",");
+			
+			if(commaIndex == -1) 
+				break;
+			
+			str = str.substring(0, commaIndex) + str.substring(commaIndex+1);
+			
+		} while (true);
+		
+		return Integer.parseInt(str);
+		
+	}// end of delComma(String str)-----------------------------------------------------
 
 }
