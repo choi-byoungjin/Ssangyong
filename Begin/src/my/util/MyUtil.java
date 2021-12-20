@@ -2,6 +2,7 @@ package my.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MyUtil {
@@ -97,13 +98,25 @@ public class MyUtil {
 	    // ==> 특정한 규칙을 가진 문자열의 집합을 표현하기 위해 쓰이는 형식언어
 		
 		// == 1. 정규표현식(Regular Expression) 패턴을 작성한다. == //
-		Pattern.compile("^[0123456789][0-9][01][0-9][0-3][0-9][1-4]$");	// 출발은 첫번째가 0123456789중 하나
+	//	Pattern p = Pattern.compile("^[0123456789][0-9][01][0-9][0-3][0-9][1-4]$");	// 출발은 첫번째가 0123456789중 하나
 		// ^ 은 시작을 의미한다.
 		// $ 는 끝을 의미한다.
 		// [] 는 글자 1개가 들어오는 것을 의미한다.
 		// [0123456789] 은 0 또는 1 또는 2 또는 ..... 8 또는 9 만 들어온다는 뜻이다.
 		// [0123456789] 은 [0-9] 와 같다.
 		
+		// [0-9] 와 \\d 은 같은 것이다.
+		Pattern p = Pattern.compile("^\\d{2}[01]\\d[0-3]\\d[1-4]$");
+		// \\d{2} 은 \\d 이 연속적으로 2번 나온다는 뜻으로 [0-9][0-9] 와 같은 말이다.
+		
+		// == 2. 문자열이 주어진 정규식 패턴과 일치하는지 판별하는 객체를 생성한다. == //
+		Matcher m = p.matcher(jubun);
+		
+		// == 3. 판별하도록 한다. == //
+		// 주어진 정규식 패턴과 일치하면 true, 일치하지 않으면 false 를 리턴시켜준다.
+		boolean bool = m.matches();
+		
+		return bool;
 		
 	}// end of isCheckJubun(String jubun) ----------------------------------------------
 
