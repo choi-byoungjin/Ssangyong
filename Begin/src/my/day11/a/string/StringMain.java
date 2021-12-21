@@ -284,7 +284,7 @@ public class StringMain {
 	      
 	    foodArr = food.split("\\d");// \\d 에서 d는 정규표현식의 하나로써 숫자를 의미한다.
 	    							// 즉, 숫자가 구분자가 되는 것이다.
-	    // {"파스타","국밥","볶음밥","고구마","계란말이"}
+	    							// {"파스타","국밥","볶음밥","고구마","계란말이"}
 	    
 	    for (int i = 0; i < foodArr.length; i++) {
 			System.out.println(foodArr[i]);

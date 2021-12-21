@@ -1,5 +1,7 @@
 package my.day11.d.abstraction;
 
+import java.util.Calendar;
+
 public class Gujikja {
 	
 	// === 객체지향프로그래밍(Object Oriented Programming) 이란? === // 
@@ -60,7 +62,66 @@ public class Gujikja {
 	
 	// method 생성(==> field(속성)를 어떤 방식으로 처리하고자 할 때 메소드를 통해서 처리한다.
 	
+	// == 구직자의 현재나이를 알려주는 메소드 생성하기 == //
+	int getAge() {
+		
+		// "9512201" "9512202" "0112204" "0112204"
+		
+		// 현재나이 = 현재년도 - 태어난년도 + 1
+		
+		Calendar currentDate = Calendar.getInstance(); 
+	    // 현재날짜와 시간을 얻어온다.
+	   
+	    int currenYear = currentDate.get(Calendar.YEAR);
+	    
+	    String sGender = jubun.substring(jubun.length()-1); 
+	    // "1" 또는 "2" "3" "4"
+	    
+	    int birthYear = 0;
+	    
+	    if( "1".equals( sGender ) || "2".equals( sGender ) ) {
+	    	birthYear = Integer.parseInt(jubun.substring(0, 2)) + 1900;
+	    	//					95 + 1900 ==> 1995
+	    }
+	    else {
+	    	birthYear = Integer.parseInt(jubun.substring(0, 2)) + 2000;
+	    	//					1 + 2000 ==> 2001
+	    }
+	    				//   95      1  + 1900 또는 2000
+	    				// 1995   2001
+	    
+	    return currenYear-birthYear+1;
+	}// end of int getAge() ------------------------------------------
 	
+	// == 구직자의 성별을 알려주는 메소드 생성하기 == //
 	
+	String getGender() {
+		
+		String sGender = jubun.substring(jubun.length()-1); 
+	    // "1","3" 또는 "2","4"
+		
+		if("1".equals(sGender) || "3".equals(sGender)) 
+			return "남";
+		
+		else 
+			return "여";
+		
+	}// end of getGender() -------------------------------------------
+	
+	// == 구직자 1명의 정보를 보여주는 메소드 생성하기 == // 
+	void showInfo() {
+		
+		System.out.println("1.아이디 : " + userid + "\n" +
+						   "2.비밀번호 : " + passwd + "\n" +
+						   "3.성명 : " + name + "\n" +
+						   "4.현재나이 : " + getAge() + "\n" +
+						   "5.성별 : " + getGender() + "\n"
+						  );
+		
+	}// end of showInfo() --------------------------------------------------------------
+	
+	void viewInfo() {
+	      System.out.printf("%-10s\t%-15s\t%-8s\t%3d\t%-2s\n",userid,passwd,name,getAge(),getGender());
+	   }
 	
 }

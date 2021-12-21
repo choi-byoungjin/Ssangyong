@@ -14,5 +14,19 @@ public class MyUtilBok {
 		
 		System.out.println(">> 현재시각 : " + today);
 	}
+	
+	public static int delComma(String str) {
+		
+		do {
+			
+			int commaIndex = str.indexOf(",");
+			if(commaIndex == -1)
+				break;
+			
+			str = str.substring(0, commaIndex) + str.substring(commaIndex+1);
+		} while (true);
+		
+		return Integer.parseInt(str);
+	}
 
 }
