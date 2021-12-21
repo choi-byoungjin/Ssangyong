@@ -7,7 +7,8 @@ import my.util.MyUtil;
 public class GujikjaCtrl {
 
 	// == 구직자(Gujikja) 신규 회원가입을 해주는 메소드 생성하기 == //
-	Gujikja register(Scanner sc, Gujikja[] guArr) { // 리턴타입이 Gujikja이다. // guArr배열을 넘겨받아 이미 들어가있는 값과 입력받은 userid를 비교해야함
+	Gujikja register(Scanner sc, Gujikja[] guArr) { // 리턴타입이 Gujikja이다. 
+													// guArr배열을 넘겨받아 이미 들어가있는 값과 입력받은 userid를 비교해야함
 
 		boolean isUseridDuplicate; // 선언만 해두고 값은 주지 않음
 		String userid = null; // null 생략 가능
