@@ -153,6 +153,67 @@ public class GujikjaCtrl {
 		}
 	}// end of showAll(Gujikja[] guArr) -----------------------------------------------
 	
+	
+	// == 성별(남 또는 여) 입력받아 해당 연령대에 속하는 구직자 정보를 출력해주는 메소드 생성하기 == //
+	void showByGender(Gujikja[] guArr, String gender) { // gender <== "남" 또는 "여"
+		
+		if(Gujikja.count == 0) {
+			System.out.println(">> 현재 가입된 구직자가 아무도 없습니다. <<\n");
+		}
+		
+		else {
+			System.out.println("-----------------------------------------------------------");
+			System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n","아이디","암호","성명","현재나이","성별");
+		    System.out.println("-----------------------------------------------------------");
+					    
+			for (int i = 0; i < Gujikja.count; i++) {
+				
+				if(gender.equals(guArr[i].getGender())) {
+					guArr[i].viewInfo();
+				}// 같다면 보여줘라
+				
+			}// end of for -----------------------------------
+			
+			System.out.print("\n");
+		}
+	}
+
+	// 특정 연령대에 속하는 특정 성별을 가지는 구직자들만 조회해주는 메소드 생성하기
+	
+	void showByAgelineGender(Gujikja[] guArr, int ageline, String gender) {
+		
+		if(Gujikja.count == 0) {
+			System.out.println(">> 현재 가입된 구직자가 아무도 없습니다. <<\n");
+		}
+		
+		else {
+			System.out.println("-----------------------------------------------------------");
+			System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n","아이디","암호","성명","현재나이","성별");
+		    System.out.println("-----------------------------------------------------------");
+		    
+		    boolean isFind = false;
+		    
+			for (int i = 0; i < Gujikja.count; i++) {
+			
+				int stored_ageline = guArr[i].getAge()/10*10;
+				String stored_gender = guArr[i].getGender();
+				
+				if(stored_ageline == ageline && stored_gender.equals(gender)) {
+					isFind = true;
+					guArr[i].viewInfo();
+				}
+				
+			}// end of for -----------------------------------
+			
+			if(!isFind) {
+				System.out.println(">> 검색하신 연령 "+ageline+"대에 속하는 "+gender+"자는 없습니다. <<\n");
+			}
+			
+			System.out.print("\n");		
+		
+		}
+	
+	}// end of showByAgelineGender(Gujikja[] guArr, int ageline, String gender)------------------
 }
 
 

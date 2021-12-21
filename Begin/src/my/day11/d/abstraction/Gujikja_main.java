@@ -118,20 +118,69 @@ public class Gujikja_main {
 	    	
 	    	switch (sMenuNo) {
 				case "1": // 연령대검색
-					System.out.println("▷ 검색할 연령대[예: 20] => ");
-					String sAgeline = sc.nextLine(); // "20" 또는 "30" 
+					int ageline = 0;
 					
-					int ageline = Integer.parseInt(sAgeline);                        
+					for(;;) {
+						System.out.println("▷ 검색할 연령대[예: 20] => ");
+						String sAgeline = sc.nextLine(); // "20" 또는 "30" 또는 "강아지"
+					
+						try {
+							ageline = Integer.parseInt(sAgeline);                        
+							break;
+						} catch (NumberFormatException e) {
+							System.out.println(">> [경고] 숫자만 입력하세요!! << \n");
+						}
+					}// end of for---------------------------------------				
 					
 					ctrl.showByAgeline(guArr, ageline);
 					
 					break;
 	
 				case "2": // 성별검색
+					for(;;) {
+						System.out.println("▷ 검색할 성별[남/여] => ");
+						String gender = sc.nextLine(); // "남" 또는 "여"
+						
+						if( !"남".equals(gender) && !"여".equals(gender)) {
+							System.out.println(">> [경고] 남 또는 여 만 입력하세요!! << \n");
+						}
+						else {
+							ctrl.showByGender(guArr, gender);// 파라미터로 남 또는 여만 날려준다
+							break;
+						}
+					}// end of for---------------------------------------					
 					
 					break;	
 					
 				case "3": // 연령대 및 성별검색
+					
+					String gender = "";
+					for(;;) {
+						
+						try {
+							System.out.println("▷ 검색할 연령대[예: 20] => ");
+							String sAgeline = sc.nextLine(); // "20" 또는 "30" 또는 "강아지"s
+							ageline = Integer.parseInt(sAgeline);
+							
+						} catch(NumberFormatException e) {
+							System.out.println(">> [경고] 숫자만 입력하세요!! << \n");
+							continue;
+						}
+						
+						System.out.println("▷ 검색할 성별[남/여] => ");
+						gender = sc.nextLine(); // "남" 또는 "여"
+						
+						if( !"남".equals(gender) && !"여".equals(gender)) {
+							System.out.println(">> [경고] 남 또는 여 만 입력하세요!! << \n");
+						}
+						else {
+							break;
+						}
+					}// end of for --------------------------------------------------
+					
+					// 특정 연령대에 속하는 특정 성별을 가지는 구직자들만 조회가 되도록 한다.
+					ctrl.showByAgelineGender(guArr, ageline, gender);
+					
 					
 					break;
 					
