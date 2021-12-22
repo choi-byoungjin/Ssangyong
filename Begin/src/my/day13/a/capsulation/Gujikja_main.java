@@ -6,6 +6,12 @@ public class Gujikja_main { // 메인에서는 파라미터를 넘겨만 부고 
 
 	public static void main(String[] args) {
 		
+		Gujikja admin_gu = new Gujikja();
+		admin_gu.setUserid("admin");
+		admin_gu.setPasswd("qWer1234$");
+		admin_gu.setName("관리자");
+		admin_gu.setJubun("8905071");
+		
 		Gujikja lss_gu = new Gujikja();
 		lss_gu.setUserid("leess");
 		lss_gu.setPasswd("qWer1234$");
@@ -16,12 +22,20 @@ public class Gujikja_main { // 메인에서는 파라미터를 넘겨만 부고 
 		ejh_gu.setUserid("eomjh");
 		ejh_gu.setPasswd("qWer1234$");
 		ejh_gu.setName("엄정화");
-		ejh_gu.setJubun("98100702");
+		ejh_gu.setJubun("9810072");
+		
+		Gujikja yks_gu = new Gujikja();
+		yks_gu.setUserid("youks");
+		yks_gu.setPasswd("qWer1234$");
+        yks_gu.setName("유관순");
+        yks_gu.setJubun("9103012");
 		
 		Gujikja[] guArr = new Gujikja[5];
 		
+		guArr[Gujikja.count++] = admin_gu;
 		guArr[Gujikja.count++] = lss_gu;
 		guArr[Gujikja.count++] = ejh_gu;
+		guArr[Gujikja.count++] = yks_gu;
 		
 		////////////////////////////////////////
 		

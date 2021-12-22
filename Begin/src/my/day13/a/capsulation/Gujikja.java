@@ -116,7 +116,7 @@ public class Gujikja {
 	
 
 	// == 구직자의 현재나이를 알려주는 메소드 생성하기 == //
-	int getAge() {
+	public int getAge() {
 		
 		// "9512201" "9512202" "0112204" "0112204"
 		
@@ -148,7 +148,7 @@ public class Gujikja {
 	
 	// == 구직자의 성별을 알려주는 메소드 생성하기 == //
 	
-	String getGender() {
+	public String getGender() {
 		
 		String sGender = jubun.substring(jubun.length()-1); 
 	    // "1","3" 또는 "2","4"
@@ -162,19 +162,24 @@ public class Gujikja {
 	}// end of getGender() -------------------------------------------
 	
 	// == 구직자 1명의 정보를 보여주는 메소드 생성하기 == // 
-	void showInfo() {
+	public void showInfo() {
 		
 		System.out.println("1.아이디 : " + userid + "\n" +
 						   "2.비밀번호 : " + passwd + "\n" +
 						   "3.성명 : " + name + "\n" +
 						   "4.현재나이 : " + getAge() + "\n" +
-						   "5.성별 : " + getGender() + "\n"
+						   "5.성별 : " + getGender() + "\n" +
+						   "6.주민번호 : " + getJubun() + "\n"
 						  );
 		
 	}// end of showInfo() --------------------------------------------------------------
 	
-	void viewInfo() {
-	      System.out.printf("%-10s\t%-15s\t%-8s\t%3d\t%-2s\n",userid,passwd,name,getAge(),getGender());
+	public void viewInfo() {
+	      System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n",userid,passwd,name,getAge(),getGender());
 	   }
+	
+	public String getInfo() {
+		return userid + "   "+ passwd +"   "+name+"   "+getAge()+"   "+getGender();
+	}
 	
 }

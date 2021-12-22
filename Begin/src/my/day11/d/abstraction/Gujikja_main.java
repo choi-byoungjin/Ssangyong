@@ -158,7 +158,7 @@ public class Gujikja_main {
 					for(;;) {
 						
 						try {
-							System.out.println("▷ 검색할 연령대[예: 20] => ");
+							System.out.print("▷ 검색할 연령대[예: 20] => ");
 							String sAgeline = sc.nextLine(); // "20" 또는 "30" 또는 "강아지"s
 							ageline = Integer.parseInt(sAgeline);
 							
@@ -171,7 +171,7 @@ public class Gujikja_main {
 						gender = sc.nextLine(); // "남" 또는 "여"
 						
 						if( !"남".equals(gender) && !"여".equals(gender)) {
-							System.out.println(">> [경고] 남 또는 여 만 입력하세요!! << \n");
+							System.out.print(">> [경고] 남 또는 여 만 입력하세요!! << \n");
 						}
 						else {
 							break;
