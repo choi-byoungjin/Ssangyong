@@ -17,6 +17,8 @@ public class Sungjuk_capsule {
 	private int eng = -1;
 	private int math = -1; // 잘못 넣었을 때만 -1이 나옴
 	
+	static int count;
+	
 	public String getName() {
 		return name;
 	}
