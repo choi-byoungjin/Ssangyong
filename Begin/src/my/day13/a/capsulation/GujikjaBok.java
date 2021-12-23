@@ -21,7 +21,7 @@ public class GujikjaBok {
 		if( userid != null && !userid.trim().isEmpty()) {
 			int len = userid.length();
 			
-			if( 5 <= len && len <= 10)
+			if( 2 <= len && len <= 10)
 				this.userid = userid;
 			else
 				System.out.println(">> [경고] 아이디는 5글자 이상 10글자 이하이어야 합니다. << \n");

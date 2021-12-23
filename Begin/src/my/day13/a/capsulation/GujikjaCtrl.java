@@ -234,6 +234,7 @@ public class GujikjaCtrl {
 		
 	}// end of private void showAllGujikja_info(Gujikja[] guArr )-------------------------------------
 	
+	// 입력한 연령대와 성별이 일치하는 인원 조회 //
 	private void searchAgeLineGender(Scanner sc, Gujikja[] guArr) {
 		
 		if(Gujikja.count == 1) {
@@ -289,10 +290,10 @@ public class GujikjaCtrl {
 			
 			if(sb.length() > 0) {
 			
-			System.out.println("-----------------------------------------------------------");
-			System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n","아이디","암호","성명","현재나이","성별");
-		    System.out.println("-----------------------------------------------------------");
-		    System.out.println(sb.toString()); // toString()은 생략가능 
+				System.out.println("-----------------------------------------------------------");
+				System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n","아이디","암호","성명","현재나이","성별");
+			    System.out.println("-----------------------------------------------------------");
+			    System.out.println(sb.toString()); // toString()은 생략가능 
 		    
 		    }
 			else {
