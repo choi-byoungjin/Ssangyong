@@ -20,7 +20,7 @@ public class Company extends Member{ // 자식클래스
 			
 			int len = comname.length();
 			
-			if( 5 <= len && len <= 10 )
+			if( 2 <= len && len <= 10 )
 				this.comname = comname;
 			else
 				System.out.println(">> [경고] 회사명은 5글자 이상 10글자 이하이어야 합니다. << \n");

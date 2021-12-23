@@ -1,5 +1,7 @@
 package my.day14.a.inheritance;
 
+import java.util.Scanner;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -39,8 +41,29 @@ public class Main {
 		Company com1 = new Company();
 		com1.setId("samsung");
 		com1.setPasswd("aBcd1234$");
+		com1.setComname("삼성전자");
+		com1.setCombunho("12-345");
+		com1.setJobtype("IT");
+		com1.setSeedmoney(7000);
 		
+		Company com2 = new Company();
+		com2.setId("sist");
+		com2.setPasswd("aBcd1234$");
+		com2.setComname("쌍용강북교육센터");
+		com2.setCombunho("82-345");
+		com2.setJobtype("교육서비스업");
+		com2.setSeedmoney(5000);
 		
+		comArr[Company.count++] = com2;
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		Scanner sc = new Scanner(System.in);
+		
+		Controller ctrl = new Controller();
+		ctrl.startMenu(sc, guArr, comArr);
+		
+		System.out.println(">> 프로그램이 종료되었습니다. <<");
 
 	}
 

@@ -16,10 +16,10 @@ public class Member { // 부모클래스
 			
 			int len = id.length();
 			
-			if( 5 <= len && len <= 10 )
+			if( 2 <= len && len <= 10 )
 				this.id = id;
 			else
-				System.out.println(">> [경고] 아이디는 5글자 이상 10글자 이하이어야 합니다. << \n");
+				System.out.println(">> [경고] 아이디는 2글자 이상 10글자 이하이어야 합니다. << \n");
 		} 
 		else {
 			System.out.println(">> [경고] 아이디는 null 또는 공백만으로 될 수는 없습니다. << \n");
