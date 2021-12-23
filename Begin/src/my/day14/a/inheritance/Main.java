@@ -5,9 +5,8 @@ import java.util.Scanner;
 public class Main {
 
 	public static void main(String[] args) {
-		
+
 		Gujikja[] guArr = new Gujikja[5];
-		Company[] comArr = new Company[3];
 		
 		Gujikja admin_gu = new Gujikja();
 		admin_gu.setId("admin");
@@ -30,13 +29,16 @@ public class Main {
 		Gujikja yks_gu = new Gujikja();
 		yks_gu.setId("youks");
 		yks_gu.setPasswd("qWer1234$");
-        yks_gu.setName("유관순");
-        yks_gu.setJubun("9103012");
+		yks_gu.setName("유관순");
+		yks_gu.setJubun("9103012");
 		
-        guArr[Gujikja.count++] = admin_gu;
+		guArr[Gujikja.count++] = admin_gu;
 		guArr[Gujikja.count++] = lss_gu;
 		guArr[Gujikja.count++] = ejh_gu;
 		guArr[Gujikja.count++] = yks_gu;
+		
+
+		Company[] comArr = new Company[3];
 		
 		Company com1 = new Company();
 		com1.setId("samsung");
@@ -54,17 +56,19 @@ public class Main {
 		com2.setJobtype("교육서비스업");
 		com2.setSeedmoney(5000);
 		
+		comArr[Company.count++] = com1;
 		comArr[Company.count++] = com2;
 		
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
+		///////////////////////////////////////////////////////////////////
 		Scanner sc = new Scanner(System.in);
 		
 		Controller ctrl = new Controller();
 		ctrl.startMenu(sc, guArr, comArr);
 		
-		System.out.println(">> 프로그램이 종료되었습니다. <<");
-
+		
+		sc.close();
+		System.out.println(">> 프로그램이 종료 되었습니다. <<");
+		
 	}
 
 }
