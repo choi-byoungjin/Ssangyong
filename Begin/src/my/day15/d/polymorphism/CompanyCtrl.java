@@ -1,8 +1,8 @@
-package my.day15.c.polymorphism;
+package my.day15.d.polymorphism;
 
 import java.util.Scanner;
 
-public class CompanyCtrl {
+public class CompanyCtrl extends Controller {
 
 	// == 구인회사 메뉴를 보여주는 메소드 생성하기 == //
 	public void showMenu(Scanner sc, Member[] mbrArr) {
@@ -41,7 +41,7 @@ public class CompanyCtrl {
 				case "2":
 					if("구인회사 로그인".equals(str_login_logout)) { // 로그인 처리해주기 
 						
-						login_com = login(sc, mbrArr);
+						login_com = (Company)login(sc, mbrArr);
 						// 로그인이 성공되어지면 login_com 이 null 이 아닌 값을 가진다.
 						// 로그인이 실패되어지면 login_com 이 null 값을 가진다.
 						
@@ -177,35 +177,38 @@ public class CompanyCtrl {
 	
 	
 	// 로그인 처리해주는 메소드 생성하기 //
-	private Company login(Scanner sc, Member[] mbrArr) {
-		
-		System.out.println("\n==== 로그인 하기 ====");
-		
-		System.out.print("▷ 아이디: ");
-		String id = sc.nextLine();
-		
-		System.out.print("▷ 비밀번호: ");
-		String passwd = sc.nextLine();
-		
-		Company login_com = null;
-		
-		for(int i=0; i<Member.count; i++) {
-			String stored_userid = mbrArr[i].getId();
-			String stored_passwd = mbrArr[i].getPasswd();
+	/*
+		private Company login(Scanner sc, Member[] mbrArr) {
 			
-			if( stored_userid.equals(id) && stored_passwd.equals(passwd) ) {
-				login_com = (Company) mbrArr[i];
-			}
+			System.out.println("\n==== 로그인 하기 ====");
 			
-		}// end of for------------------------
-		
-		return login_com;
-		
-	}// end of private Company login(Scanner sc)-------------------------	
-	
+			System.out.print("▷ 아이디: ");
+			String id = sc.nextLine();
+			
+			System.out.print("▷ 비밀번호: ");
+			String passwd = sc.nextLine();
+			
+			Company login_com = null;
+			
+			for(int i=0; i<Member.count; i++) {
+				String stored_userid = mbrArr[i].getId();
+				String stored_passwd = mbrArr[i].getPasswd();
+				
+				if( stored_userid.equals(id) && stored_passwd.equals(passwd) ) {
+					login_com = (Company) mbrArr[i];
+				}
+				
+			}// end of for------------------------
+			
+			return login_com;
+			
+		}// end of private Company login(Scanner sc)-------------------------	
+	*/
 	
 	// 관리자전용 메소드 생성하기 //
 	private void showAdminMenu(Scanner sc, Member[] mbrArr) {
+		
+		super.startMenu(sc, mbrArr);
 		
 		System.out.println("\n=== *** 관리자 인증받기 *** ===");
 		

@@ -1,4 +1,4 @@
-package my.day15.c.polymorphism;
+package my.day15.d.polymorphism;
 
 import my.util.MyUtil;
 

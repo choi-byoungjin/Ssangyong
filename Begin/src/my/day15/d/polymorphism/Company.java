@@ -1,4 +1,4 @@
-package my.day15.c.polymorphism;
+package my.day15.d.polymorphism;
 
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;

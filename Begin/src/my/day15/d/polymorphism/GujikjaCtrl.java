@@ -1,8 +1,8 @@
-package my.day15.c.polymorphism;
+package my.day15.d.polymorphism;
 
 import java.util.Scanner;
 
-public class GujikjaCtrl {
+public class GujikjaCtrl extends Controller {
 
 	// == 구직자 메뉴를 보여주는 메소드 생성하기 == //
 	public void showMenu(Scanner sc, Member [] mbrArr) {
@@ -50,7 +50,7 @@ public class GujikjaCtrl {
 					
 					if("로그인".equals(str_login_logout)) { // 로그인 처리해주기 
 					
-						login_gu = login(sc, mbrArr);
+						login_gu = (Gujikja)super.login(sc, mbrArr);
 						// 로그인이 성공되어지면 login_gu 이 null 이 아닌 값을 가진다.
 						// 로그인이 실패되어지면 login_gu 이 null 값을 가진다.
 						
@@ -166,7 +166,7 @@ public class GujikjaCtrl {
 		
 	}// end of private void register(Scanner sc, Gujikja[] guArr)---------
 	
-	
+/*
 	// 로그인 처리해주는 메소드 생성하기 //
 	private Gujikja login(Scanner sc, Member [] mbrArr) {
 		
@@ -194,7 +194,7 @@ public class GujikjaCtrl {
 		
 	}// end of private Gujikja login(Scanner sc)-------------------------
 	
-	
+*/
 	
 	// 관리자 전용 메뉴를 보여주는 메소드 생성하기 //
 	private void showAdminMenu(Scanner sc, Member [] mbrArr) {
