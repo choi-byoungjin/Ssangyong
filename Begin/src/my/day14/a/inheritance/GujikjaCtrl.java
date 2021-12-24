@@ -12,7 +12,6 @@ public class GujikjaCtrl {
 		String str_add = "";
 		String str_login_logout = "";
 		String str_menuno_3 = "";
-		
 		String str_menuno_4 = "";
 		
 		do {
