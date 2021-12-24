@@ -18,13 +18,12 @@ public class Duck extends Animal{
 
 	@Override
 	protected void cry() {
-		super.cry();
 		System.out.println("오리 "+ getName() +"는 '꽥꽥' 하며 짖습니다.");		
 	}
 
 	@Override
 	protected void showInfo() {
-		System.out.println("=== 고양이정보 ===\n"
+		System.out.println("=== 오리정보 ===\n"
 				+  "1. 성명 : " + getName() + "\n"
 				+  "2. 생년 : " + getBirthYear() + "년\n"
 				+  "3. 가격 : " + price + "원\n");
