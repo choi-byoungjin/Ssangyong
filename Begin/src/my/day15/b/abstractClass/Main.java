@@ -1,4 +1,4 @@
-package my.day15.a.polymorphism;
+package my.day15.b.abstractClass;
 
 import java.util.Iterator;
 
@@ -39,8 +39,13 @@ public class Main {
 
 		aniArr[2] = duck;
 		
-		Animal ani = new Animal();
-		aniArr[3] = ani;
+	//	Animal ani = new Animal();  
+		// Animal 은 미완성 클래스(추상 클래스, abstract class)이므로 객체생성(인스턴스화)이 불가하다.
+		
+		Animal ani2 = new Dog();
+		// 그러나 자식클래스가 일반클래스라면 자식클래스로 생성되어진 객체는 부모클래스가 미완성 클래스이더라도 
+		// 자식클래스 객체를 받을 수 있다.
+		// 그래서 일반적으로 추상클래스의 용도는 자식클래스의 저장소 역할을 한다.
 		
 		for (int i = 0; i < aniArr.length; i++) {
 			if(aniArr[i] != null)
@@ -58,14 +63,7 @@ public class Main {
 		
 		for (int i = 0; i < aniArr.length; i++) {
 			if(aniArr[i] != null)
-				
-				if(aniArr[i] instanceof Dog)
-					// aniArr[i] 저장소에 들어있는 instance(객체)가 Dog 라는 클래스로 만든 instance(객체) 입니까?
-					((Dog) aniArr[i]).run();
-				else if(aniArr[i] instanceof Cat)
-					((Cat) aniArr[i]).jump();
-				else if(aniArr[i] instanceof Duck)
-					((Duck) aniArr[i]).swim();
+				aniArr[i].move();
 		}
 		
 	}// end of main--------------------------------------------
