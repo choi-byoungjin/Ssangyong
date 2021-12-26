@@ -31,16 +31,16 @@ public class CompanyCtrlBok {
 			
 			switch (str_menuNo) {
 				case "1":
-					register(sc, guArr);
+					register(sc, comArr);
 					break;
 	
 				case "2":
 					if("구인회사 로그인".equals(str_login_logout)) {
 						login_com = login(sc, comArr);
 						if(login_com != null)
-							System.out.println(">> 로그인 성공!! <<\n");
+							System.out.println(">> 구인회사 로그인 성공!! <<\n");
 						else
-							System.out.println(">> 로그인 실패!! <<\n");
+							System.out.println(">> 구인회사 로그인 실패!! <<\n");
 					}
 					else
 						login_com = null;
@@ -48,7 +48,7 @@ public class CompanyCtrlBok {
 					
 				case "3":
 					if( login_com != null) {
-						System.out.println("\n==== "+ login_com.getName() +"님의 회원정보 ====");
+						System.out.println("\n==== "+ login_com.getComname() +"님의 회원정보 ====");
 						login_com.showInfo();
 					}
 					else
@@ -56,10 +56,7 @@ public class CompanyCtrlBok {
 					break;
 					
 				case "4":
-					if( login_com != null && "admin".equals(login_com.getId()))
-						showAdminMenu(sc, guArr);
-					else
-						System.out.println(">> [경고] 메뉴에 없는 번호 입니다. << \n");
+					showAdminMenu(sc, comArr, guArr);
 					break;
 					
 				case "10":
@@ -112,134 +109,128 @@ public class CompanyCtrlBok {
 			long ln_seedmoney = 0;
 			do {
 				try {
-					System.out.println("6.자본금:");
+					System.out.println("6.자본금: ");
+					String seedmoney = sc.nextLine();
+					ln_seedmoney = Long.parseLong(seedmoney);
+					break;
+				} catch(NumberFormatException e) {
+					System.out.println(">> [경고] 자본금은 숫자로만 입력하셔야 합니다!! << \n");
 				}
-			}
-			CompanyBok gu = new CompanyBok();
-			gu.setId(id);
-			gu.setPasswd(passwd);
-			gu.setName(comname);
-			gu.setJubun(combunho);
+			} while(true);
 			
-			if(gu.isUseGujikja()) {
-				comArr[CompanyBok.count++] = gu;
-				System.out.println(">> 회원가입 성공!! <<\n");
+			CompanyBok comp = new CompanyBok();
+			comp.setId(id);
+			comp.setPasswd(passwd);
+			comp.setComname(comname);
+			comp.setCombunho(combunho);
+			
+			if(comp.isUseCompany()) {
+				comArr[CompanyBok.count++] = comp;
+				System.out.println(">> 구인회사 회원가입 성공!! <<\n");
 			}
 			else
-				System.out.println(">> 회원가입 실패!! <<\n");
+				System.out.println(">> 구인회사 회원가입 실패!! <<\n");
 		}
 		else
-			System.out.println(">> [경고] 정원 "+ comArr.length +"명이 다차서 더이상 구직자 신규가입이 불가합니다. <<\n");
+			System.out.println(">> [경고] 구인회사 정원 "+ comArr.length +"명이 다차서 더이상 구인회사 신규가입이 불가합니다. <<\n");
 		
 	}
 	
-	private GujikjaBok login(Scanner sc, GujikjaBok[] guArr) {
+	private CompanyBok login(Scanner sc, CompanyBok[] comArr) {
 		System.out.println("\n==== 로그인 하기 ====");
 		System.out.print("▷ 아이디 : ");
-		String userid = sc.nextLine();
+		String id = sc.nextLine();
 		
 		System.out.print("▷ 비밀번호 : ");
 		String passwd = sc.nextLine();
 		
-		GujikjaBok login_com = null;
-		for (int i = 0; i < GujikjaBok.count; i++) {
-			String stored_userid = guArr[i].getId();
-			String stored_passwd = guArr[i].getPasswd();
+		CompanyBok login_com = null;
+		for (int i = 0; i < CompanyBok.count; i++) {
+			String stored_userid = comArr[i].getId();
+			String stored_passwd = comArr[i].getPasswd();
 			
-			if(stored_userid.equals(userid) && stored_passwd.equals(passwd))
-				login_com = guArr[i];
+			if(stored_userid.equals(id) && stored_passwd.equals(passwd))
+				login_com = comArr[i];
 		}
 		return login_com;
 	}
 	
-	private void showAdminMenu(Scanner sc, GujikjaBok[] guArr) {
+	private void showAdminMenu(Scanner sc, CompanyBok[] comArr, GujikjaBok[] guArr) {
 		
-		String str_menuNo = "";
-		do {
-			System.out.println("\n====== >> 관리자 전용 메뉴 << ======\n"
-							+  "1.모든구독자 정보조회   2.연령대 및 성별 검색   3.메인메뉴로 돌아가기");
-			System.out.print("▷ 메뉴번호 선택 => ");
-			str_menuNo = sc.nextLine();
-			
-			switch (str_menuNo) {
+		System.out.println("\n====== *** 관리자 인증받기 *** ======");
+		
+		System.out.print("◇ 관리자 ID : ");
+		String id = sc.nextLine();
+		
+		System.out.print("◇ 비밀번호 : ");
+		String passwd = sc.nextLine();
+		
+		boolean isAdminOk = false;
+		
+		for (int i = 0; i < GujikjaBok.count; i++) {
+			String stored_id = guArr[i].getId();
+			String stored_passwd = guArr[i].getPasswd();
+			if( (stored_id.equals(id) && stored_passwd.equals(passwd)) ) {
+				isAdminOk = true;
+				break;
+			}
+		}
+		if(!isAdminOk)
+			System.out.println(">> [관리자 인증 실패!!] <<\n");
+		else {
+			String str_menuNo = "";
+			do {
+				System.out.println("\n====== >> 관리자 전용 메뉴 << ======\n"
+						+ "1.모든 구인회사 정보조회   2.업종별 검색   3.구인회사 메뉴로 돌아가기");
+				System.out.println("▷ 메뉴번호 선택 => ");
+				
+				str_menuNo = sc.nextLine();
+				switch (str_menuNo) {
 				case "1":
-					showAllGujikja_info(guArr);
+					showAllCompany_info(comArr);
 					break;
-		
 				case "2":
-					searchAgeLineGender(sc, guArr);
+					searchJobtype(comArr, sc);
 					break;
+
 				default:
 					break;
 				}
-		} while (!("3".equals(str_menuNo)));
+			} while (!("3".equals(str_menuNo)));
+		}		
 	}
 
-	private void showAllGujikja_info(GujikjaBok[] guArr) {
-
-		if(GujikjaBok.count == 1)
-			System.out.println(">> 등록되어진 구직자가 아무도 없습니다. <<");
+	private void showAllCompany_info(CompanyBok[] comArr) {
+		if(comArr.length == 0)
+			System.out.println(">> 등록되어진 구인회사가 아무도 없습니다. <<\n");
 		else {
-			System.out.println("-----------------------------------------------------------");
-			System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n","아이디","암호","성명","현재나이","성별");
-		    System.out.println("-----------------------------------------------------------");
-		    for (int i = 0; i < GujikjaBok.count; i++) {
-				if(!"admin".equals(guArr[i].getId()))
-					guArr[i].viewInfo();
-			}
-		}	
-	}
-	
-	private void searchAgeLineGender(Scanner sc, GujikjaBok[] guArr) {
-		
-		if(GujikjaBok.count == 1)
-			System.out.println(">> 등록되어진 구직자가 아무도 없습니다. <<");
-		else {
-			int ageline = 0;
-			String gender = "";
-				do {
-					try {
-						System.out.print("▷ 검색하고자 하는 연령대 => ");
-						String str_ageline = sc.nextLine();
-						
-						ageline = Integer.parseInt(str_ageline);
-						
-						if(0 <= ageline && ageline <= 100)
-							break;
-						else
-							System.out.print(">> [경고] 연령대는 숫자만 입력하세요 << \n");
-					} catch(NumberFormatException e) {
-						System.out.println(">> [경고] 연령대는 숫자만 입력하세요 << \n");
-					}
-				} while (true);
-				do {
-					System.out.print("▷ 검색하고자 하는 성별[남/여] => ");
-					gender = sc.nextLine();
-					
-					if(!"남".equals(gender) && !"여".equals(gender))
-						System.out.println(">> [경고] 성별은 남 또는 여 만 입력하세요 <<\n");
-					else
-						break;
-				} while(true);
-				
-				StringBuilder sb = new StringBuilder();
-				for (int i = 0; i < GujikjaBok.count; i++) {
-					if( !"admin".equals(guArr[i].getId()) ) {
-						if( guArr[i].getAge()/10*10 == ageline &&
-							guArr[i].getGender().equals(gender)) {
-							sb.append( guArr[i].getInfo() +"\n" );
-						}
-					}
-				}
-				
-				if(sb.length() > 0) {
-					System.out.println("-----------------------------------------------------------");
-					System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n","아이디","암호","성명","현재나이","성별");
-				    System.out.println("-----------------------------------------------------------");
-				    System.out.println(sb.toString());
-				}
-				else 
-					System.out.println("\n>> 검색하신 연령대 "+ ageline +"대인 "+ gender +"자는 없습니다. << \n");
+			System.out.println("----------------------------------------------------------------------------------------");
+			System.out.printf("%-10s\t%-15s\t%-10s\t%-8s\t%-10s\t%-10s\n","아이디","암호","회사명","사업자등록번호","업종","자본금");
+			System.out.println("----------------------------------------------------------------------------------------");
+			
+			for(int i=0; i < CompanyBok.count; i++) {
+				comArr[i].viewInfo();
+			}		
 		}
+	}
+	private void searchJobtype(CompanyBok[] comArr, Scanner sc) {
+		System.out.print("▷ 검색하실 업종명 => ");
+		String jobtype = sc.nextLine();
+		
+		StringBuilder sb = new StringBuilder();
+		if(!jobtype.trim().isEmpty()) {
+			for (int i = 0; i < CompanyBok.count; i++) {
+				if(comArr[i].getJobtype().toLowerCase().indexOf(jobtype.toLowerCase()) != -1)
+					sb.append(comArr[i].getInfo()+"\n");
+			}
+		}
+		if(sb.length() > 0) {
+			System.out.println("----------------------------------------------------------------------------");
+			System.out.printf("%-10s\t%-15s\t%-10s\t%-8s\t%-10s\t%-10s\n","아이디","암호","회사명","사업자등록번호","업종","자본금");
+			System.out.println("----------------------------------------------------------------------------");
+		    System.out.println(sb.toString());
+		}
+		else
+			System.out.println(">> 검색하신 업종 "+ jobtype +"는(은) 없습니다. <<\n");
 	}
 }
