@@ -2,10 +2,10 @@ package my.day16.d.Interface;
 
 public interface InterMember {
 
-	  void showInfo(); 
+    void showInfo();  // 미완성 메소드(추상 메소드, abstract method)
 	
-	  void viewInfo(); 
+	void viewInfo();  // 미완성 메소드(추상 메소드, abstract method)
 	
-	  String getInfo();
+	String getInfo(); // 미완성 메소드(추상 메소드, abstract method)	
 	
 }

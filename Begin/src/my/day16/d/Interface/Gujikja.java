@@ -127,29 +127,30 @@ public class Gujikja extends Member { // 자식클래스
 			return "여";
 		
 	}// end of String getGender()--------------------------
-
-
+	
+	// == 구직자 1명의 정보를 보여주는 메소드 생성하기 == //
 	@Override
 	public void showInfo() {
-		// TODO Auto-generated method stub
 		
-	}
-
-
+		System.out.println("1.아이디 : "+super.getId()+"\n" + 
+						   "2.비밀번호 : "+super.getPasswd()+"\n" + 
+						   "3.성명 : "+name+"\n" + 
+						   "4.현재나이 : "+ getAge() +"세\n" + 
+						   "5.성별 : "+ getGender() +"\n"
+				          );
+		
+	}// end of void showInfo()---------------------------------------
+	
 	@Override
 	public void viewInfo() {
-		// TODO Auto-generated method stub
-		
+		System.out.printf("%10s\t%-15s\t%-8s\t%3d\t%-2s\n",getId(),getPasswd(),name,getAge(),getGender()); 
 	}
-
-
+	
+	
 	@Override
 	public String getInfo() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	
+		return getId()+"   "+getPasswd()+"   "+name+"   "+getAge()+"   "+getGender();
+	}	
 	
 	
 }

@@ -126,6 +126,7 @@ public class Company extends Member { // 자식클래스
 		
 	}// end of void showInfo()---------------------------------------
 		
+	
 	@Override
 	public void viewInfo() {
 		
@@ -135,6 +136,7 @@ public class Company extends Member { // 자식클래스
 	}  
 	
 	
+	@Override
 	public String getInfo() {
 		
 		DecimalFormat df = new DecimalFormat("#,###");

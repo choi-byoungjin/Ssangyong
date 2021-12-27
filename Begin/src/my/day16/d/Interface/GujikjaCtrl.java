@@ -3,16 +3,17 @@ package my.day16.d.Interface;
 import java.util.Scanner;
 
 public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
-
+	
 	// == 구직자 메뉴를 보여주는 메소드 생성하기 == //
 	@Override
-	public void showMenu(Scanner sc, Member [] mbrArr) {
+	public void showMenu(Scanner sc, Member[] mbrArr) {
 		
 		String str_meunNo = "";
 		Gujikja login_gu = null;
 		String str_add = "";
 		String str_login_logout = "";
 		String str_menuno_3 = "";
+		
 		String str_menuno_4 = "";
 		
 		do {
@@ -51,7 +52,7 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 					
 					if("로그인".equals(str_login_logout)) { // 로그인 처리해주기 
 					
-						login_gu = (Gujikja)super.login(sc, mbrArr);
+						login_gu = (Gujikja) (super.login(sc, mbrArr));
 						// 로그인이 성공되어지면 login_gu 이 null 이 아닌 값을 가진다.
 						// 로그인이 실패되어지면 login_gu 이 null 값을 가진다.
 						
@@ -109,7 +110,7 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 	
 	// == 구직자(Gujikja) 신규 회원가입을 해주는 메소드 생성하기 == //
 	@Override
-	public void register(Scanner sc, Member [] mbrArr) {
+	public void register(Scanner sc, Member[] mbrArr) {
 		
 		if(Member.count < mbrArr.length) {
 		
@@ -168,9 +169,10 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 		
 	}// end of private void register(Scanner sc, Gujikja[] guArr)---------
 	
-/*
+	
 	// 로그인 처리해주는 메소드 생성하기 //
-	private Gujikja login(Scanner sc, Member [] mbrArr) {
+	/*
+	private Gujikja login(Scanner sc, Member[] mbrArr) {
 		
 		System.out.println("\n==== 로그인 하기 ====");
 		
@@ -187,7 +189,7 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 			String stored_passwd = mbrArr[i].getPasswd();
 			
 			if( stored_userid.equals(userid) && stored_passwd.equals(passwd) ) {
-				login_gu = (Gujikja)mbrArr[i]; // mbrArr에는 구직자, 컴퍼니 둘 다 들어가있어 캐스팅 필요
+				login_gu = (Gujikja) mbrArr[i];
 			}
 			
 		}// end of for------------------------
@@ -195,12 +197,12 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 		return login_gu;
 		
 	}// end of private Gujikja login(Scanner sc)-------------------------
+	*/
 	
-*/
 	
 	// 관리자 전용 메뉴를 보여주는 메소드 생성하기 //
 	@Override
-	public void showAdminMenu(Scanner sc, Member [] mbrArr) {
+	public void showAdminMenu(Scanner sc, Member[] mbrArr) {
 		
 		String str_menuNo = "";
 		
@@ -232,18 +234,18 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 	
 	// 관리자를 제외한 모든 구직자 정보를 조회해주는 메소드 생성하기 //
 	@Override
-	public void showAllGujikja_info(Member [] mbrArr) {
+	public void showAllGujikja_info(Member[] mbrArr) {
 		
 		int count_gu = 0;
 		
-		for (int i = 0; i < Member.count; i++) {
+		for(int i=0; i<Member.count; i++) {
 			
-			if( mbrArr[i] instanceof Gujikja && 
+			if( mbrArr[i] instanceof Gujikja &&
 				!"admin".equals(mbrArr[i].getId()) ) {
 				count_gu++;
 			}
 			
-		}// end of for---------------------------------------------------------
+		}// end of for----------------------
 		
 		if(count_gu == 0) {
 		   // mbrArr 배열에 저장되어진 객체정보중 Gujikja 객체가 관리자(admin)만 저장된 경우
@@ -256,7 +258,7 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 			System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n","아이디","암호","성명","현재나이","성별");
 			System.out.println("-----------------------------------------------------------");
 			
-			for(int i=0; i < Member.count; i++) {
+			for(int i=0; i<Member.count; i++) {
 				
 				if( mbrArr[i] instanceof Gujikja &&
 					!"admin".equals(mbrArr[i].getId()) ) {
@@ -272,24 +274,24 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 	
 	// 연령대및성별을 검색해주는 메소드 생성하기 //
 	@Override
-	public void searchAgeLineGender(Member [] mbrArr, Scanner sc) {
+	public void searchAgeLineGender(Member[] mbrArr, Scanner sc) {
 		
 		int count_gu = 0;
 		
-		for (int i = 0; i < Member.count; i++) {
+		for(int i=0; i<Member.count; i++) {
 			
-			if( mbrArr[i] instanceof Gujikja && 
+			if( mbrArr[i] instanceof Gujikja &&
 				!"admin".equals(mbrArr[i].getId()) ) {
 				count_gu++;
 			}
 			
-		}// end of for---------------------------------------------------------
+		}// end of for----------------------
 		
 		if(count_gu == 0) {
 		   // mbrArr 배열에 저장되어진 객체정보중 Gujikja 객체가 관리자(admin)만 저장된 경우
 		   System.out.println(">> 등록되어진 구직자가 아무도 없습니다. << \n");	
 		}
-		
+				
 		else {
 			
 			int ageline = 0;
@@ -331,13 +333,13 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 			
 			StringBuilder sb = new StringBuilder();
 			
-			for(int i=0; i<Gujikja.count; i++) {
+			for(int i=0; i<Member.count; i++) {
 				
 				if( mbrArr[i] instanceof Gujikja && 
 					!"admin".equals(mbrArr[i].getId()) ) {
-					if( ((Gujikja)mbrArr[i]).getAge()/10*10 == ageline && 
-						((Gujikja)mbrArr[i]).getGender().equals(gender) ) { // Gujikja 캐스팅 필요
-						sb.append(mbrArr[i].getInfo()+"\n");     
+					if( ((Gujikja) mbrArr[i]).getAge()/10*10 == ageline && 
+						((Gujikja) mbrArr[i]).getGender().equals(gender) ) {
+						sb.append(mbrArr[i].getInfo()+"\n");    
 					}
 				}
 				

@@ -2,16 +2,16 @@ package my.day16.d.Interface;
 
 import my.util.MyUtil;
 
-public abstract class Member implements InterMember{  // 부모클래스
+public abstract class Member implements InterMember {  // 부모클래스. 미완성 클래스(추상 클래스, abstract class)
 
 	// field(속성) 생성
 	private String id;     // 아이디
 	private String passwd; // 비밀번호
-	
-	public static int count; // private만 아니면 된다
+
+	public static int count;
 	
 	// method 생성(==> field(속성)를 어떤 방식으로 처리하고자 할때 메소드를 통해서 처리한다.)
-	public String getId() {
+	protected String getId() {
 		return id;
 	}
 	
@@ -47,13 +47,7 @@ public abstract class Member implements InterMember{  // 부모클래스
 			System.out.println(">> [경고] 비밀번호는 8글자 이상 15글자 이하의 대,소문자 및 숫자, 특수기호가 혼합되어야만 합니다. << \n"); 		
 	}
 	
-	/////////////////////////////////////////////////////////////
-	
-
-	
-	
-	
-	
+	/////////////////////////////////////////////////////////////////
 	
 	
 	

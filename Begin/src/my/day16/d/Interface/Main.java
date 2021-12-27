@@ -6,8 +6,8 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		Member [] mbrArr = new Member[8]; // Member 인스턴스는 못만들지만 필드는 쓸 수 있다.
-		
+		Member[] mbrArr = new Member[8];
+				
 		Gujikja admin_gu = new Gujikja();
 		admin_gu.setId("admin");
 		admin_gu.setPasswd("qWer1234$");
@@ -36,6 +36,7 @@ public class Main {
 		mbrArr[Member.count++] = lss_gu;
 		mbrArr[Member.count++] = ejh_gu;
 		mbrArr[Member.count++] = yks_gu;
+		
 		
 		Company com1 = new Company();
 		com1.setId("samsung");
