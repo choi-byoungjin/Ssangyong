@@ -11,9 +11,7 @@ public class Company extends Member { // 자식클래스
 	private String combunho;  // 사업자등록번호
 	private String jobtype;   // 업종명(예: 제조업, IT, 서비스업)
 	private long   seedmoney; // 자본금
-	                  
-	
-//	static int count; // Company 객체(인스턴스)의 개수를 알아오려는 용도 	
+	                
 
 
 	public String getComname() {

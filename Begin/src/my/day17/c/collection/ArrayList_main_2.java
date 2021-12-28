@@ -168,25 +168,99 @@ public class ArrayList_main_2 {
           삭제한 후 mbrList 에 저장되어진 Member 객체들의 정보를 출력하세요
         */
 	    
-	    isFind = false;
 	    first_name= "이";
 	    
-	    for (int i = mbrList.size()-1; i >= 0 ; i--) {
-			if( mbrList.get(i).getName() != null && 
-				mbrList.get(i).getName().startsWith(first_name)) {
-				mbrList.remove(i);
-				isFind = true;
-			}
-			else {
-				isFind = false;
-			}
-		}
-	    if(!isFind) {
-	    	System.out.println(first_name +" 으로 시작하는 name을 가지는 회원은 없습니다.");
-	    }
+	    
+	    // >>> 아래의 것은 틀린 풀이!!! <<< //
+	    /*
+	    for (int i = 0; i < mbrList.size(); i++) {  // mbrList.size() ==> 10
+			
+	    	String name = mbrList.get(i).getName();
+	    	
+	    	if(name != null && name.startsWith(first_name)) {
+	    		// System.out.println("i => " + i); // 0 1 2 3(이순신) 4 5 6 7(이순신) 8(이민호) 9
+	    		
+	    		mbrList.remove(i);   // i 가 3을 삭제하면 
+	    							 // 0 1 2 3(김태희) 4 6(이순신) 7(이민호)  
+	    							 
+	    							 // i 가 6을 삭제하면
+	    							 // 0 1 2 3(김태희) 4 6(이민호) 7
+	    		
+	    							 // 다음으로 for 문의 증가식 i++ 로 인해 i는 6에서 7이 되는데
+	    							 // i 가 7 을 포함해 그 다음으로는 "이"씨가 없으므로 remove(i); 하는 동작이 없게 된다.
+	    							 // 그래서 인덱스 번호 6번으로 남은 "이민호"는 삭제되지 않고 그대로 남아있게 되는 것이다.
+	    	}
+	    	
+		}// end of for------------------------------------------
+	    
 	    for (Member mbr : mbrList) {
-			 mbr.infoPrint();
-		}
+	    	mbr.infoPrint();
+	    }
+	    */
+	    
+	    // >>> 아래의 것이 올바른 풀이!!! <<< //
+	    for (int i = mbrList.size()-1; i >= 0 ; i--) {
+	    	
+	    	String name = mbrList.get(i).getName();
+	    	
+	    	if(name != null && name.startsWith(first_name)) {	    		
+	    		System.out.println("i=>" + i); // 0 1 2 3(이순신) 4 5 7(이순신) 8(이민호) 9
+	    		
+	    		mbrList.remove(i);			   // 8(이민호) 를 삭제하면
+	    									   // 0 1 2 3(이순신) 4 5 7(이순신) 8
+	    		
+	    									   // 7(이순신) 를 삭제하면
+	    									   // 0 1 2 3(이순신) 4 5 7
+	    		
+	    									   // 3(이순신) 을 삭제하면
+	    									   // 0 1 2 3 4 6
+	    	}
+	    	
+		}// end of for------------------------------------------
+	    
+	    for (Member mbr : mbrList) {
+	    	mbr.infoPrint();
+	    }
+	    
+	    
+	    
+	    System.out.println("\n~~~~~~~~ [퀴즈4] ~~~~~~~~~~~~\n");
+        /*
+          [퀴즈4]
+          mbrList 에 저장되어진 Member 객체들 중에서
+           특정한 조건(id 가 null 인 것)에 만족하는 Member 객체를 하나를 삭제하고
+           삭제되어진 그 인덱스(위치)자리에 새로운 Member 객체를 넣어주기
+           그런데 만약에 id 가 null 인 것이 없다라면 새로운 Member 객체는 맨 뒤에 넣어주기
+        */
+	    
+	    boolean flag = false;
+	    
+	    for (int i = mbrList.size()-1; i >= 0 ; i--) {
+	    	
+	    	String iD = mbrList.get(i).getId();
+	    	
+	    	if(iD == null) {
+	    		mbrList.remove(i);
+	    		mbrList.add(i, new Member("seokj", "qwer1234$", "서강준")); 
+	    		
+	    		flag = true;
+	    		break;
+	    	}
+	    	
+		}// end of for-------------------------------------------------------
+	    
+	    if(!flag) {
+    		mbrList.add(new Member("seokj", "qwer1234$", "서강준"));
+	    }
+	    
+	    for (Member mbr : mbrList) {
+	    	mbr.infoPrint();
+	    }
+	    
+	    System.out.println("\n ===== mbrList 에 저장된 모든 객체 삭제하기 ==== \n");
+	    
+	    mbrList.clear();
+	    System.out.println(">> 삭제 후 mbrList.size() => \""+ mbrList.size() +"\" <<");
 	    
 	}// end of main(String[] args)-----------------------------------------------------
 

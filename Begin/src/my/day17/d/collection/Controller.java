@@ -1,13 +1,14 @@
 package my.day17.d.collection;
 
-import java.util.Scanner;
+import java.util.*;
+
 
 public class Controller implements InterController {
 	
 	
 	// == 메뉴를 보여주는 메소드 생성하기 == //
 	@Override
-	public final void startMenu(Scanner sc, Member[] mbrArr) { 
+	public final void startMenu(Scanner sc, List<Member> mbrList) { 
 		// 접근제한자 다음에 final을 붙이면 해당 메소드는 자식 클래스에서 override(재정의)가 불가하다는 말이다.
 		
 		GujikjaCtrl guCtrl = new GujikjaCtrl();
@@ -25,15 +26,14 @@ public class Controller implements InterController {
 			
 			switch (str_choice.toUpperCase()) { // "A"
 				case "A":  // 구직자 메뉴로 가기
-					guCtrl.showMenu(sc, mbrArr);
+					guCtrl.showMenu(sc, mbrList);
 					break;
 		
 				case "B":  // 구인회사 메뉴로 가기
-					comCtrl.showMenu(sc, mbrArr);
+					comCtrl.showMenu(sc, mbrList);
 					break;
 					
 				case "C":  // 프로그램 종료
-					
 					break;	
 					
 				default:
@@ -49,7 +49,7 @@ public class Controller implements InterController {
 	
 	// 구직자 또는 구인회사로 로그인 처리를 해주는 메소드 생성하기 //
 	@Override
-	public final Member login(Scanner sc, Member[] mbrArr) {
+	public final Member login(Scanner sc, List<Member> mbrList) {
 		// 접근제한자 다음에 final을 붙이면 해당 메소드는 자식 클래스에서 override(재정의)가 불가하다는 말이다.
 		
 		System.out.println("\n==== 로그인 하기 ====");
@@ -62,19 +62,19 @@ public class Controller implements InterController {
 		
 		Member login_mbr = null;
 		
-		for(int i=0; i<Member.count; i++) {
-			String stored_userid = mbrArr[i].getId();
-			String stored_passwd = mbrArr[i].getPasswd();
+		for(int i=0; i<mbrList.size(); i++) {
+			String stored_userid = mbrList.get(i).getId();
+			String stored_passwd = mbrList.get(i).getPasswd();
 			
 			if( stored_userid.equals(id) && stored_passwd.equals(passwd) ) {
-				login_mbr = mbrArr[i];
+				login_mbr = mbrList.get(i);
 			}
 			
 		}// end of for------------------------
 		
 		return login_mbr;
 		
-	}// end of private Member login(Scanner sc, Member[] mbrArr)-------------------------	
+	}// end of private Member login(Scanner sc, List<Member> mbrList)-------------------------	
 
 	
 }

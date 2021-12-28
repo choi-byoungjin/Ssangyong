@@ -1,12 +1,12 @@
 package my.day17.d.collection;
 
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		Member[] mbrArr = new Member[8];
+		List<Member> mbrList = new ArrayList<>();
 				
 		Gujikja admin_gu = new Gujikja();
 		admin_gu.setId("admin");
@@ -32,12 +32,6 @@ public class Main {
 		yks_gu.setName("유관순");
 		yks_gu.setJubun("9103012");
 		
-		mbrArr[Member.count++] = admin_gu;
-		mbrArr[Member.count++] = lss_gu;
-		mbrArr[Member.count++] = ejh_gu;
-		mbrArr[Member.count++] = yks_gu;
-		
-		
 		Company com1 = new Company();
 		com1.setId("samsung");
 		com1.setPasswd("aBcd1234$");
@@ -54,14 +48,18 @@ public class Main {
 		com2.setJobtype("교육서비스업");
 		com2.setSeedmoney(5000);
 		
-		mbrArr[Member.count++] = com1;
-		mbrArr[Member.count++] = com2;
+		mbrList.add(admin_gu);
+		mbrList.add(lss_gu);
+		mbrList.add(ejh_gu);
+		mbrList.add(yks_gu);
+		mbrList.add(com1);
+		mbrList.add(com2);
 		
 		///////////////////////////////////////////////////////////////////
 		Scanner sc = new Scanner(System.in);
 		
 		Controller ctrl = new Controller();
-		ctrl.startMenu(sc, mbrArr);
+		ctrl.startMenu(sc, mbrList);
 		
 		
 		sc.close();

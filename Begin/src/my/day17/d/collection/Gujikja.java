@@ -14,7 +14,7 @@ public class Gujikja extends Member { // 자식클래스
 	                  // 예: "9512201" 남자  "0112213"  남자 
 	                  // 예: "9512202" 여자  "0112204"  여자
 	
-//	static int count; // Gujikja 객체(인스턴스)의 개수를 알아오려는 용도 
+
 	
 	
 	// method 생성(==> field(속성)를 어떤 방식으로 처리하고자 할때 메소드를 통해서 처리한다.)

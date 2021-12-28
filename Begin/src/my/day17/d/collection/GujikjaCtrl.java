@@ -1,12 +1,12 @@
 package my.day17.d.collection;
 
-import java.util.Scanner;
+import java.util.*;
 
 public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 	
 	// == 구직자 메뉴를 보여주는 메소드 생성하기 == //
 	@Override
-	public void showMenu(Scanner sc, Member[] mbrArr) {
+	public void showMenu(Scanner sc, List<Member> mbrList) {
 		
 		String str_meunNo = "";
 		Gujikja login_gu = null;
@@ -45,14 +45,14 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 			
 			switch (str_meunNo) {
 				case "1":  // 구직자 회원가입 
-					register(sc, mbrArr);
+					register(sc, mbrList);
 					break;
 					
 				case "2":  // 로그인 또는 로그아웃
 					
 					if("로그인".equals(str_login_logout)) { // 로그인 처리해주기 
 					
-						login_gu = (Gujikja) (super.login(sc, mbrArr));
+						login_gu = (Gujikja) (super.login(sc, mbrList));
 						// 로그인이 성공되어지면 login_gu 이 null 이 아닌 값을 가진다.
 						// 로그인이 실패되어지면 login_gu 이 null 값을 가진다.
 						
@@ -87,7 +87,7 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 				case "4": // 관리자전용
 					if(login_gu != null && "admin".equals(login_gu.getId()) ) { 
 						// 관리자로 로그인 한 경우 
-						showAdminMenu(sc, mbrArr);
+						showAdminMenu(sc, mbrList);
 					}
 					
 					else { // 로그인을 하지 않거나 관리자가 아닌 일반구직자로 로그인한 경우 
@@ -110,99 +110,61 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 	
 	// == 구직자(Gujikja) 신규 회원가입을 해주는 메소드 생성하기 == //
 	@Override
-	public void register(Scanner sc, Member[] mbrArr) {
+	public void register(Scanner sc, List<Member> mbrList) {
 		
-		if(Member.count < mbrArr.length) {
+		System.out.println("\n>> === 구직자 신규회원 가입 === <<");
 		
-			System.out.println("\n>> === 구직자 신규회원 가입 === <<");
+		String userid = null;
+		for(;;) {
+			System.out.print("1.아이디 : ");
+			userid = sc.nextLine();
 			
-			String userid = null;
-			for(;;) {
-				System.out.print("1.아이디 : ");
-				userid = sc.nextLine();
-				
-				boolean isDuplicate = false;
-				
-				for(int i=0; i<Member.count; i++) {
-					String stored_userid = mbrArr[i].getId();
-					if(stored_userid.equals(userid) ) {
-						System.out.println(">> [경고] "+userid+" 아이디는 이미 사용중 입니다. 다른 아이디를 입력하세요!! << \n");
-						isDuplicate = true;
-						break;
-					}
-				}// end of for--------------------
-				
-				if(!isDuplicate)
+			boolean isDuplicate = false;
+			
+			for(int i=0; i<mbrList.size(); i++) {
+				String stored_userid = mbrList.get(i).getId();
+				if(stored_userid.equals(userid) ) {
+					System.out.println(">> [경고] "+userid+" 아이디는 이미 사용중 입니다. 다른 아이디를 입력하세요!! << \n");
+					isDuplicate = true;
 					break;
-				
-			}// end of for--------------------------
+				}
+			}// end of for--------------------
 			
+			if(!isDuplicate)
+				break;
 			
-			System.out.print("2.비밀번호 : ");
-			String passwd = sc.nextLine();
-			
-			System.out.print("3.성명 : ");
-			String name = sc.nextLine();
-			
-			System.out.print("4.주민번호7자리[예: 9510092] : ");
-			String jubun = sc.nextLine();
-			
-			Gujikja gu = new Gujikja();
-			gu.setId(userid);
-			gu.setPasswd(passwd);
-			gu.setName(name);
-			gu.setJubun(jubun);
-			
-			if(gu.isUseGujikja()) {
-				mbrArr[Member.count++] = gu;
-				System.out.println(">> 회원가입 성공!! <<\n");
-			}
-			else {
-				System.out.println(">> 회원가입 실패!! <<\n");
-			}
+		}// end of for--------------------------
 		
-		}
 		
-		else {
-			System.out.println(">> [경고] 정원 "+mbrArr.length+"명이 다차서 더이상 구직자 신규가입이 불가합니다. <<\n"); 
-		}
-		
-	}// end of private void register(Scanner sc, Gujikja[] guArr)---------
-	
-	
-	// 로그인 처리해주는 메소드 생성하기 //
-	/*
-	private Gujikja login(Scanner sc, Member[] mbrArr) {
-		
-		System.out.println("\n==== 로그인 하기 ====");
-		
-		System.out.print("▷ 아이디: ");
-		String userid = sc.nextLine();
-		
-		System.out.print("▷ 비밀번호: ");
+		System.out.print("2.비밀번호 : ");
 		String passwd = sc.nextLine();
 		
-		Gujikja login_gu = null;
+		System.out.print("3.성명 : ");
+		String name = sc.nextLine();
 		
-		for(int i=0; i<Member.count; i++) {
-			String stored_userid = mbrArr[i].getId();
-			String stored_passwd = mbrArr[i].getPasswd();
-			
-			if( stored_userid.equals(userid) && stored_passwd.equals(passwd) ) {
-				login_gu = (Gujikja) mbrArr[i];
-			}
-			
-		}// end of for------------------------
+		System.out.print("4.주민번호7자리[예: 9510092] : ");
+		String jubun = sc.nextLine();
 		
-		return login_gu;
+		Gujikja gu = new Gujikja();
+		gu.setId(userid);
+		gu.setPasswd(passwd);
+		gu.setName(name);
+		gu.setJubun(jubun);
 		
-	}// end of private Gujikja login(Scanner sc)-------------------------
-	*/
-	
+		if(gu.isUseGujikja()) {
+			mbrList.add(gu);
+			System.out.println(">> 회원가입 성공!! <<\n");
+		}
+		else {
+			System.out.println(">> 회원가입 실패!! <<\n");
+		}
+		
+	}// end of private void register(Scanner sc, List<Member> mbrList)---------
+
 	
 	// 관리자 전용 메뉴를 보여주는 메소드 생성하기 //
 	@Override
-	public void showAdminMenu(Scanner sc, Member[] mbrArr) {
+	public void showAdminMenu(Scanner sc, List<Member> mbrList) {
 		
 		String str_menuNo = "";
 		
@@ -215,11 +177,11 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 			
 			switch (str_menuNo) {
 				case "1":
-					showAllGujikja_info(mbrArr); 
+					showAllGujikja_info(mbrList); 
 					break;
 		
 				case "2":
-					searchAgeLineGender(mbrArr, sc);
+					searchAgeLineGender(mbrList, sc);
 					break;	
 					
 				default:
@@ -234,61 +196,61 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 	
 	// 관리자를 제외한 모든 구직자 정보를 조회해주는 메소드 생성하기 //
 	@Override
-	public void showAllGujikja_info(Member[] mbrArr) {
+	public void showAllGujikja_info(List<Member> mbrList) {
 		
 		int count_gu = 0;
 		
-		for(int i=0; i<Member.count; i++) {
+		for(int i=0; i<mbrList.size(); i++) {
 			
-			if( mbrArr[i] instanceof Gujikja &&
-				!"admin".equals(mbrArr[i].getId()) ) {
+			if( mbrList.get(i) instanceof Gujikja &&
+				!"admin".equals(mbrList.get(i).getId()) ) {
 				count_gu++;
 			}
 			
 		}// end of for----------------------
 		
 		if(count_gu == 0) {
-		   // mbrArr 배열에 저장되어진 객체정보중 Gujikja 객체가 관리자(admin)만 저장된 경우
+		   // mbrList 리스트에 저장되어진 객체정보중 Gujikja 객체가 관리자(admin)만 저장된 경우
 		   System.out.println(">> 등록되어진 구직자가 아무도 없습니다. << \n");	
 		}
 		
 		else {
-			// mbrArr 배열에 저장되어진 객체정보가 관리자(admin) 이외에 일반 구직자도 저장된 경우
+			// mbrList 리스트에 저장되어진 객체정보가 관리자(admin) 이외에 일반 구직자도 저장된 경우
 			System.out.println("-----------------------------------------------------------");
 			System.out.printf("%-10s\t%-15s\t%-8s\t%-4s\t%-2s\n","아이디","암호","성명","현재나이","성별");
 			System.out.println("-----------------------------------------------------------");
 			
-			for(int i=0; i<Member.count; i++) {
+			for(int i=0; i<mbrList.size(); i++) {
 				
-				if( mbrArr[i] instanceof Gujikja &&
-					!"admin".equals(mbrArr[i].getId()) ) {
-					mbrArr[i].viewInfo();
+				if( mbrList.get(i) instanceof Gujikja &&
+					!"admin".equals(mbrList.get(i).getId()) ) {
+					mbrList.get(i).viewInfo();
 				}
 				
 			}// end of for--------------------------------
 		}	
 		
-	}// end of private void showAllGujikja_info(Gujikja[] guArr)--------------- 
+	}// end of private void showAllGujikja_info(List<Member> mbrList)--------------- 
 	
 	
 	
 	// 연령대및성별을 검색해주는 메소드 생성하기 //
 	@Override
-	public void searchAgeLineGender(Member[] mbrArr, Scanner sc) {
+	public void searchAgeLineGender(List<Member> mbrList, Scanner sc) {
 		
 		int count_gu = 0;
 		
-		for(int i=0; i<Member.count; i++) {
+		for(int i=0; i<mbrList.size(); i++) {
 			
-			if( mbrArr[i] instanceof Gujikja &&
-				!"admin".equals(mbrArr[i].getId()) ) {
+			if( mbrList.get(i) instanceof Gujikja &&
+				!"admin".equals(mbrList.get(i).getId()) ) {
 				count_gu++;
 			}
 			
 		}// end of for----------------------
 		
 		if(count_gu == 0) {
-		   // mbrArr 배열에 저장되어진 객체정보중 Gujikja 객체가 관리자(admin)만 저장된 경우
+		   // mbrList 리스트에 저장되어진 객체정보중 Gujikja 객체가 관리자(admin)만 저장된 경우
 		   System.out.println(">> 등록되어진 구직자가 아무도 없습니다. << \n");	
 		}
 				
@@ -333,13 +295,13 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 			
 			StringBuilder sb = new StringBuilder();
 			
-			for(int i=0; i<Member.count; i++) {
+			for(int i=0; i<mbrList.size(); i++) {
 				
-				if( mbrArr[i] instanceof Gujikja && 
-					!"admin".equals(mbrArr[i].getId()) ) {
-					if( ((Gujikja) mbrArr[i]).getAge()/10*10 == ageline && 
-						((Gujikja) mbrArr[i]).getGender().equals(gender) ) {
-						sb.append(mbrArr[i].getInfo()+"\n");    
+				if( mbrList.get(i) instanceof Gujikja && 
+					!"admin".equals(mbrList.get(i).getId()) ) {
+					if( ((Gujikja) mbrList.get(i)).getAge()/10*10 == ageline && 
+						((Gujikja) mbrList.get(i)).getGender().equals(gender) ) {
+						sb.append(mbrList.get(i).getInfo()+"\n");    
 					}
 				}
 				
@@ -359,7 +321,7 @@ public class GujikjaCtrl extends Controller implements InterGujikjaCtrl {
 		
 		}
 	
-	} // end of private void searchAgeLineGender(Gujikja[] guArr)---------------
+	} // end of private void searchAgeLineGender(List<Member> mbrList)---------------
 	
 	
 }
