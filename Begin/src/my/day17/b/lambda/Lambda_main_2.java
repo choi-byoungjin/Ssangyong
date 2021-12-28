@@ -304,10 +304,17 @@ public class Lambda_main_2 {
 		lambda_searchall.searchAll();
 		
 		
-		// 7.
+		// 7. 실행명령문이 1개 이더라도 return 이 있을 경우에는 { }; 를 생략할 수 없다.
+//		FunctionalInterPlus_6 lambda_plus_1 = (a, b) -> return a+b; // 오류!!
+		FunctionalInterPlus_6 lambda_plus_1 = (a, b) -> {return a+b;};
+		System.out.println(lambda_plus_1.plus(10, 20));
+		// 30
 		
 		
-		// 8. 
+		
+		// 8. return 문만 있는 단일 코드인 경우에는 { } 및 return 을 생략할 수 있다.
+		FunctionalInterPlus_6 lambda_plus_2 = (a, b) -> a+b;
+		System.out.println(lambda_plus_2.plus(30, 20));
 		
 		
 	}// end of main(String[] args)------------------------------
