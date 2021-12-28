@@ -50,8 +50,9 @@ public class ArrayList_main_1 {
 	  프로그램 실행시 에러를 발생하지 않도록 사전에 방지하는 것이 좋기 때문이다.
 	   
 	  ▷ 제네릭(Generic)은 컬렉션(자료구조) 즉, 쉽게 말해서 객체들을 저장(수집)하는 구조적인 성격을 보강하기 위해 제공하는 것이다.
+	  
 	  ▷ 간단히 예를 들자면 컵이라는 특정 객체가 있다고 하자. 
-	    이 컵은 물만 담을 수 있는 물컵 , 또는 이 컵은 쥬스만 담을 수 있는 쥬스 컵. 이렇게 지정해주도록 하는 것이  제네릭(Generic) 이다.    
+	    이 컵은 물만 담을 수 있는 물컵, 또는 이 컵은 쥬스만 담을 수 있는 쥬스 컵. 이렇게 지정해주도록 하는 것이  제네릭(Generic) 이다.    
 
       ▷ JDK 1.5 부터 제네릭(Generic)타입이 새로 추가되면서, 특정 컬렉션(자료구조)에 저장되어질 특정한 객체 타입을 명시하여
 	    실행하기전 컴파일 단계에서 특정한 객체 타입이 아니면 에러를 발생토록 하여 저장이 불가능하도록 만들었다.
@@ -63,10 +64,9 @@ public class ArrayList_main_1 {
 	  ▷ 제네릭(Generic)타입을 사용함으로써 별도의 형 변환(Casting)이 필요없이 <> 사이에 선언하였던 객체자료형으로 검출되어 편리하다.       
 
 	  ▷ 제네릭(Generic)타입에 있어서 1개 글자로 된 영문대문자는 영문대문자 아무것이나 사용해도 무관하다.
-	  -- 그런데 관습상 객체가 제네릭(Generic)타입으로 사용될때 자료형(Type)이라고 나타내고 싶을때는 <T>라고 쓰고,
-	     어떠한 요소(Element)이라고 나타내고 싶을때는 <E>라고 쓰고, 
-	     key값이라고 나타내고 싶을때는 <K>라고 쓰고, Value값이라고 나타내고 싶을때는 <V>라고 쓴다.      
-	    
+	 -- 그런데 관습상 객체가 제네릭(Generic)타입으로 사용될때 자료형(Type)이라고 나타내고 싶을때는 <T>라고 쓰고,
+	    어떠한 요소(Element)이라고 나타내고 싶을때는 <E>라고 쓰고, 
+	    key값이라고 나타내고 싶을때는 <K>라고 쓰고, Value값이라고 나타내고 싶을때는 <V>라고 쓴다.          
 	*/
 		
 		
@@ -165,9 +165,16 @@ public class ArrayList_main_1 {
 			System.out.println(list.get(i));
 		}
 		
-		System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~ 제네릭 ~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+		System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~ 제네릭(Generic) ~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		
-		ArrayList<Member> member_list = new ArrayList<Member>();
+	//	ArrayList<Member> member_list = new ArrayList<Member>();
+	//	또는
+		ArrayList<Member> member_list = new ArrayList<>();
+		// <Member> 이 제네릭(Generic)이다.
+		// member_list 에는 오로지 Member 객체만 저장할 수 있다.
+		// JDK 1.7 부터는 
+		// ArrayList<Member> member_list = new ArrayList<Member>(); 를
+		// ArrayList<Member> member_list = new ArrayList<>(); 으로 할 수 있다.
 		
 		member_list.add(new Member("leess","qwer1234$","이순신"));
 		member_list.add(new Member("eomjh","qwer1234$","엄정화"));
