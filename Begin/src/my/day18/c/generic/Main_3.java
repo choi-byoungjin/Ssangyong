@@ -1,12 +1,48 @@
-package my.day18.b.generic;
+package my.day18.c.generic;
 
 import java.util.List;
 
-public class Main_2 {
+public class Main_3 {
 
 	public static void main(String[] args) {
 		
-		Box_Employee<Employee_Child_Executive> box_executive = new Box_Employee<Employee_Child_Executive>(); 
+		Box_wildCard_Employee box = new Box_wildCard_Employee();
+		
+		////////////////////////////////////////////////////////////////////////
+		
+		System.out.println("\n~~~~~~~ 모든 타입이 가능한 경우 ~~~~~~~~~\n");
+		
+		Box_Anything<Employee> emp = new Box_Anything<>();
+		emp.register(new Employee("superman","1234","슈퍼맨","부장")); // List에 넣고있다
+		emp.register(new Employee("wonderwoman","0070","원더우맨","대리"));
+		emp.register(new Employee("batman","5678","배트맨","사원"));
+		
+		
+		Box_Anything<String> str = new Box_Anything<>();
+		str.register("한석규");
+		str.register("두석규");
+		str.register("세석규");
+		
+		Box_Anything<Integer> intg = new Box_Anything<>();
+		
+		intg.register(10);
+		intg.register(20);
+		intg.register(30);
+		
+		box.register_anything(emp);
+		box.register_anything(str);
+		box.register_anything(intg);
+		
+		List<Box_Anything<?>> anything_list = box.get_anything();
+		
+		for(Box_Anything<?> b : anything_list) {
+			List<?> list = b.getList(); // ?는 아무거나
+			for(Object obj : list) {
+				System.out.println(obj.toString());
+			}// end of for-------------------------
+		}// end of for-------------------------
+		
+		Box_wildCard_Employee<Employee_Child_Executive> box_executive = new Box_wildCard_Employee<Employee_Child_Executive>(); 
 		box_executive.register(new Employee_Child_Executive("hansk", "1234", "한석규", "사장", "1-01"));
 		box_executive.register(new Employee_Child_Executive("dusk", "5678", "두석규", "전무", "2-01"));
 		box_executive.register(new Employee_Child_Executive("sesk", "0070", "세석규", "상무", "3-01"));
@@ -41,7 +77,7 @@ public class Main_2 {
 		
 		System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		
-		Box_Employee<Employee_Child_Plain> box_plain = new Box_Employee<>();
+		Box_wildCard_Employee<Employee_Child_Plain> box_plain = new Box_wildCard_Employee<>();
 		box_plain.register(new Employee_Child_Plain("leess", "qwer", "이순신", "부장", 8000));
 		box_plain.register(new Employee_Child_Plain("eomjh", "abcd", "엄정화", "과장", 6000));
 		box_plain.register(new Employee_Child_Plain("hongkd", "1234", "홍길동", "대리", 4000));
@@ -76,7 +112,7 @@ public class Main_2 {
 		
 		System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		
-		Box_Employee<Employee> box_all = new Box_Employee<>();
+		Box_wildCard_Employee<Employee> box_all = new Box_wildCard_Employee<>();
 		
 		box_all.register(new Employee("superman","1234","슈퍼맨","부장"));
 		box_all.register(new Employee_Child_Executive("batman","6789","배트맨","이사","4-01"));
