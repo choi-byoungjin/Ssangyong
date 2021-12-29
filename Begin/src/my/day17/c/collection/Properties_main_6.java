@@ -1,5 +1,7 @@
 package my.day17.c.collection;
 
+import java.util.*;
+
 public class Properties_main_6 {
 
 	/*
@@ -12,7 +14,40 @@ public class Properties_main_6 {
 	 */
 	public static void main(String[] args) {
 		
+		Properties prop = new Properties();
+		
+		prop.setProperty("jdk", "http://www.oracle.com/technetwork/java/javase/downloads/index.html");
+	    prop.setProperty("eclipse", "http://www.sist.co.kr");
+	    prop.setProperty("eclipse", "http://www.eclipse.org/downloads/eclipse-packages/");
+	    prop.setProperty("oracle", "http://www.oracle.com/technetwork/database/database-technologies/express-edition/downloads/index.html");
+		
+	    String url = prop.getProperty("eclipse");
+	    System.out.println(url);
+	    // http://www.eclipse.org/downloads/eclipse-packages/
 
-	}
+	    System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+	    
+	    // === prop 에 저장되어진 모든 value 값들을 출력하고자 한다. ===
+	    // 먼저 prop 에 저장되어진 키목록을 알아봐야 한다.
+	    // 키목록은 아래와 같이 하면 된다.
+	    
+	    // Enumeration<?> en = prop.propertyNames(); // 어떤 클래스이던지 다 받아야 할 때는 <Object>를 사용한다. <?>는 <Object>와 같은 의미이다.
+	    // 제네릭에서 <?> 의 뜻은 ?는 아무거나 를 뜻하는 것이므로 Object 와 같은 의미이다.
+	    
+	    @SuppressWarnings("unchecked")
+		Enumeration<String> en = (Enumeration<String>) prop.propertyNames();
+	    // Properties prop 에서 키목록은 Enumeration<String> 형태로 반환시켜 준다.
+	    // Enumeration은 collection(저장소) 가 아니다.
+	    
+	    while (en.hasMoreElements()) {
+			
+	    	String key = en.nextElement();
+	    	String value = prop.getProperty(key); // value 값
+	    	
+	    	System.out.println(key+"="+value);
+		}// end of while----------------------------------------
+	    
+	    
+	}// end of main(String[] args)-----------------------------------------------
 
 }
