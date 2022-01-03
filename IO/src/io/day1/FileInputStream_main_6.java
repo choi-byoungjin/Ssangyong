@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class FileInputStream_main_5 {
+public class FileInputStream_main_6 {
 
 /*
     ※ Data Source (File, 키보드, 원격 컴퓨터)
@@ -55,23 +55,33 @@ public class FileInputStream_main_5 {
 		try {
 			fist = new FileInputStream(fileName);
 			
-			int input = 0;
-			int totalByte = 0; // byte 수 누적용도 
-			int cnt = 0;       // while 문의 반복회수
+			byte[] dataArr = new byte[10];
+			// dataArr 변수의 용도는 빨대(System.in, 키보드)에서 흡입할때 단위크기를 10byte로 하는 것이다. 
+			// 또한 dataArr의 용도는 빨대(System.in, 키보드)에서 1번 흡입할때 마다 흡입한 내용물을 저장하는 용도로 쓰인다. 
 			
-			while( (input = fist.read()) != -1 ) {
+			int inputLength = 0;
+			// inputLength 변수의 용도는 빨대(System.in, 키보드)에서 흡입한 실제 크기(길이)를 나타내는 용도임.
+			
+			int totalByte = 0; // byte수 누적용도 
+			int cnt = 0;       // while문의 반복회수를 알기위한것	
+			
+			while( (inputLength = fist.read(dataArr)) != -1) {
 				/*
-				  fist.read() 메소드는 해당 파일에서 
-				  데이터를 1byte 씩 읽어서 int 타입으로 리턴해준다.
-				  만약에 파일의 내용물에서 읽어들일 데이터가 없다라면  -1 을 리턴시켜준다.
-				  즉, 파일속의 내용물이 끝이 아니라면 계속해서 while{} 부분을 실행해라는 말이다.
+				   fist.read(dataArr) 메소드는 해당 파일에서
+				   데이터를 배열 dataArr 크기인 10byte 씩 잘라서 읽는데
+				   실제 읽어온 byte 크기(int 타입)를 inputLength 에 넣어준다.
+				   이어서 읽어온 내용물을 배열 dataArr 에 저장시킨다.
+				   
+				   만약에 파일의 내용물에서 읽어들일 데이터가 없다라면 -1 을 리턴시켜준다.
+				   즉, 파일속의 내용물이 끝이 아니라면 계속해서 while{ } 부분을 실행해라는 말이다.
 				*/
 				
-				System.out.write(input); // 모니터(콘솔화면)에 출력
+				System.out.write(dataArr, 0, inputLength); // 모니터(콘솔화면)에 출력
 				System.out.flush();
 				
-				totalByte++;
-				cnt++;
+				totalByte += inputLength;
+				
+				cnt++; // 반복회수
 			}// end of while-------------------------
 			
 			System.out.println("\n=========================");
@@ -80,7 +90,7 @@ public class FileInputStream_main_5 {
 			System.out.println("===========================");
 			/*
 			   총 57byte
-			   반복회수 57번 반복함 
+			   반복회수 6번 반복함
 			*/
 			
 		} catch (FileNotFoundException e) {
