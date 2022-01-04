@@ -5,7 +5,7 @@ import io.util.FileManager;
 public class FileReader_main_1 {
 
 	public static void main(String[] args) {
-	// 읽어들일 파일명은 명령프롬프트에서 파라미터(인자(로 주겠다.
+	// 읽어들일 파일명은 명령프롬프트에서 파라미터(인자)로 주겠다.
 	/*
 		String str1 = args[0];
 		String str2 = args[1];

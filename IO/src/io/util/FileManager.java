@@ -82,6 +82,41 @@ public class FileManager {
 	}// end of public static String reading_2(String fileName)--------- 
 	
 	
+	public static void charFileCopy(String srcFileName, String targetFileName) throws FileNotFoundException, IOException { // 메소드를 처리하는 쪽에서 예외처리 해라
+		
+		// 해당 소스파일에 노드 연결 생성(빨대꽂기)
+		FileReader fr = new FileReader(srcFileName);
+		
+		// 해당 타겟파일에 노드 연결 생성(빨대꽂기)
+		FileWriter fw = new FileWriter(targetFileName);
+		
+		char[] dataArr = new char[10];
+		int dataLength = 0;
+		
+		do {
+			dataLength = fr.read(dataArr); 
+			// fr 파일로 부터 글자(char)10개씩 읽어들임.
+            // 읽어들인 글자는 char[] 타입의 배열인 dataArr 에 저장시킨후
+            // 읽어들인 글자수(길이)는 dataLength 에 저장시킨다.
+            // 그런데 fr 파일이 손상되었을시 IOException 이 발생된다.
+			
+			if(dataLength != -1) {
+				fw.write(dataArr, 0, dataLength); // 0번째부터 실제 읽어온 길이만큼
+				fw.flush();
+			}
+			
+			else {
+				break;
+			}
+			
+		} while (true);
+		// end of do~while----------------------------------------------------------------------
+		
+		fw.close(); // 빨대제거
+		fr.close(); // 빨대제거
+		
+	}// end of public static void charFileCopy(String srcFileName, String targetFileName)
+	
 	
 	
 	
