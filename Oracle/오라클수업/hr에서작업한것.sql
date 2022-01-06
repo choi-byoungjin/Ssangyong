@@ -705,7 +705,7 @@ from dual;\
    
    commit; 
    -- 커밋 완료.
-   -- DML(Data Manuplation Language[데이터조작어] ==> insert, update, delete, merge) 명령어로 
+   -- DML(Data Manuplation Language[데이터조작어] ==> select, insert, update, delete, merge) 명령어로 
    -- 변경되어진 것을 디스크에 적용시키는 것이다.
    -- commit; 한 이후로 rollback; 해봐야 이전상태로 되돌아 가지 않는다. 
  
@@ -1357,4 +1357,682 @@ from dual;\
     select fileno 파일번호,
         reverse(substr( reverse(filepath), 1, instr( reverse(filepath), '\', 1)-1)) 파일명
     from tbl_files
+    
+    
+    select '쌍용교육센터 서울교육대학교 교육문화원'
+         
+         , instr('쌍용교육센터 서울교육대학교 교육문화원', '교육', 1, 1) -- 3
+         --  '쌍용교육센터 서울교육대학교 교육문화원' 에서 '교육' 이 나온 위치를 찾는데
+         --  출발점이 1 번째 부터 1 번째로 나오는 '교육'의 위치를 알려달라는 말이다.
+         
+         , instr('쌍용교육센터 서울교육대학교 교육문화원', '교육', -1, 1) -- 16
+         --  '쌍용교육센터 서울교육대학교 교육문화원' 에서 '교육' 이 나온 위치를 찾는데
+         --  출발점이 역순으로 1 번째 부터 2 번째로 나오는 '교육'의 위치를 알려달라는 말이다.
+         
+         , instr('쌍용교육센터 서울교육대학교 교육문화원', '교육', -6, 1) -- 10
+         --  '쌍용교육센터 서울교육대학교 교육문화원' 에서 '교육' 이 나온 위치를 찾는데
+         --  출발점이 역순으로 6 번째 부터 1 번째로 나오는 '교육'의 위치를 알려달라는 말이다.
+         
+         , instr('쌍용교육센터 서울교육대학교 교육문화원', '교육', -6, 2) -- 3
+         --  '쌍용교육센터 서울교육대학교 교육문화원' 에서 '교육' 이 나온 위치를 찾는데
+         --  출발점이 역순으로 6 번째 부터 2 번째로 나오는 '교육'의 위치를 알려달라는 말이다.
+         --  그러한 값이 없다라면 0 이 나온다.
+         
+          , instr('쌍용교육센터 서울교육대학교 교육문화원', '교육', -6, 3) -- 0
+         --  '쌍용교육센터 서울교육대학교 교육문화원' 에서 '교육' 이 나온 위치를 찾는데
+         --  출발점이 역순으로 6 번째 부터 3 번째로 나오는 '교육'의 위치를 알려달라는 말이다.
+         --  그러한 값이 없다라면 0 이 나온다.
+         
+         , instr('쌍용교육센터 서울교육대학교 교육문화원', '교육', -6) -- 10
+         --  '쌍용교육센터 서울교육대학교 교육문화원' 에서 '교육' 이 나온 위치를 찾는데
+         --  출발점이 역순으로 6 번째 부터 1 번째로 나오는 '교육'의 위치를 알려달라는 말이다.
+         --  출발점만 나오면 뒤에 , 1 이 생략된 것이다.
+         
+    from dual;
         
+        
+    select fileno 파일번호
+        , substr(filepath, instr(filepath, '\', -1)+1) 파일명
+    from tbl_files;
+    
+    
+    -- 1.7  lpad : 왼쪽부터 문자를 자리채움 *** ---
+    -- 1.8  lpad : 왼쪽부터 문자를 자리채움 *** ---
+    select lpad('교육센터',10,'*') 
+    -- 10 byte를 확보해서 거기에 '교육센터'를 넣습니다. 넣은 후 빈공간(2byte)이 있으면 왼쪽부터 '*' 로 채워라
+        , rpad('교육센터',10,'*')
+    from dual;
+    
+    
+    -- 1.9  ltrim : 왼쪽부터 문자를 제거한다, 문자가 없으면 공백 제거 **** ---
+    -- 1.10 rtrim : 오른쪽부터 문자를 제거한다, 문자가 없으면 공백 제거 **** ---
+    -- 1.11 trim  : 왼쪽, 오른쪽부터 공백을 제거한다 **** ---
+    select ltrim('abbbaaacccddaabcdTaabdcaSSS', 'abcd')
+          ,rtrim('abbbaaacccddaabcdTaabdcd', 'abcd')
+          ,rtrim(ltrim('abbbaaacccddaabcdTaabdcd', 'abcd'), 'abcd')
+    from dual;
+    
+    select '쌍용' || '                           교육                    센터',
+           '쌍용' || ltrim('                           교육                    센터')
+    from dual;
+    
+    select '쌍용                     ' || '교육                    센터',
+           rtrim('쌍용                     ') || '교육                    센터'
+    from dual;
+    
+    select '쌍용' || '                  교육                 ' ||'센터',
+           '쌍용' || trim('                  교육                 ') ||'센터'
+    from dual;
+   
+   
+   -- 1.12  translate ---
+   select translate('010-2345-6789'
+                   ,'0123456789'
+                   ,'영일이삼사오육칠팔구')
+   from dual;
+   
+   
+   -- 1.13 replace ---
+   select replace('쌍용교육센터 서울교육대학교 교육문화원'
+                , '교육'
+                , 'education')
+   from dual;
+   
+   
+   -- 1.14 langth ==> 문자열의 길이를 알려주는 것 ---
+   select length('쌍용center')
+   from dual;
+
+
+   -- 1.15 langthb ==> 문자열의 byte수를 알려주는 것 ---   
+   select lengthb('쌍용center')
+   from dual;
+   
+
+
+    -------------- >> 2. 숫자 함수 << ---------------------
+    
+    -- 2.1 mod : 나머지를 구해주는 것
+    select 5/2, mod(5,2), trunc(5/2)
+    from dual;
+    
+    --     2.5      1        2
+    
+    
+    
+    -- 2.2 round : 반올림을 해주는 것
+    select 94.547
+        ,  round(94.547)     --95
+        ,  round(94.547,0)   --95        0 은 정수 1자리까지만 나타내어준다.
+        ,  round(94.547,1)   --94.5      1 은 소수 첫째자리까지만 나타내어준다.
+        ,  round(94.547,2)   --94.55     2 은 소수 둘째자리까지만 나타내어준다.
+        ,  round(94.547,-1)  --90       -1 은 정수 10자리까지만 나타내어준다.
+        ,  round(94.547,-2)  --100       -2 은 정수 100자리까지만 나타내어준다.
+    from dual;
+    
+    
+    -- 2.3 trunc : 절삭을 해주는 것
+    select 94.547
+        ,  trunc(94.547)     --95
+        ,  trunc(94.547,0)   --94       0 은 정수 1자리까지만 나타내어준다.
+        ,  trunc(94.547,1)   --94       1 은 소수 첫째자리까지만 나타내어준다.
+        ,  trunc(94.547,2)   --94.5     2 은 소수 둘째자리까지만 나타내어준다.
+        ,  trunc(94.547,-1)  --90      -1 은 정수 10자리까지만 나타내어준다.
+        ,  trunc(94.547,-2)  --0       -2 은 정수 100자리까지만 나타내어준다.
+    from dual;
+    
+    
+    -- *** [성적처리] *** --
+    create table tbl_sungjuk
+    (hakbun      varchar2(20)
+    ,name        varchar2(20)
+    ,kor         number(3)
+    ,eng         number(3)
+    ,math        number(3)
+    );
+    
+    select *
+    from tbl_sungjuk;
+    
+    --- *** 데이터 입력하기 *** ---
+    insert into tbl_sungjuk(hakbun, name, kor, eng, math) values('sist001','한석규',90,92,93);
+    insert into tbl_sungjuk(hakbun, name, kor, eng, math) values('sist002','두석규',100,100,100);
+    insert into tbl_sungjuk(hakbun, name, kor, eng, math) values('sist003','세석규',71,72,73);
+    insert into tbl_sungjuk(hakbun, name, kor, eng, math) values('sist004','네석규',89,87,81);
+    insert into tbl_sungjuk(hakbun, name, kor, eng, math) values('sist005','오석규',60,50,40);
+    insert into tbl_sungjuk(hakbun, name, kor, eng, math) values('sist006','육석규',80,81,87);
+    
+    commit;
+    
+    
+    
+    --------------------------------------------------------------------------------------------------------------------------------------
+    학번  성명  국어  영어  수학  총점  평균(소수부 첫째자리까지 나타내되 반올림)  학점(평균이 90 이상이면 'A' 90미만 80이상이면 'B' .... 60 미만이면 'F' )
+    --------------------------------------------------------------------------------------------------------------------------------------
+    
+    
+    select hakbun 학번 
+          ,name 성명  
+          ,kor 국어  
+          ,eng 영어  
+          ,math 수학  
+          ,kor + eng + math 총점  
+          ,round((kor + eng + math)/3, 1) 평균  
+        --,trunc(round((kor + eng + math)/3, 1), -1)
+          ,case trunc(round((kor + eng + math)/3, 1), -1)
+            when 100 then 'A'
+            when 90 then 'A'
+            when 80 then 'B'
+            when 70 then 'C'
+            when 60 then 'D'
+            else 'F' 
+            end 학점
+        
+          ,decode(trunc(round((kor + eng + math)/3, 1), -1), 100, 'A'
+                                                           ,  90, 'A'
+                                                           ,  80, 'B'
+                                                           ,  70, 'C'
+                                                           ,  60, 'D'
+                                                                , 'F') 학점2
+          ,case
+            when trunc(round((kor + eng + math)/3, 1), -1) in (100, 90) then 'A'
+            when trunc(round((kor + eng + math)/3, 1), -1) = 80           then 'B'
+            when trunc(round((kor + eng + math)/3, 1), -1) = 70           then 'C'
+            when trunc(round((kor + eng + math)/3, 1), -1) = 60           then 'D'
+            else 'F'
+            end 학점3
+    from tbl_sungjuk
+    
+    
+    -- 2.4  power : 거듭제곱
+    select 2*2*2*2*2, power(2,5) -- 2의 5승
+    from dual;
+    
+    
+    -- 2.5  sqrt : 제곱근
+    select sqrt(16), sqrt(3), sqrt(2)
+    from dual;
+    
+    
+    -- 2.6  sin, cos, tan, asin, acos, atan
+    select sin(90), cos(90), tan(90), asin(0.3), acos(0.3), atan(0.3)
+    from dual;
+    
+    
+    -- 2.7 log
+    select log(10, 100)
+    from dual;
+    
+    
+    -- 2,8 sign  ==>  결과값이 양수람ㄴ 1, 결과값이 0 이면 0, 결과값이 음수라면 -1
+    select sign(5-2), sign(5-5), sign(2-5)
+    from dual;
+    
+    
+    -- 2.9 ceil(실수)  ==>  입력되어진 실수보다 큰 최소의 정수를 나타내어준다.
+    --     ceil(정수)  ==>  입력되어진 정수를 그대로 나타내어준다.
+    select ceil(10.1), ceil(-10.1)
+    from dual;
+
+
+    -- 2.10 floor(실수)  ==>  입력되어진 실수보다 작은 최대의 정수를 나타내어준다.
+    --      floor(정수)  ==>  입력되어진 정수를 그대로 나타내어준다.
+    select floor(10.1), floor(-10.1), floor(10), floor(-10)
+    from dual;
+    
+
+    ----------- >> 3. 날짜 함수 << -----------------
+
+    /*
+        날짜1 + 숫자 = 날짜2 ==> 날짜1 에서 숫자(단위가 일수)만큼 더한 값이 날짜2 가 된다.
+        날짜1 - 숫자 = 날짜2 ==> 날짜1 에서 숫자(단위가 일수)만큼 뺀 값이 날짜2 가 된다.
+
+        여기서 중요한 것은 숫자의 단위는 일수 이다.
+        
+        날짜1 - 날짜2 = 숫자  ==> 결과값인 숫자의 단위는 일수이다.
+    */
+    select
+            sysdate - 1, to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss') 어제시각
+           ,sysdate, to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss') 현재시각
+    from dual
+    
+    -- 단위환산 --
+    /*
+        1 kg = 1000 g
+        1 g = 1/1000 kg
+        
+        1 일 = 24 시간
+        1 시간 = 60 분
+        1 분 = 1/60 시간
+        1 분 = 60 초
+        1 초 = 1/60 분
+    */
+    
+    --- *** [퀴즈] 현재시각으로 부터 1일 2시간 3분 4초 뒤를 나타내세요 *** ---
+    
+    select
+            to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss') 현재
+           ,to_char(sysdate + 1 + (2/24) + 3/(24*60) + 4/(24*60*60), 'yyyy-mm-dd hh24:mi:ss') "1일 2시간 3분 4초 뒤"
+    from dual
+
+
+    -- 3.1 to_yminterval('년-월'), to_dsinterval('일 시:분:초')
+    /*
+        to_yminteval 은 년 과 월을 나타내어 
+        연산자가 + 이면 날짜에서 더해주는 것이고,
+        연산자가 - 이면 날짜에서 빼주는 것이고,
+        
+        to_dsinterval 은 일 시간 분 초를 나타내어
+        연산자가 + 이면 날짜에서 더해주는 것이고,
+        연산자가 - 이면 날짜에서 빼주는 것이고,
+    */
+    -- 현재시각으로 부터 1년 2개월 3일 4시간 5분 6초 뒤를 나타내세요
+    select to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss') 현재시각
+          ,sysdate + to_yminterval('01-02') + to_dsinterval('003 04:05:06')
+          ,to_char(sysdate + to_yminterval('01-02') + to_dsinterval('003 04:05:06'), 'yyyy-mm-dd hh24:mi:ss') as "1년2개월3일4시간5분6초"
+    from dual
+
+    
+    -- 3.2 add_months(날짜, 숫자)
+    /*
+        ==> 숫자가 양수이면 날짜에서 숫자 개월수 만큼 더해준 날짜를 나타내는 것이고,
+            숫자가 음수이면 날짜에서 숫자 개월수 만큼 뺀 날짜를 나타내는 것이다.
+            
+        여기서 숫자의 단위는 개월수 이다.
+    */
+    select
+            to_char(add_months(sysdate, -2), 'yyyy-mm-dd hh24:mi:ss') "2개월전",
+            to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss') "현재시각",
+            to_char(add_months(sysdate, 2), 'yyyy-mm-dd hh24:mi:ss') "2개월후"
+    from dual;
+    
+    --- *** 내일 홍길동이 군대에 입대를 한다. 복무기간이 18개월 이라면 제대일자(년-월-일) 를 구하세요.. 
+    select to_char(add_months(sysdate+1, 18), 'yyyy-mm-dd') "제대일자"
+    from dual;
+    
+    
+    -- 3.3 months_between(날짜1, 날짜2)
+    /*
+          날짜1 에서 날짜2 를 뺀 값으로 그 결과는 숫자가 나오는데 결과물 숫자의 단위는 개월수 이다.
+          즉, 두 날짜의 개월차이를 구할 때 사용한다.
+        
+     */
+    select sysdate + 3
+    from dual;
+    -- 날짜1 - 날짜2 = 숫자  ==> 결과값인 숫자의 단위는 일수이다.
+    
+    select months_between(add_months(sysdate,3), sysdate),  --  3
+           months_between(sysdate, add_months(sysdate,3))   -- -3
+    from dual;
+     
+     
+    -- 3.4 last_day(특정날짜)
+    --     ==> 특정날짜가 포함된 달력에서 맨 마지막날짜를 알려주는 것이다.
+    select sysdate, lase_day(sysdate)
+    from dual;
+    
+    select last_day('2022-02-01'),
+           last_day(to_date('2022-01-01', 'yyyy-mm-dd')),
+           last_day('2020-02-01'),
+           last_day('2024-02-01')
+    from dual;
+    
+    -- 3.5  next_day(특정날짜, '일') '일'~'토'
+    --      ==> 특정날자로 부터 다음번에 돌아오는 가장 빠른 '일'~'토'의 날짜를 알려주는 것
+    
+    selecr sysdate
+        ,  next_day(sysdate, '금')
+        ,  next_day(sysdate, '월')
+        ,  next_day(sysdate, '목')
+    from dual;
+    -- 22/02/28	22/01/31	20/02/29	24/02/29\
+    
+    
+    -- 3.6 extract ==> 날짜에서 년, 월, 일을 숫자형태로 추출해주는 것이다.
+    --     참고로 to_char() ==> 날짜에서 년, 월, 일을 문자형태로 추출해주는 것이다.
+    select sysdate
+        ,  to_char(sysdate, 'yyyy')     -- 2022
+        ,  extract(year from sysdate)   -- 2022
+        ,  to_char(sysdate, 'mm')       -- 01
+        ,  extract(month from sysdate)  -- 1
+        ,  to_char(sysdate, 'dd')       -- 06
+        ,  extract(day from sysdate)    -- 6
+        
+        ,  to_char(sysdate, 'hh24')
+        ,  to_char(sysdate, 'mm')
+        ,  to_char(sysdate, 'ss')
+    from dual;
+    
+    
+    ----------- >> 4. 변환 함수 << -----------------
+    
+    -- 4.1  to_char(날짜, '형태')  ==> 날짜를 '형태' 모양으로 변환시켜주는 것이다.
+    --      to_char(숫자, '형태')  ==> 숫자를 '형태' 모양으로 변환시켜주는 것이다.
+    
+    --- 날짜를 문자형태로 변환하기 ---
+     select to_char(sysdate, 'yyyy')  AS 년도
+          , to_char(sysdate, 'mm')    AS 월
+          , to_char(sysdate, 'dd')    AS 일
+          , to_char(sysdate, 'hh24')  AS "24시간"
+          , to_char(sysdate, 'am hh') AS "12시간"
+          , to_char(sysdate, 'pm hh') AS "12시간"
+          , to_char(sysdate, 'mi')    AS 분
+          , to_char(sysdate, 'ss')    AS 초
+          , to_char(sysdate, 'q')     AS 분기       -- 1월~3월 => 1,   4월~6월 => 2,   7월~9월 => 3,    10월~12월 => 4 
+          , to_char(sysdate, 'day')   AS 요일명     -- 월요일(Windows) , Monday(Linux) 
+          , to_char(sysdate, 'dy')    AS 줄인요일명  -- 월(Windows) , Mon(Linux)
+     from dual;
+     
+     select to_char(sysdate, 'd')  -- sysdate 의 주의 일요일 부터(지금은 2022년 1월 2일)  sysdate(지금은 2022년 1월 6일) 까지 며칠째 인지를 알려주는 것이다.
+                                   -- 1(일요일)  2(월요일) 3(화요일) 4(수요일) 5(목요일) 6(금요일) 7(토요일) 
+     from dual;
+     
+     
+     select case to_char(sysdate, 'd')
+     from dual;
+     
+     select case to_char(sysdate, 'd')
+            when '1' then '일'
+            when '2' then '월'
+            when '3' then '화'
+            when '4' then '수'
+            when '5' then '목'
+            when '6' then '금'
+            when '7' then '토'
+            end "오늘의요일명1"
+        ,  decode(to_char(sysdate, 'd'), '1', '일'
+                                         '2', '월'
+                                         '3', '화'
+                                         '4', '수'
+                                         '5', '목'
+                                         '6', '금'
+                                         '7', '토') 오늘의요일명2
+    from dual;
+     
+    select to_char(sysdate, 'dd')   -- sysdate 의 월 1일 부터(지금은 2022년 1월 1일) sysdate 까지 며칠째 인지를 알려주는 것이다.
+        ,  to_char(sysdate, 'ddd')  -- sysdate 의 년도 1월1일 부터(지금은 2022년 1월 1일) sysdate 까지 며칠째 인지를 알려주는 것이다.
+    from dual;
+    
+    select to_char(add_months(sysdate, 1), 'dd') -- add_months(sysdate, 1) 은 2022년 2월 6일 이다.
+        ,  to_char(add_months(sysdate, 1), 'ddd')-- add_months(sysdate, 1) 은 2022년 2월 6일 이다.
+    from dual   
+    
+    --- *** 숫자를 문자형태로 변환하기 *** ---
+    select 1234567890
+        ,  to_char(1234567890, '9,999,999,999')
+        ,  to_char(1234567890, '$9,999,999,999')
+        ,  to_char(1234567890, 'L9,999,999,999') -- L 은 그 나라의 화폐기호가 나온다.
+    from dual;
+    
+    
+    select 100
+        ,  to_char(100, '999.0')    -- 100.0
+        ,  95.7
+        ,  to_char(95.7, '999.0')   -- 95.7
+        ,  to_char(95.7, '999.00')  -- 95.70
+        ,  to_char(95.78, '999.00') -- 95.78
+    from dual;
+    
+    
+    -- 4.2 to_date(문자, '형태') ==> 문자를 '형태' 모양으로 날짜형태로 변환시켜주는 것.
+    select '2022-01-06' + 1
+    from dual;
+    -- ORA-01722: invalid number
+    
+    select to_date('2022-01-06', 'yyyy-mm-dd') + 1
+        ,  to_date('2022/01/06', 'yyyy/mm/dd') + 1
+        ,  to_date('20220106', 'yyyymmdd') + 1
+    from dual;
+    
+    select to_date('2022-02-28', 'yyyy-mm-dd') + 1 -- 2022-02-29 은 달력에 없으므로 오류
+    from dual;
+    
+    select to_date('2020-02-28', 'yyyy-mm-dd') + 1
+    from dual;
+    
+    
+    -- 4.3 to_number(문자) ==> 숫자모양을 가지는 문자를 숫자형태로 변환시켜주는 것이다.
+    select '12345', to_number('12345')
+    from dual;
+    
+    select '50' + 10 -- 자동형변환이 되어짐.
+        ,  to_number('50')+10
+    from dual;
+    
+    select to_number('홍길동')
+    from dual;
+    -- ORA-01722: invalid number
+    
+    ----------- >> 5. 기타 함수 << ----------------
+    -
+    -- 5.1  case when then else end  ==> !! 암기 !!
+    select case 5-2
+           when 4 then '5-2=4 입니다.'
+           when 1 then '5-2=1 입니다.'
+           when 3 then '5-2=3 입니다.'
+           else '나는 수학을 몰라요'
+           end
+    from dual;
+
+    select case
+           when 4 > 5 then '4는 5보다 큽니다.'
+           when 5 > 7 then '5는 7보다 큽니다.'
+           when 3 > 2 then '3은 2보다 큽니다.'
+           else '나는 수학을 몰라요'
+           end 결과
+    from dual;
+    
+    
+    -- 5.2  decode  ==> !!! 암기 !!!
+    select decode(5-2, 4, '5-2=4 입니다.'
+                     , 1, '5-2=1 입니다.'
+                     , 0, '5-2=3 입니다.'
+                        , '나는 수학을 몰라요') 결과
+    from dual;
+    
+     /*
+        --- [퀴즈] ---
+        employees 테이블에서 모든 사원들에 대해
+        사원번호, 사원명, 주민번호, 성별, 현재나이, 월급, 입사일자, 정년퇴직일, 정년까지근무개월수, 퇴직금 을 나타내세요.
+        
+        여기서 정년퇴직일이라 함은 
+        해당 사원의 생월이 3월에서 8월에 태어난 사람은 
+        해당사원의 나이(한국나이)가 63세가 되는 년도의 8월 31일로 하고,
+        해당사원의 생월이 9월에서 2월에 태어난 사람은 
+        해당사원의 나이(한국나이)가 63세가 되는 년도의 2월말일(2월28일 또는 2월29일)로 한다.
+   
+        정년까지근무개월수 ==> 입사일자로 부터 정년퇴직일 까지 개월차이 
+        months_between(정년퇴직일, 입사일자)
+        
+        퇴직금 ==> 근무년수 * 월급       26개월근무 ==> 2년2개월 ==> 2년*월급
+        
+    */
+    select employee_id AS 사원번호
+         , first_name || ' ' || last_name AS 사원명
+         , jubun AS 주민번호
+         , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS 성별
+    
+    --   , 현재년도 - 태어난년도( 주민번호앞의2자리 + 1900 OR 주민번호앞의2자리 + 2000 ) + 1 AS 현재나이
+         , extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 AS 현재나이
+         
+         , nvl(salary + (salary * commission_pct), salary) AS 월급
+         , hire_date AS 입사일자
+         
+         --  정년퇴직일은 해당사원의 나이(한국나이)가 63세가 되는 년도 
+         --  어떤 사원의 현재 나이가 62세 => 63세가 되는 년도  add_months(sysdate, (63-62)*12)
+         --  어떤 사원의 현재 나이가 40세 => 63세가 되는 년도  add_months(sysdate, (63-40)*12)
+         --  어떤 사원의 현재 나이가 57세 => 63세가 되는 년도  add_months(sysdate, (63-57)*12) 
+         --  to_char( add_months(sysdate, (63-현재나이)*12), 'yyyy') || '-08-31'
+         
+         ,  last_day( to_char( add_months(sysdate, (63-( extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 ))*12), 'yyyy') || 
+                      case when to_number( substr(jubun,3,2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+                     ) AS 정년퇴직일
+    --   ,  months_between(정년퇴직일, hire_date) 정년까지근무개월수
+         ,  trunc(months_between(last_day( to_char( add_months(sysdate, (63-( extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 ))*12), 'yyyy') || 
+                      case when to_number( substr(jubun,3,2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+                     ), hire_date)) 정년까지근무개월수
+                     
+    --   ,  trunc( 정년까지근무개월수/12 ) * 월급 퇴직금
+         ,  trunc( (trunc(months_between(last_day( to_char( add_months(sysdate, (63-( extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 ))*12), 'yyyy') || 
+                      case when to_number( substr(jubun,3,2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+                     ), hire_date)) )/12 ) * nvl(salary + (salary * commission_pct), salary) 퇴직금
+    from employees;
+    
+    ---------------------------------------------------------------------------------------------------------------
+    ------- !!!!!"inline view" 를 사용하여 구해본다.!!!!!----------
+    select employee_id, full_name, jubun, gender, age, month_sal, hire_date
+         , last_day(to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+           case when to_number( substr(jubun, 3, 2)) between 3 and 8 then '-08-01'
+           else '-02-01'
+           end) as 정년퇴직일
+    --   , months_between(정년퇴직일, hire_date) as 정년까지근무개월수
+         , trunc(
+                 months_between(last_day(
+                                         to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+                                         case when to_number( substr(jubun, 3, 2)) between 3 and 8 then '-08-01' else '-02-01' end
+                                         ), hire_date) 
+            )as 정년까지근무개월수
+    --   , trunc( 정년까지근무개월수/12 ) * 월급 AS 퇴직금
+         , trunc( trunc(
+                        months_between(last_day(
+                                                to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+                                                case when to_number( substr(jubun, 3, 2)) between 3 and 8 then '-08-01' else '-02-01' end
+                                         ), hire_date) 
+                 )/12 
+            ) * month_sal AS 퇴직금
+    from
+    (
+    select employee_id  
+         , first_name || ' ' || last_name  as full_name
+         , jubun 
+         , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end as gender
+         , extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 as age
+         , nvl(salary + (salary * commission_pct), salary) as month_sal
+         , hire_date  
+         
+    from employees
+    ) V -- V를 "inline view" 라고 부른다
+    
+    
+    ----- **** !!!!! 아주 중요중요중요중요중요중요중요중요중요중요중요중요중요중요 아주 !!!!! **** ------
+    -- VIEW(뷰)란? 테이블은 아니지만 select 되어진 결과물을 마치 테이블 처럼 보는것(간주하는 것)이다.
+    -- VIEW(뷰) 는 2가지 종류가 있다.
+    -- 첫번째로 inline view 가 있고, 두번째로 stored view 가 있다. 
+    -- inline view 는 바로 위의 예제에 보이는 V 인 것이다. 즉, select 구문을 괄호( )를 쳐서 별칭(예 : V)을 부여한 것을 말한다.
+    -- stored view 는 복잡한 SQL(Structured Query Language == 정형화된 질의어)을 저장하여 select 문을 간단하게 사용하고자 할 때 쓰인다.
+    -- 그래서 inline view 는 1회성이고, stored view는 언제든지 불러내서 재사용이 가능하다.
+    
+    --- *** Stored View(저장된 뷰) 생성하기 *** ---
+    /*
+        create or replace view 뷰명  --> 만약에 저장된 뷰로 뷰명이 없으면 새로이 생성해주고(create), 뷰명이 이미 존재한다라면 그 이전의 select 문을 없애고 지금의 select 문으로 바꾸어라(replae)는 말이다.
+        as
+        select 문;
+    */
+   create or replace view view_employee_retire
+   as 
+   select employee_id, first_name || ' ' || last_name AS FULL_NAME
+        , salary, department_id
+   from employees
+   where department_id in (20,30);
+   -- View VIEW_EMPLOYEE_RETIRE이(가) 생성되었습니다.
+   
+   select *
+   from view_employee_retire;
+   
+   
+   create or replace view view_employee_retire
+   as 
+   select employee_id, full_name, jubun, gender, age, month_sal, hire_date
+     
+        , last_day(
+                   to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+                   case when to_number( substr(jubun, 3, 2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+          ) AS RETIREMENT_DATE
+ 
+       ,  trunc(
+                months_between(last_day(
+                                       to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+                                       case when to_number( substr(jubun, 3, 2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+                                      ) , hire_date) 
+          ) AS RETIRE_WORKING_MONTHS_NUM
+     
+       , trunc( 
+                trunc(
+                       months_between(last_day(
+                                               to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+                                               case when to_number( substr(jubun, 3, 2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+                                      ) , hire_date) 
+                ) /12 
+         ) * month_sal  AS SEVERANCE_PAY
+   from 
+   ( 
+    select employee_id
+         , first_name || ' ' || last_name AS FULL_NAME
+         , jubun
+         , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS GENDER
+         , extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 AS AGE 
+         , nvl(salary + (salary * commission_pct), salary) AS MONTH_SAL
+         , hire_date 
+    from employees
+   ) V; 
+   -- View VIEW_EMPLOYEE_RETIRE이(가) 생성되었습니다.
+   
+   select * from tab;
+   
+   desc view_employee_retire;
+   
+   select *
+   from view_employee_retire;
+   
+   select *
+   from view_employee_retire
+   where gender = '여' and trunc(age, -1) in (40,50);
+   
+   select *
+   from view_employee_retire
+   where gender = '남' and retire_working_months_num >= 500;
+   
+   --- Stored View(저장된 뷰) 가 뭐가 있는지 알아봅니다. ---
+   select *
+   from user_views;
+   
+   --- Stored View(저장된 뷰) 중에 VIEW_EMPLOYEE_RETIRE 의 원본소스를 알아봅니다. ---
+   select text
+   from user_views
+   where view_name = 'VIEW_EMPLOYEE_RETIRE';
+   /*
+   "select employee_id, full_name, jubun, gender, age, month_sal, hire_date
+     
+        , last_day(
+                   to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+                   case when to_number( substr(jubun, 3, 2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+          ) AS RETIREMENT_DATE
+ 
+       ,  trunc(
+                months_between(last_day(
+                                       to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+                                       case when to_number( substr(jubun, 3, 2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+                                      ) , hire_date) 
+          ) AS RETIRE_WORKING_MONTHS_NUM
+     
+       , trunc( 
+                trunc(
+                       months_between(last_day(
+                                               to_char( add_months(sysdate, (63-age)*12), 'yyyy') || 
+                                               case when to_number( substr(jubun, 3, 2) ) between 3 and 8 then '-08-01' else '-02-01' end  
+                                      ) , hire_date) 
+                ) /12 
+         ) * month_sal  AS SEVERANCE_PAY
+   from 
+   ( 
+    select employee_id
+         , first_name || ' ' || last_name AS FULL_NAME
+         , jubun
+         , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS GENDER
+         , extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 AS AGE 
+         , nvl(salary + (salary * commission_pct), salary) AS MONTH_SAL
+         , hire_date 
+    from employees
+   ) V"
+   */
+   
