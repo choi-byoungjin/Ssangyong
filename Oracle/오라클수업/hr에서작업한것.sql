@@ -1830,6 +1830,65 @@ from dual;\
                         , '나는 수학을 몰라요') 결과
     from dual;
     
+    
+    -- 5.3  greatest, least
+    select greatest(10, 90, 100, 80)    -- 나열되어진것들 중에 제일 큰값을 알려주는 것
+         , least(10, 90, 100, 80)       -- 나열되어진것들 중에 제일 작은값을 알려주는 것
+    from dual;
+    -- 100	10
+    
+    select greatest('김유신','허준','고수','엄정화')
+         , least('김유신','허준','고수','엄정화')
+    from dual
+    -- 허준	고수
+    
+    
+    -- 5.4  rank ==> 등수(석차)구하기, dense_rank ==> 서열구하기
+    select employee_id as 사원번호
+         , first_name || ' ' || last_name 사원명
+         , nvl(salary + (salary*commission_pct), salary) 월급
+         , department_id 부서번호
+         , rank() over(partition by department_id
+                        order by nvl(salary + (salary*commission_pct), salary) desc) as 부서내월급등수
+         , rank() over(order by nvl(salary + (salary*commission_pct), salary) desc) as 전체월급등수
+         , dense_rank() over(partition by department_id
+                        order by nvl(salary + (salary*commission_pct), salary) desc) as 부서내월급서열
+         , dense_rank() over(order by nvl(salary + (salary*commission_pct), salary) desc) as 전체월급서열
+         
+    from employees;
+    order by 부서번호;
+    
+    -- employees 테이블에서 월급이 가장 많이 버는 등수로 1등부터 10등까지인 사원들만
+    -- 사원번호, 사원명, 월급, 등수를 나타내세요.
+    
+    select *
+    from employees
+    where rank() over(order by nvl(salary + (salary*commission_pct), salary) desc) between 1 and 10
+    -- 오류!! rank() 및 dense_rank() 함수는 where 절에 바로 사용할 수 없다.
+    -- inline view 를 통해서 해야 한다.
+    
+    select V.*
+    from
+    (
+    select employee_id, first_name || ' ' || last_name as full_name
+         , nvl(salary + (salary*commission_pct), salary) as month_sal
+         , rank() over(order by nvl(salary + (salary*commission_pct), salary) desc) as rank_month_sal
+    from employees
+    ) V
+    where V.rank_month_sal between 1 and 10;
+    
+    -- V는 생략가능하다. --
+    select *
+    from
+    (
+    select employee_id, first_name || ' ' || last_name as full_name
+         , nvl(salary + (salary*commission_pct), salary) as month_sal
+         , rank() over(order by nvl(salary + (salary*commission_pct), salary) desc) as rank_month_sal
+    from employees
+    ) V
+    where rank_month_sal between 1 and 10;
+    
+    
      /*
         --- [퀴즈] ---
         employees 테이블에서 모든 사원들에 대해
@@ -2036,3 +2095,431 @@ from dual;\
    ) V"
    */
    
+   
+   
+   -- 5.5  lag 함수, lead 함수
+   --      ==> 게시판에서 특정글을 조회할때 많이 사용한다. !!!
+   
+    create table tbl_board
+    (boardno       number                -- 글번호 
+    ,subject       varchar2(4000)        -- 글제목   varchar2 의 최대크기는 4000 이다. 4000 보다 크면 오류!!!
+    ,content       Nvarchar2(2000)       -- 글내용   Nvarchar2 의 최대크기는 2000 이다. 2000 보다 크면 오류!!!
+    ,userid        varchar2(40)          -- 글쓴이의 ID
+    ,registerday   date default sysdate  -- 작성일자   default sysdate 은 데이터 입력시 registerday 컬럼의 값을 생략하면 기본적으로 sysdate 가 입력된다는 말이다. 
+    ,readcount     number(10)            -- 조회수
+    );
+    
+    insert into tbl_board(boardno, subject, content, userid, registerday, readcount)
+    values(1, '안녕하세요', '글쓰기 연습입니다', 'leess',  sysdate, 0);  
+    -- 1 행 이(가) 삽입되었습니다.
+    
+    insert into tbl_board
+    values(2, '반갑습니다', '모두 취업대박 나십시오', 'eomjh',  sysdate, 0);  
+    -- 1 행 이(가) 삽입되었습니다.
+    
+    insert into tbl_board(subject, boardno, content, userid, registerday, readcount)
+    values('건강하세요', 3, '로또 1등을 기원합니다', 'youks',  sysdate, 0); 
+    -- 1 행 이(가) 삽입되었습니다.
+    
+    insert into tbl_board(boardno, subject, content, userid, registerday, readcount)
+    values(4, '기쁘고 감사함이 넘치는 좋은 하루되세요', '늘 행복하세요', 'leess',  default, 0);
+    -- 1 행 이(가) 삽입되었습니다.
+    
+    insert into tbl_board(boardno, subject, content, userid, readcount)
+    values(5, '오늘도 좋은 하루되세요', '늘 감사합니다', 'hongkd', 0);
+    -- 1 행 이(가) 삽입되었습니다.
+    
+    commit;
+    -- 커밋 완료.
+
+    select *
+    from tbl_board;
+    
+    select boardno
+         , case when length(subject) > 7 then substr(subject, 1, 5) || '..' else subject end as subject
+         , to_char(registerday, 'yyyy-mm-dd hh24:mi:ss') as registerday
+    from tbl_board
+    order by boardno desc;
+    
+    /*
+        ----------------------------------------------------------------------------------------------------------------------------------------
+        이전글번호   이전글제목   이전글작성일자              글번호   글제목         글작성일자            다음글번호      다음글제목       다음글작성일자
+        ----------------------------------------------------------------------------------------------------------------------------------------
+        4       	기쁘고 감..	2022-01-07 10:18:00       5	    오늘도 좋..	2022-01-07 10:18:00     null          null            null
+        3	        건강하세요	2022-01-07 10:18:00       4     기쁘고 감..	2022-01-07 10:18:00     5	        오늘도 좋..	2022-01-07 10:18:00
+        2	        반갑습니다	2022-01-07 10:17:54       3	    건강하세요	2022-01-07 10:18:00     4       	기쁘고 감..	2022-01-07 10:18:00
+        1	        안녕하세요	2022-01-07 10:17:51       2	    반갑습니다	2022-01-07 10:17:54     3	        건강하세요	2022-01-07 10:18:00
+        null    	null        null                      1	    안녕하세요	2022-01-07 10:17:51     2	        반갑습니다	2022-01-07 10:17:54
+    */
+    select T.*
+    from
+    (
+    select lead(boardno, 1) over(order by boardno desc) as 이전글번호
+            -- boardno (글번호) 컬럼의 값을 내림차순으로 정렬했을때 아래쪽으로 1칸 내려간 행의 boardno 값을 가져오는 것이다.
+        ,  lead(Subject, 1) over(order by boardno desc) as 이전글제목
+            -- boardno (글제목) 컬럼의 값을 내림차순으로 정렬했을때 아래쪽으로 1칸 내려간 행의 Subject 값을 가져오는 것이다.
+        ,  lead(registerday, 1) over(order by boardno desc) as 이전글작성일자
+            -- boardno (작성일자) 컬럼의 값을 내림차순으로 정렬했을때 아래쪽으로 1칸 내려간 행의 registerday 값을 가져오는 것이다.
+        
+        ,  boardno 글번호
+        ,  Subject 글제목
+        ,  registerday 글작성일자
+        
+        ,  lag(boardno, 1) over(order by boardno desc) 다음글번호
+            -- boardno (글번호) 컬럼의 값을 내림차순으로 정렬했을때 위으로 1칸 올라간 행의 boardno 값을 가져오는 것이다.
+        ,  lag(Subject, 1) over(order by boardno desc) 다음글제목
+            -- boardno (글제목) 컬럼의 값을 내림차순으로 정렬했을때 위으로 1칸 올라간 행의 Subject 값을 가져오는 것이다.
+        ,  lag(registerday, 1) over(order by boardno desc) 다음글작성일자
+            -- boardno (작성일자) 컬럼의 값을 내림차순으로 정렬했을때 위으로 1칸 올라간 행의 registerday 값을 가져오는 것이다.
+        
+    from
+    (
+    select 
+           boardno
+         , case when length(subject) > 7 then substr(subject, 1, 5) || '..' else subject end as Subject
+         , to_char(registerday, 'yyyy-mm-dd hh24:mi:ss') as REGISTERDAY
+    from tbl_board
+    ) V
+    ) T
+    where T.글번호 = 3;
+    
+    
+    
+    
+    select lead(boardno) over(order by boardno desc) as 이전글번호
+            -- 숫자가 없으면 1이 생략된 것이다.
+        ,  lead(Subject) over(order by boardno desc) as 이전글제목
+        ,  lead(registerday) over(order by boardno desc) as 이전글작성일자
+        
+        ,  boardno 글번호
+        ,  Subject 글제목
+        ,  registerday 글작성일자
+        
+        ,  lag(boardno) over(order by boardno desc) 다음글번호
+        ,  lag(Subject) over(order by boardno desc) 다음글제목
+        ,  lag(registerday) over(order by boardno desc) 다음글작성일자
+        
+    from
+    (
+    select 
+           boardno
+         , case when length(subject) > 7 then substr(subject, 1, 5) || '..' else subject end as Subject
+         , to_char(registerday, 'yyyy-mm-dd hh24:mi:ss') as REGISTERDAY
+    from tbl_board
+    ) V
+    
+    --------------------------------------------------------------------------
+    -- *** case when then else end 구문을 사용하여 로그인 메시지 보여주기 *** --
+    
+   create table tbl_members
+    (userid    varchar2(20)
+    ,passwd    varchar2(20)
+    ,name      varchar2(20)
+    ,addr      varchar2(100)
+    );
+    
+    insert into tbl_members(userid, passwd, name, addr)
+    values('kimys','abcd','김유신','서울');
+    
+    insert into tbl_members(userid, passwd, name, addr)
+    values('young2','abcd','이영이','서울');
+    
+    insert into tbl_members(userid, passwd, name, addr)
+    values('leesa','abcd','이에리사','서울');
+    
+    insert into tbl_members(userid, passwd, name, addr)
+    values('park','abcd','박이남','서울');
+    
+    insert into tbl_members(userid, passwd, name, addr)
+    values('leebon','abcd','이본','서울');
+    
+    commit;  
+    
+    select *
+    from tbl_members
+    where userid = 'kimys' and passwd = 'abcd';
+    
+    /*
+       -- [퀴즈] --
+       tbl_members 테이블에서
+       userid 및 passwd 가 모두 올바르면 '로그인성공' 을 보여주고,
+       userid 는 올바르지만 passwd 가 틀리면 '암호가 틀립니다' 을 보여주고,
+       userid 가 존재하지 않으면 '아이디가 존재하지 않습니다' 을 보여주려고 한다.
+    */
+    select case ( select count(*)
+                  from tbl_members
+                  where userid = 'kimys' and psswd = 'abcd' )
+           when 1 then '로그인성공'
+           else(
+                 case ( select count(*)
+                        from tbl_members
+                        where userid = 'kimys' )
+                 when 1 then '암호가 틀립니다'
+                 else '아이디가 존재하지 않습니다'
+                 end
+                )
+           end as 로그인결과
+    from dual;
+    
+    
+    
+    -------------------------------------------------------------------------
+    
+    ------ >> 그룹함수(집계함수) << ------
+    /*
+        1. sum      -- 합계
+        2. avg      -- 평균
+        3. max      -- 최대값
+        4. min      -- 최소값
+        5. count    -- select 되어서 나온 결과물의 행의 개수
+        6. variance -- 분산
+        7. stddev   -- 표준편차
+        
+        분산    : 분산의 제곱근이 표준편차 (평균에서 떨어진 정도)
+        표준편차 : 표준편차의 제곱승이 분산 (평균과의 차액)
+        
+        >> 주식투자 <<
+    A - 50  60  40  50  55  45  52  48     평균 50  A는 B보다 상대적으로 편차가 적음.      -- 안정투자
+    B - 10  90  20  80  30  70  90  10     평균 50  B는 A보다 상대적으로 편차가 크다.      -- 투기성투자(위험을 안고서 투자함)
+    
+    분산과 표준편차는 어떤 의사결정시 도움이 되는 지표이다.
+        
+    */
+    
+    select salary, to_char(salary, '$99,999')
+    from employees; -- 107 개행
+    
+    select sum(salary)  -- 그룹함수는 결과물이 1개행만 나온다.
+    from employees;
+    
+    select salary, sum(salary)
+    from employees; -- 테이블은 다각형이 아니므로 이것은 오류이다.
+    
+    ---- !!! 중요중요중요 !!! ----
+    -- 그룹함수(집계함수)에서는 null 이 있으면 무조건 null 은 제외시킨 후 연산을 한다.!!
+    -- 그룹함수(집계함수)를 사용하면 1개의 결과물을 가진다.
+    
+    select 1+100+5234+null
+    from dual;
+    
+    select sum(salary * commission_pct)
+    from employees
+    where commission_pct is not null;
+    
+    select sum(salary * commission_pct)
+         , count(salary)         -- 107
+         , count(commission_pct) --  35
+    from employees;
+    
+    desc employees;
+    
+    select count(*)              -- 107
+          ,count(department_id)  -- 106 department_id 컬럼의 값이 null 이 아닌 개수
+          ,count(commission_pct) --  35 commission_pct 컬럼의 값이 null 이 아닌 개수
+          ,count(employee_id)    -- 107
+          ,count(email)          -- 107
+    from employees;
+    
+    
+    select sum(salary * commission_pct)      -- 합계
+         , avg(salary * commission_pct)      -- 평균
+         , max(salary * commission_pct)      -- 최대값
+         , min(salary * commission_pct)      -- 최소값
+         , count(salary * commission_pct)    -- null 을 제외한 개수
+         , variance(salary * commission_pct) -- 분산
+         , stddev(salary * commission_pct)   -- 표준편차
+    from employees;
+    
+    
+    ----- **** avg() 평균을 구할 때는 주의를 요한다. **** -----
+    
+    -- employees 테이블에서 수당액(salary * commission_pct)의 평균을 나타내세요.
+    select sum(salary * commission_pct)/count(salary * commission_pct)
+            -- 2105.428571428571428571428571428571428571
+            --  / 35
+            --  / 107
+            
+          , avg(salary * commission_pct)
+            -- 2105.428571428571428571428571428571428571
+            
+          , sum(salary * commission_pct)/count(*)
+            -- 73690 / 107
+        
+          , sum( nvl(salary * commission_pct, 0) ) / count( nvl(salary * commission_pct, 0) )
+            -- 73690 / 107
+            
+          , avg( nvl(salary * commission_pct, 0) )
+    from employees;
+    
+    
+    select salary * commission_pct
+         , nvl(salary * commission_pct, 0)
+    from employees;
+    
+    
+    select count(salary * commission_pct)           --  35
+         , count( nvl(salary * commission_pct, 0) ) -- 107
+    from employees;
+    
+    
+    -- sum(10+20+null+30)  ==>  60
+    -- sum(10+20+0+30)     ==>  60
+    select avg(salary * commission_pct)
+            -- 수당액을 받는 사람들만의 수당액 평균
+         , avg( nvl(salary * commission_pct, 0) )
+            -- 수당이 null 인 사람은 0 으로 간주한 모든 사원들의 평균
+    from employees;
+    
+    
+    ---- *** 그룹함수(집계함수)와 함께 사용되어지는 group by 절에 대해서 알아본다. ** ----
+    
+    --- employees 테이블에서 부서번호별로 인원수를 나타내세요. ---
+    
+    
+    /*
+        ---------------------
+         부서번호    인원수
+        ---------------------
+            10       1
+            20       2
+            30      15
+            40       3
+            50      20
+            ...     ...
+    */
+    
+    select department_id 부서번호
+         , count(*) 인원수
+    from employees
+    group by department_id  -- department_id 컬럼의 값이 같은것 끼리 그룹을 짓는다.
+    order by 1;
+    
+    
+    --- employees 테이블에서 성별로 인원수를 나타내세요. ---
+    
+    /*
+        ---------------------
+          성별   인원수
+        ---------------------
+           남     56
+           여     51
+    */
+    
+    select GENDER, count(*)
+    from
+    (
+    select case when substr(jubun,7,1) in ('2','4') then '여' else '남' end as GENDER
+    from employees
+    ) V
+    group by GENDER
+    ORDER BY 1;
+    
+    ---- [퀴즈] employees 테이블에서 연령대별로 인원수를 나타내세요. ----
+   /*
+      -------------------
+       연령대       인원수
+      -------------------
+        10
+        20
+        30
+        40
+        50
+        60
+        
+        나이 ==> 현재년도 - 태어난년도 + 1
+                extract(year from sysdate)
+                substr(jubun,1,2) + case when substr(jubun,7,1) in ('1','2') then 1900 else 2000 end + 1
+   */
+   
+   -- trunc(16, -1) = 10
+   
+   select V.AGE_LINE 연령대
+        , count(*) 인원수
+   from
+   (
+    select trunc(extract(year from sysdate) - (substr(jubun,1,2) + case when substr(jubun,7,1) in ('1','2') then 1900 else 2000 end) + 1, -1) as AGE_LINE
+    from employees
+   ) V
+   group by V.AGE_LINE
+   order by 1;
+  
+   
+   ----- ***** 1차 그룹, 2차 그룹 짓기 ***** -----
+   
+   --- employees 테이블에서 부서번호별, 성별 인원수를 나타내세요. ---
+   /*
+        -----------------------
+        부서번호    성별    인원수
+        -----------------------
+          ....    ....
+          50       남      10
+          50       여      15
+          60       남       5
+          60       여      10
+          ....    ....
+   */
+   select V.department_id as 부서번호
+        , V.GENDER as 성별
+        , count(*) as 인원수
+   from
+   (
+    select department_id
+         , case when substr(jubun,7,1) in ('2','4') then '여' else '남' end as GENDER
+    from employees
+   ) V
+   group by V.department_id, V.GENDER
+   order by 1;
+   
+   
+   ---- [퀴즈] employees 테이블에서 연령대별, 성별 인원수를 나타내세요. ----
+   /*
+      -------------------------
+       연령대     성별    인원수
+      -------------------------
+        10        남
+        10        여
+        20        남
+        20        여
+        30        남
+        30        여
+        ...       ...
+   */
+   
+   select V.AGE_LINE as 연령대
+        , V.GENDER as 성별
+        , count(*) as 인원수
+   from
+   (
+    select trunc(extract(year from sysdate) - (substr(jubun,1,2) + case when substr(jubun,7,1) in ('1','2') then 1900 else 2000 end) + 1, -1) as AGE_LINE
+          ,case when substr(jubun,7,1) in ('2','4') then '여' else '남' end as GENDER
+    from employees
+   ) V
+   group by V.AGE_LINE, V.GENDER
+   order by 1;
+   
+   
+   -----------------------------------------------------------------------------
+   
+   -- *** 요약값을 보여주는 rollup, cube, grouping sets, grouping 에 대해서 알아본다. *** --
+   
+   -- employees 테이블에서 부서번호별로 인원수를 나타내면서 동시에 전체인원수도 나타내세요. --
+   
+   select department_id as 부서번호
+        , count(*) as 인원수
+   from employees
+   group by rollup(department_id);
+   
+   
+   select decode(grouping(department_id), 0, nvl(to_char(department_id), '인턴') -- grouping(department_id) 은 결과값이 오로지 2개만 나온다. 0 또는 1 인데, 0이라함은 department_id 컬럼의 값으로 그룹을 지었다는 말이고, 1 이라함은 그룹을 안지었다는 말이다.
+                                           , '전체') as 부서번호
+        , count(*) as 인원수
+   from employees
+   group by rollup(department_id);
+   
+   
+   select decode(grouping(department_id), 0, nvl(to_char(department_id), '인턴') 
+                                           , '전체') as 부서번호
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 1) as 퍼센티지
+   from employees
+   group by rollup(department_id);
