@@ -116,7 +116,7 @@ public class FileManager {
 		fr.close(); // 빨대제거
 		
 	}// end of public static void charFileCopy(String srcFileName, String targetFileName)
-	
+	  
 	   
 	
 	
