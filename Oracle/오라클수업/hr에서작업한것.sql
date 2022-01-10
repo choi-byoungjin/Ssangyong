@@ -1668,7 +1668,7 @@ from dual;\
      
     -- 3.4 last_day(특정날짜)
     --     ==> 특정날짜가 포함된 달력에서 맨 마지막날짜를 알려주는 것이다.
-    select sysdate, lase_day(sysdate)
+    select sysdate, last_day(sysdate)
     from dual;
     
     select last_day('2022-02-01'),
@@ -2501,6 +2501,19 @@ from dual;\
    -----------------------------------------------------------------------------
    
    -- *** 요약값을 보여주는 rollup, cube, grouping sets, grouping 에 대해서 알아본다. *** --
+  
+  ------ >>>>> 요약값(rollup, cube, grouping sets) <<<<< ------
+  /*
+      1. rollup(a,b,c) 은 grouping sets( (a,b,c),(a,b),(a),() ) 와 같다.
+    
+         group by rollup(department_id, gender) 은
+         group by grouping sets( (department_id, gender), (department_id), () ) 와 같다.
+  
+      2. cube(a,b,c) 은 grouping sets( (a,b,c),(a,b),(b,c),(a,c),(a),(b),(c),() ) 와 같다.
+ 
+         group by cube(department_id, gender) 은
+         group by grouping sets( (department_id, gender), (department_id), (gender), () ) 와 같다.
+  */
    
    -- employees 테이블에서 부서번호별로 인원수를 나타내면서 동시에 전체인원수도 나타내세요. --
    
@@ -2523,3 +2536,633 @@ from dual;\
         , round(count(*) / (select count(*) from employees) * 100, 1) as 퍼센티지
    from employees
    group by rollup(department_id);
+   
+   
+   -- employees 테이블에서 성별로 인원수를 나타내면서 동시에 전체인원수도 나타내세요. --
+   
+   /*
+   -------------------------
+    성별   인원수   퍼센티지
+   -------------------------
+     남     56      52%   
+     여     51      48%
+    전체    107     100
+   */
+   
+   
+   select decode(grouping(V.GENDER), 0, V.GENDER, '전체') as 성별
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+    
+   from
+   (
+   select case when substr(jubun, 7, 1) in ('2', '4') then '여자' else '남자' end as GENDER
+   from employees
+   ) V
+   group by rollup(V.GENDER);
+
+    
+    -- employees 테이블에서 부서번호별, 성별로 인원수를 나타내면서 동시에 전체인원수도 나타내세요. --
+    /*
+   ------------------------------
+    부서번호 성별   인원수   퍼센티지
+   ------------------------------
+   
+   */
+   -- rollup 사용시 --
+   select decode (grouping(V.department_id), 0, nvl(to_char(V.department_id), '인턴')
+                                              , ' ') as 부서번호 -- 그루핑 되어진 값이 0 이라면 그루핑 되어진 값이고 1이면(그룹이 지어지지 않음) 전체값
+        
+        , decode (grouping(v.gender), 0, V.GENDER 
+                                       , ' ') as 성별
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+   from
+   (
+    select department_id
+         , case when substr(jubun, 7, 1) in ('2', '4') then '여' else '남' end || '자' as GENDER
+    from employees
+    ) V
+    group by rollup(V.department_id, V.GENDER);
+    
+   -- rollup 사용시( 순서변경 ) --
+   select decode (grouping(v.gender), 0, V.GENDER 
+                                       , ' ') as 성별
+        , decode (grouping(V.department_id), 0, nvl(to_char(V.department_id), '인턴')
+                                              , ' ') as 부서번호 -- 그루핑 되어진 값이 0 이라면 그루핑 되어진 값이고 1이면(그룹이 지어지지 않음) 전체값
+        
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+   from
+   (
+    select department_id
+         , case when substr(jubun, 7, 1) in ('2', '4') then '여' else '남' end || '자' as GENDER
+    from employees
+    ) V
+    group by rollup(V.GENDER, V.department_id);
+     
+    
+    ---------------------------------------------------------------------------------------------------------------------
+    -- grouping sets 사용시 --
+   select decode (grouping(V.department_id), 0, nvl(to_char(V.department_id), '인턴')
+                                              , ' ') as 부서번호 -- 그루핑 되어진 값이 0 이라면 그루핑 되어진 값이고 1이면(그룹이 지어지지 않음) 전체값
+        
+        , decode (grouping(v.gender), 0, V.GENDER 
+                                       , ' ') as 성별
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+   from
+   (
+    select department_id
+         , case when substr(jubun, 7, 1) in ('2', '4') then '여' else '남' end || '자' as GENDER
+    from employees
+    ) V
+    group by grouping sets((V.department_id, V.GENDER), (V.department_id), ());
+   
+   -- grouping sets 사용시( 순서변경 ) --
+   select decode (grouping(v.gender), 0, V.GENDER 
+                                       , ' ') as 성별
+        , decode (grouping(V.department_id), 0, nvl(to_char(V.department_id), '인턴')
+                                              , ' ') as 부서번호 -- 그루핑 되어진 값이 0 이라면 그루핑 되어진 값이고 1이면(그룹이 지어지지 않음) 전체값
+        
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+   from
+   (
+    select department_id
+         , case when substr(jubun, 7, 1) in ('2', '4') then '여' else '남' end || '자' as GENDER
+    from employees
+    ) V
+    group by grouping sets( (V.GENDER, V.department_id), (V.GENDER), ()); -- 뒤에서부터 없어진다.
+   
+    
+    -------------------------------------------------------------------------------------------
+   -- cube 사용시 -- 
+    select decode (grouping(V.department_id), 0, nvl(to_char(V.department_id), '인턴')
+                                               , ' ') as 부서번호 
+        , decode (grouping(v.gender), 0, V.GENDER 
+                                       , ' ') as 성별
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+   from
+   (
+    select department_id
+         , case when substr(jubun, 7, 1) in ('2', '4') then '여' else '남' end || '자' as GENDER
+    from employees
+    ) V
+    group by cube(V.department_id, V.GENDER)
+--  order by 1;
+    order by v.department_id
+    
+    
+    -------------------------------------------------------------------------------------------
+   -- grouping sets 사용시 -- 
+    select decode (grouping(V.department_id), 0, nvl(to_char(V.department_id), '인턴')
+                                               , ' ') as 부서번호 
+        , decode (grouping(v.gender), 0, V.GENDER 
+                                       , ' ') as 성별
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+   from
+   (
+    select department_id
+         , case when substr(jubun, 7, 1) in ('2', '4') then '여' else '남' end || '자' as GENDER
+    from employees
+    ) V
+    group by grouping sets( (V.department_id, V.GENDER), (v.department_id), (v.gender), () )
+    order by v.department_id
+    
+    
+    -------------------------------------------------------------------------------------------
+   -- grouping sets 사용시 -- 
+    select decode (grouping(V.department_id), 0, nvl(to_char(V.department_id), '인턴')
+                                               , ' ') as 부서번호 
+        , decode (grouping(v.gender), 0, V.GENDER 
+                                       , ' ') as 성별
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+   from
+   (
+    select department_id
+         , case when substr(jubun, 7, 1) in ('2', '4') then '여' else '남' end || '자' as GENDER
+    from employees
+    ) V
+    group by grouping sets( (V.department_id, V.GENDER), () )
+    order by v.department_id
+    
+    
+      -------------------------------------------------------------------------------------------
+   -- grouping sets 사용시 -- 
+    select decode (grouping(V.department_id), 0, nvl(to_char(V.department_id), '인턴')
+                                               , ' ') as 부서번호 
+        , decode (grouping(v.gender), 0, V.GENDER 
+                                       , ' ') as 성별
+        , count(*) as 인원수
+        , round(count(*) / (select count(*) from employees) * 100, 0) || '%' as 퍼센티지
+   from
+   (
+    select department_id
+         , case when substr(jubun, 7, 1) in ('2', '4') then '여' else '남' end || '자' as GENDER
+    from employees
+    ) V
+    group by grouping sets( (V.department_id), (V.GENDER), () )
+    order by v.department_id
+    
+    
+    
+    
+    ---------- ======= ****   having 그룹함수조건절   **** ======= ----------
+   /*
+       group by 절을 사용하여 그룹함수의 값을 나타내었을때
+       그룹함수의 값이 특정 조건에 해당하는 것만 추출하고자 할때는 where 절을 사용하는 것이 아니라
+       having 그룹함수조건절 을 사용해야 한다.
+   */
+   
+   -- employees 테이블에서 사원이 10명 이상 근무하는 부서번호와 그 인원수를 나타내세요.
+   
+   select department_id
+        , count(*)
+   from employees
+   where count(*) >= 10 -- 특정 행만 올리는 것인데 기준이 없으므로 오류가 발생한다(select부터가 아닌 from부터이므로)
+   group by department_id
+   
+   -- 그룹함수에 대한 조건절은 having에 써야한다.
+   select department_id as 부서번호
+        , count(*) as 인원수
+   from employees
+   group by department_id
+   having count(*) >= 10
+   order by 인원수 desc;
+   
+   
+   --- [퀴즈] employees 테이블에서 부서번호별로 월급의 합계를 나타내었을 때
+   --        부서번호별 월급의 합계가 50000 이상인 부서에 대해서만
+   --        부서번호, 월급의 합계를 나타내세요.
+   
+   select department_id as 부서번호
+        , to_char(sum( nvl(salary + (salary * commission_pct), salary) )
+                    , '999,999')as 월급합계
+   from employees
+   group by department_id
+   having sum( nvl(salary + (salary * commission_pct), salary) ) >= 50000
+   order by 2 desc;
+   
+   
+   ------- **** !!! 누적(누계)에 대해서 알아봅니다. !!! **** ---------
+   /*
+        sum(누적되어야할 컬럼명) over(order by 누적되어질 기준이 되는 컬럼명 asc[desc] )
+        
+        sum(누적되어야할 컬럼명) over(partition by 그룹화 되어질 컬럼명 
+                                   order by 누적되어질 기준이 되는 컬럼명 asc[desc] )
+   */
+   
+create table tbl_panmae
+ (panmaedate  date
+ ,jepumname   varchar2(20)
+ ,panmaesu    number
+ );
+-- Table TBL_PANMAE이(가) 생성되었습니다.
+    
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-2), '새우깡', 10);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-2)+1, '새우깡', 15); 
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-2)+2, '감자깡', 20);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-2)+3, '새우깡', 10);
+ 
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-2)+3, '새우깡', 3);
+ 
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-1), '고구마깡', 7);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-1)+1, '새우깡', 8); 
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-1)+2, '감자깡', 10);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( add_months(sysdate,-1)+3, '감자깡', 5);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate - 4, '허니버터칩', 30);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate - 3, '고구마깡', 15);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate - 2, '고구마깡', 10);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate - 1, '허니버터칩', 20);
+
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate, '새우깡', 10);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate, '새우깡', 10);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate, '감자깡', 5);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate, '허니버터칩', 15);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate, '고구마깡', 20);
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate, '감자깡', 10); 
+
+ insert into tbl_panmae(panmaedate, jepumname, panmaesu)
+ values( sysdate, '새우깡', 10);
+
+ commit;
+ 
+ select *
+ from tbl_panmae;
+ 
+ -- *** tbl_panmae 테이블에서 '새우깡' 에 대한 일별판매량과 일별누적판매량을 나타내세요 *** --
+ select to_char(panmaedate, 'yyyy-mm-dd hh24:mi:ss') as panmaedate
+      , panmaesu
+ from tbl_panmae
+ where jepumname = '새우깡'
+ 
+ --------------------------------------
+    판매일자   일별판매량   일별누적판매량
+ --------------------------------------
+  2021-11-10 	10           10
+  2021-11-11 	15           25
+  2021-11-13 	13           38
+  2021-12-11 	 8           46
+  2022-01-10	30           76
+  -------------------------------------
+  
+  select to_char(panmaedate, 'yyyy-mm-dd') as 판매일자
+        ,sum(panmaesu) as 일별판매량
+    --  ,sum(누적되어야 할 칼럼명) over(order by 누적되어질 기준이 되는 컬럼명 asc[desc])
+        ,sum(sum(panmaesu)) over(order by to_char(panmaedate, 'yyyy-mm-dd') asc) as 일별누적판매량
+  from tbl_panmae
+  where jepumname = '새우깡'
+  group by to_char(panmaedate, 'yyyy-mm-dd')
+  order by 판매일자
+  
+  
+  -- *** tbl_panmae 테이블에서 모든제품에 대한 일별판매량과 일별누적판매량을 나타내세요 *** --
+  
+ -------------------------------------------------
+  제품명     판매일자      일별판매량   일별누적판매량
+ -------------------------------------------------
+  감자깡   2021-11-12	        20	        20
+  감자깡   2021-12-12	        10	        30
+  감자깡   2021-12-13       	 5	        35
+  감자깡   2022-01-10	        15	        50
+  
+  ....    ..........       ...          ....
+  
+  새우깡   2021-11-10 	    10          10
+  새우깡   2021-11-11 	    15          25
+  새우깡   2021-11-13 	    13          38
+  새우깡   2021-12-11 	     8          46
+  새우깡   2022-01-10	        30          76
+  ------------------------------------------------
+ 
+    select jepumname as 제품명
+         , to_char(panmaedate, 'yyyy-mm-dd') as 판매일자
+         , sum(panmaesu) as 일별판매량
+    /*   , sum(누적되어야할 컬럼명) over(partition by 그룹화 되어질 컬럼명 
+                                   order by 누적되어질 기준이 되는 컬럼명 asc[desc] )
+    */
+         , sum(sum(panmaesu)) over(partition by jepumname
+                                   order by to_char(panmaedate, 'yyyy-mm-dd') asc )
+           as 일별누적판매량
+    from tbl_panmae
+    group by jepumname, to_char(panmaedate, 'yyyy-mm-dd');
+    
+    --------------------------------------------------------------------------------
+    
+    create or replace view view_nujukPanmae
+    as 
+    select jepumname
+         , to_char(panmaedate, 'yyyy-mm-dd') as PANMAEDATE
+         , sum(panmaesu) as DAILY_SALES
+         , sum(sum(panmaesu)) over(partition by jepumname
+                                   order by to_char(panmaedate, 'yyyy-mm-dd') asc )
+            as DAILY_NUJUK_SALES
+    from tbl_panmae
+    group by jepumname, to_char(panmaedate, 'yyyy-mm-dd');
+    -- View VIEW_NUJUKPANMAE이(가) 생성되었습니다.
+    
+    
+    select *
+    from VIEW_NUJUKPANMAE
+    where jepumname in('감자깡', '새우깡');
+
+
+    -- *** [퀴즈] tbl_panmae 테이블에서 판매일자가 1개월전 '01'일(즉, 현재가 2022년 1월10일 이므로 2021년 12월 1일) 부터 판매된 
+    --           모든 제품에 대해 일별판매량과 일별누적판매량을 나타내세요.. ***
+    select sysdate
+         , add_months(sysdate, -1)
+         , to_date(to_char(add_months(sysdate, -1), 'yyyy-mm-') || '01', 'yyyy-mm-dd')
+         , last_day(add_months(sysdate, -2)) +1
+    from dual
+    
+    
+    select jepumname as 제품명
+         , to_char(panmaedate, 'yyyy-mm-dd') as 판매일자
+         , sum(panmaesu) as 일별판매량
+         , sum(sum(panmaesu)) over(partition by jepumname
+                                   order by to_char(panmaedate, 'yyyy-mm-dd') asc )
+           as 일별누적판매량
+    from tbl_panmae
+    where panmaedate >= to_date(to_char(add_months(sysdate, -1), 'yyyy-mm-') || '01', 'yyyy-mm-dd')
+    group by jepumname, to_char(panmaedate, 'yyyy-mm-dd');
+    
+    
+    
+    select jepumname as 제품명
+         , to_char(panmaedate, 'yyyy-mm-dd') as 판매일자
+         , sum(panmaesu) as 일별판매량
+         , sum(sum(panmaesu)) over(partition by jepumname
+                                   order by to_char(panmaedate, 'yyyy-mm-dd') asc )
+           as 일별누적판매량
+    from tbl_panmae
+    where panmaedate >= last_day(add_months(sysdate, -2)) +1
+    group by jepumname, to_char(panmaedate, 'yyyy-mm-dd');
+    
+    
+    
+    ------- ==== *** 아래처럼 나오도록 하세요 *** ==== -------
+    
+    -------------------------------------------------
+    전체사원수   10대   20대   30대   40대   50대   60대
+    -------------------------------------------------
+       107      16    18     21     20    16     16
+    -------------------------------------------------
+    
+    select count(v.AGELINE) as 전체사원수
+         , sum(decode(v.ageline, 10, 1)) as "10대" -- 별칭에 있어서 첫글자가 숫자라면 반드시 ""로 처리해야한다.
+         , sum(decode(v.ageline, 20, 1)) as "20대"
+         , sum(decode(v.ageline, 30, 1)) as "30대"
+         , sum(decode(v.ageline, 40, 1)) as "40대"
+         , sum(decode(v.ageline, 50, 1)) as "50대"
+         , sum(decode(v.ageline, 60, 1)) as "60대"
+    from
+    (
+    select trunc(extract(year from sysdate) - (substr(jubun,1,2) + case when substr(jubun,7,1) in ('1','2') then 1900 else 2000 end) + 1, -1) as AGELINE
+    from employees
+    ) V
+    
+    
+    
+    select count(v.AGELINE) as 전체사원수
+         , decode(v.ageline, 10, 1) as "10대" 
+         , decode(v.ageline, 20, 1) as "20대"
+         , decode(v.ageline, 30, 1) as "30대"
+         , decode(v.ageline, 40, 1) as "40대"
+         , decode(v.ageline, 50, 1) as "50대"
+         , decode(v.ageline, 60, 1) as "60대"
+    from
+    (
+    select trunc(extract(year from sysdate) - (substr(jubun,1,2) + case when substr(jubun,7,1) in ('1','2') then 1900 else 2000 end) + 1, -1) as AGELINE
+    from employees
+    ) V
+    
+    
+    ---------- ===== *** [퀴즈] 아래처럼 나오도록 하세요 *** ===== ----------
+   
+   select employee_id, first_name, job_id
+   from employees;
+   
+   
+   --------------------------------------------------------------------------------------------------------------------------------------
+     직종ID          남자기본급여평균    여자기본급여평균     기본급여평균    (남자기본급여평균 - 기본급여평균)       (여자기본급여평균 - 기본급여평균)
+   --------------------------------------------------------------------------------------------------------------------------------------
+     ........           ....              ....             ....                   ...                                 ...     
+     FI_ACCOUNT         7900              7950             7920                   -20                                  30 
+     IT_PROG            5700              6000             5760                   -60                                 240 
+     ........           ....              ....             ....                   ...                                 ...   
+   --------------------------------------------------------------------------------------------------------------------------------------
+   -- 직종별 급여 평균
+   
+   
+   select v.job_id as 직종ID
+        , trunc(avg(v.MAN_SALARY)) as "남자급여평균"
+        , trunc(avg(v.WOMAN_SALARY)) as "여자급여평균"
+        , trunc(avg(salary)) as "기본급여평균"
+        , trunc((avg(v.MAN_SALARY) - avg(salary))) as "(남자 - 기본급여평균)"
+        , trunc((avg(v.WOMAN_SALARY) - avg(salary))) as "(여자 - 기본급여평균)"
+   from
+   (
+   select job_id
+        , case when substr(jubun, 7, 1) in ('1','3') then '남' else '여' end as gender
+        , salary
+        , case when substr(jubun, 7, 1) in ('1','3') then salary end as MAN_SALARY
+        , case when substr(jubun, 7, 1) in ('2','4') then salary end as WOMAN_SALARY
+   from employees
+   )v
+   group by v.job_id
+   
+   
+   
+   -------------------------------------------------------------------------------------
+   
+   ----- ===== **** Sub Query(서브쿼리) **** ===== -----
+   
+   /*
+       -- Sub Query (서브쿼리)란?
+       select 문속에 또 다른 select 문이 포함되어져 있을 때 포함되어진 select 문을 Sub Query (서브쿼리)라고 부른다.
+       
+       
+       select ...
+       from .....  ==> Main Query(메인쿼리 == 외부쿼리)
+       where ... in (select ... 
+                     from .....) ==> Sub Query (서브쿼리 == 내부쿼리)
+   */
+   
+   /*
+       employees 테이블에서
+       기본급여가 제일 많은 사원과 기본급여가 제일 적은 사원의 정보를
+       사원번호, 사원명, 기본급여로 나타내세요...
+   */
+   /*
+    - SELECT 문에 있는 서브쿼리 : Scalar Subquery
+    - FROM 절에 있는 서브쿼리 : Inline View
+    - WHERE 절에 있는 서브쿼리 : Subquery
+   */
+   from employees
+   where salary = (employees 테이블에서 salary 의 최대값) OR
+         salary = (employees 테이블에서 salary 의 최소값);
+         
+   employees 테이블에서 salary 의 최대값 ==> select max(salary) from employees ==> 24000
+   employees 테이블에서 salary 의 최대값 ==> select min(salary) from employees ==>  2100
+   
+   
+   select employee_id as 사원번호
+        , first_name || ' ' || last_name as 사원명
+        , salary as 기본급여
+   from employees
+   where salary = (select max(salary) from employees) OR
+         salary = (select min(salary) from employees);
+    
+   /*
+   ----------------------------
+   사원번호     사원명     기본급여
+   ----------------------------
+    100    Steven King   24000
+    200    TJ Olson       2100
+   ----------------------------
+   */
+   
+   
+   /*
+      [퀴즈]
+      employees 테이블에서 부서번호가 60, 80번 부서에 근무하는 사원들중에
+      월급이 50번 부서 직원들의 '평균월급' 보다 많은 사원들만 
+      부서번호, 사원번호, 사원명, 월급을 나타내세요....
+   */
+   
+   
+   select department_id as 부서번호
+        , employee_id as 사원번호
+        , first_name || last_name as 사원명
+        , NVL( salary + (salary * commission_pct), salary) as 월급
+   from employees
+   where NVL( salary + (salary * commission_pct), salary) > (select avg(NVL( salary + (salary * commission_pct), salary))
+                                                             from employees 
+                                                             where department_id = '50')
+     and department_id in ('60','80')
+   order by 1, 4 desc;
+   
+   ----------------------------------------------------------------------------
+   
+   create table tbl_authorbook
+   (bookname       varchar2(100) -- 도서명
+   ,authorname     varchar2(20)  -- 작가명
+   ,loyalty        number(5)
+   );
+   
+   insert into tbl_authorbook(bookname, authorname, loyalty)
+   values('자바프로그래밍','이순신',1000);
+   
+   insert into tbl_authorbook(bookname, authorname, loyalty)
+   values('로빈슨크루소','한석규',800);
+   
+   insert into tbl_authorbook(bookname, authorname, loyalty)
+   values('로빈슨크루소','이순신',500);
+   
+   insert into tbl_authorbook(bookname, authorname, loyalty)
+   values('조선왕조실록','엄정화',2500);
+   
+   insert into tbl_authorbook(bookname, authorname, loyalty)
+   values('그리스로마신화','유관순',1200);
+   
+   insert into tbl_authorbook(bookname, authorname, loyalty)
+   values('그리스로마신화','이혜리',1300);
+   
+   insert into tbl_authorbook(bookname, authorname, loyalty)
+   values('그리스로마신화','서강준',1700);
+
+   insert into tbl_authorbook(bookname, authorname, loyalty)
+   values('어린왕자','김유신',1800);
+   
+   commit;
+   
+   
+   select * 
+   from tbl_authorbook;
+   
+   ---  tbl_authorbook 테이블에서 공저(도서명은 동일하지만 작가명이 다른 도서)로 지어진 도서정보를 나타내세요... ---
+   
+   /*
+       ---------------------------------
+         도서명         작가명    로얄티
+       ---------------------------------  
+         로빈슨크루소    한석규    800
+         로빈슨크루소    이순신    500
+         그리스로마신화  유관순   1200
+         그리스로마신화  이혜리   1300
+         그리스로마신화  서강준   1700
+       ---------------------------------  
+   */
+   
+   select bookname, count(*)
+   from tbl_authorbook
+   group by bookname
+/*
+    ------------------------
+    bookname       count(*)
+    ------------------------
+    로빈슨크루소	      2
+    그리스로마신화	      3
+    자바프로그래밍	      1
+    조선왕조실록	      1
+    어린왕자	          1
+*/
+
+
+   select bookname, count(*)
+   from tbl_authorbook
+   group by bookname
+   having count(*) > 1
+   
+   
+   select bookname
+   from tbl_authorbook
+   group by bookname
+   having count(*) > 1
+   
+   
+   select *
+   from tbl_authorbook
+   where bookname in( select bookname
+                      from tbl_authorbook
+                      group by bookname
+                      having count(*) > 1 )
