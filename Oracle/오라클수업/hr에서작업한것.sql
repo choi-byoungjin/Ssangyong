@@ -3165,4 +3165,679 @@ create table tbl_panmae
    where bookname in( select bookname
                       from tbl_authorbook
                       group by bookname
-                      having count(*) > 1 )
+                      having count(*) > 1 );
+                      
+
+  ------- **** Sub Query (서브쿼리)에서 사용되어지는 ANY , ALL 에 대해서 알아봅니다. **** --------
+   /*
+       Sub Query (서브쿼리) 에서 사용되어지는 ANY 는 OR 와 흡사하고, 
+       Sub Query (서브쿼리) 에서 사용되어지는 ALL 은 AND 와 흡사하다.
+   */
+   
+   -- employees 테이블에서 salary 가 30번 부서에 근무하는 사원들의 salary 와 동일한 사원들만 추출하세요..
+   -- 단, 출력시 30번 부서에 근무하는 사원은 제외합니다.
+   
+   from employees
+   where salary = (30번 부서에 근무하는 사원들의 salary);
+   
+   -- 30번 부서에 근무하는 사원들의 salary
+   select salary 
+   from employees
+   where department_id = 30;
+   /*
+       11000
+        3100
+        2900
+        2800
+        2600
+        2500
+   */
+   
+   select employee_id, first_name, salary, department_id 
+   from employees
+   where department_id != 30 AND 
+         salary in(select salary 
+                   from employees
+                   where department_id = 30)
+   order by 4, 3 desc;
+   
+   
+   select employee_id, first_name, salary, department_id 
+   from employees
+   where department_id != 30 AND 
+         salary =ANY (select salary 
+                      from employees
+                      where department_id = 30)
+   order by 4, 3 desc;
+   
+   /*
+      기본급여(salary)가 제일 많은 사원만
+      사원번호, 사원명, 기본급여(salary)를 나타내세요.
+   */
+   from employees
+   where salary = (사원들중에 기본급여(salary)가 제일큰값);
+   
+   select employee_id, first_name, salary, department_id 
+   from employees
+   where salary = (select max(salary) from employees);
+   
+   select employee_id, first_name, salary, department_id 
+   from employees
+   where salary >=ALL (select salary from employees);
+   -- ALL 은 모든 것이 참일때만 보여진다.
+   
+   /*
+      기본급여(salary)가 제일 많은 사원을 제외한 나머지 사원들만 
+      사원번호, 사원명, 기본급여(salary)를 나타내세요.
+   */
+   select employee_id, first_name, salary, department_id 
+   from employees
+   where salary != (select max(salary) from employees);
+   
+   select employee_id, first_name, salary, department_id 
+   from employees
+   where salary < (select max(salary) from employees);
+   
+   -- OR 는 참이 1개만이라도 포함되면 참이다.
+   select employee_id, first_name, salary, department_id 
+   from employees
+   where salary <ANY (select salary from employees); 
+   -- 자동으로 salary 컬럼에 대해 오름차순으로 정렬되어져 나온다. 
+   /*
+         salary < (24000
+         24000     17000
+                    9000
+                    ....
+                    2100)
+   */  
+   
+   
+   /*
+      commission_pct 가 제일 많은 사원만   
+      사원번호, 사원명, commission_pct 를 나타내세요.
+   */
+   from employees
+   where commission_pct = (commission_pct 가 제일큰값);
+   
+   select employee_id, first_name, commission_pct, department_id 
+   from employees
+   where commission_pct = (select max(commission_pct) from employees);
+   -- 145	John	0.4	  80
+   
+   select employee_id, first_name, commission_pct, department_id 
+   from employees
+   where commission_pct >=ALL (select commission_pct from employees);
+   -- 위의 처럼 하면 결과물은 아무것도 안나온다.
+   -- *** Sub Query 절에서 사용하는 ALL 은 사용시 주의를 요한다.
+   --     Sub Query 절에서 select 되어지는 결과물에 NULL 이 존재하지 않도록 만들어야 한다. !!!
+   
+   select employee_id, first_name, commission_pct, department_id 
+   from employees
+   where commission_pct >=ALL (select commission_pct from employees
+                               where commission_pct is not null);
+   -- 145	John	0.4	  80
+   -- 위의 처럼 Sub Query 절에서 select 되어지는 결과물에 NULL 이 존재하지 않도록 만들어야 한다. !!!                                
+   
+   
+   /*
+      commission_pct 가 제일 많은 사원을 제외한 나머지 사원들만 
+      사원번호, 사원명, commission_pct 를 나타내세요.
+   */
+   select employee_id, first_name, commission_pct, department_id 
+   from employees
+   where commission_pct != (select max(commission_pct) from employees);
+   -- 34명 출력됨.
+   
+   select employee_id, first_name, commission_pct, department_id 
+   from employees
+   where commission_pct < (select max(commission_pct) from employees);
+   -- 34명 출력됨.
+   
+   select employee_id, first_name, commission_pct, department_id 
+   from employees
+   where commission_pct <ANY (select commission_pct from employees);
+   -- 34명 출력됨.
+   -- 자동으로 commission_pct 컬럼에 대해 오름차순으로 정렬되어져 나온다. 
+   
+   
+   
+   
+   
+   
+   ------ ===== *** Pairwise(쌍) Sub Query *** ===== ------
+   /*
+      employees 테이블에서
+      부서번호별로 salary 가 최대인 사원과
+      부서번호별로 salary 가 최소인 사원의 정보를
+      부서번호, 사원번호, 사원명, 기본급여를 나타내세요....
+   */
+   select department_id, salary 
+   from employees
+   order by 1, 2;
+   
+   /*
+      원하는 값
+      -------------------------------
+       department_id     salary
+      -------------------------------
+        10	             4400
+        20	             6000
+        20	            13000
+        30	             2500
+        30	            11000
+        40	             6500
+        50	             2100
+        50	             8200
+        60	             4200
+        60	             9000
+        ...              ....
+   */
+   select department_id AS 부서번호
+        , employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        , salary AS 기본급여
+   from employees
+   where (department_id, salary) in (select department_id, min(salary)
+                                     from employees 
+                                     group by department_id)
+         OR
+         (department_id, salary) in (select department_id, max(salary)
+                                     from employees 
+                                     group by department_id)
+   order by 부서번호, 기본급여; 
+   
+   
+   select department_id AS 부서번호
+        , employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        , salary AS 기본급여
+   from employees
+   where (NVL(department_id, -9999), salary) in (select NVL(department_id, -9999), min(salary)
+                                                 from employees 
+                                                 group by department_id)
+         OR
+         (NVL(department_id, -9999), salary) in (select NVL(department_id, -9999), max(salary)
+                                                 from employees 
+                                                 group by department_id)
+   order by 부서번호, 기본급여;
+
+
+
+
+
+   ------ ===== *** Pairwise(쌍) Sub Query *** ===== ------
+   /*
+      employees 테이블에서
+      부서번호별로 salary 가 최대인 사원과
+      부서번호별로 salary 가 최소인 사원의 정보를
+      부서번호, 사원번호, 사원명, 기본급여를 나타내세요....
+   */
+   select department_id, salary 
+   from employees
+   order by 1, 2;
+   
+   /*
+      원하는 값
+      -------------------------------
+       department_id     salary
+      -------------------------------
+        10	             4400
+        20	             6000
+        20	            13000
+        30	             2500
+        30	            11000
+        40	             6500
+        50	             2100
+        50	             8200
+        60	             4200
+        60	             9000
+        ...              ....
+   */
+   select department_id AS 부서번호
+        , employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        , salary AS 기본급여
+   from employees
+   where (department_id, salary) in (select department_id, min(salary)
+                                     from employees 
+                                     group by department_id)
+         OR
+         (department_id, salary) in (select department_id, max(salary)
+                                     from employees 
+                                     group by department_id)
+   order by 부서번호, 기본급여; 
+   
+   
+   select department_id AS 부서번호
+        , employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        , salary AS 기본급여
+   from employees
+   where (NVL(department_id, -9999), salary) in (select NVL(department_id, -9999), min(salary)
+                                                 from employees 
+                                                 group by department_id)
+         OR
+         (NVL(department_id, -9999), salary) in (select NVL(department_id, -9999), max(salary)
+                                                 from employees 
+                                                 group by department_id)
+   order by 부서번호, 기본급여;
+
+
+
+
+
+   --------- ===== **** 상관서브쿼리(== 서브상관쿼리) ****  ===== ---------    
+   /*
+      상관서브쿼리 이라함은 Main Query(== 외부쿼리)에서 사용된 테이블(뷰)에 존재하는 컬럼이
+      Sub Query(== 내부쿼리)의 조건절(where절, having절)에 사용되어질때를 
+      상관서브쿼리(== 서브상관쿼리)라고 부른다.
+   */
+   
+   -- employees 테이블에서 기본급여에 대해 전체등수 및 부서내등수를 구하세요.
+   -- 첫번째 방법은 rank() 함수를 사용하여 구해본다.
+   select department_id AS 부서번호   
+        , employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        , salary AS 기본급여
+        , rank() over(order by salary desc) AS 전체등수 
+        , rank() over(partition by department_id 
+                      order by salary desc) AS 부서내등수 
+   from employees
+   order by 부서번호, 기본급여 desc;
+   
+   
+   -- employees 테이블에서 기본급여에 대해 전체등수 및 부서내등수를 구하세요.
+   -- 두번째 방법은 count(*) 를 이용하여 상관서브쿼리를 사용하여 구해본다.
+   select salary 
+   from employees
+   order by salary desc;
+   
+   -- 자신의 급여가 14000 이라면 몇등일까?
+   select count(*)+ 1 AS 등수
+   from employees
+   where salary > 14000;
+   
+   update employees set department_id = null
+   where employee_id = 100;
+   
+   select department_id AS 부서번호   
+        , employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        , salary AS 기본급여
+        
+        , (select count(*)+ 1
+           from employees
+           where salary > E.salary) AS 전체등수 
+           
+        , (select count(*)+ 1
+           from employees
+           where NVL(department_id, -9999) = NVL(E.department_id, -9999) AND 
+                 salary > E.salary) AS 부서내등수 
+   from employees E
+   order by 부서번호, 기본급여 desc;
+
+   rollback;
+   
+   select employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        
+        , (select count(*)+ 1
+           from employees
+           where salary > E.salary) AS 전체등수 
+           
+        , (select count(*)+ 1
+           from employees
+           where NVL(department_id, -9999) = NVL(E.department_id, -9999) AND 
+                 salary > E.salary) AS 부서내등수 
+   from employees E
+   order by 전체등수 asc;
+   
+   
+   ----- === *** Sub Query 를 사용하여 테이블을 생성할 수 있습니다. *** === -----
+   create table tbl_employees_3060
+   as
+   select department_id
+        , employee_id
+        , first_name || ' ' || last_name AS ENAME
+        , nvl(salary + (salary * commission_pct), salary) AS MONTHSAL
+        , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS GENDER
+        , jubun
+   from employees
+   where department_id in (30, 60);
+   -- Table TBL_EMPLOYEES_3060이(가) 생성되었습니다.
+   
+   select * from tab;
+   
+   select * 
+   from TBL_EMPLOYEES_3060;
+   
+   
+   ----- === *** employees 테이블을 가지고 데이터 없이 
+   --            employees 테이블의 구조만 동일한 tbl_employees_sub 이라는
+   --            테이블을 생성하겠습니다. *** === -----
+   select *
+   from employees
+   where 1=1;
+   
+   select *
+   from employees
+   where 1=2;
+   
+   select *
+   from employees
+   where 2=2;
+   
+   
+   create table tbl_employees_sub
+   as 
+   select *
+   from employees
+   where 1=2;
+   -- Table TBL_EMPLOYEES_SUB이(가) 생성되었습니다.
+   
+   select * from tab;
+   
+   select * 
+   from TBL_EMPLOYEES_SUB;
+   
+   desc TBL_EMPLOYEES_SUB;
+   
+   
+   ---- **** !!!! 필수로 꼭 알아두시길 바랍니다. !!!! **** ----
+   -- === 상관서브쿼리(=서브상관쿼리)를 사용한 UPDATE 처리하기 === --
+   /*
+      회사에 입사하셔서 delete 또는 update 를 할 때 먼저 반드시 해당 테이블을 백업해 두시고
+      그런 다음에 작업을 하시길 바랍니다. 백업본이 있으면 실수를 하더라도 복구가 가능하기 때문입니다.
+   */
+   create table tbl_employees_backup_220111
+   as
+   select * 
+   from employees;
+   -- Table TBL_EMPLOYEES_BACKUP_220111이(가) 생성되었습니다.
+   
+   select * 
+   from tbl_employees_backup_220111;
+   
+   update employees set first_name = '순신', last_name = '이';
+   -- 107개 행 이(가) 업데이트되었습니다.
+   
+   commit;
+   -- 커밋 완료.
+   
+   select * 
+   from employees;
+   
+   update employees E set first_name = ( select first_name 
+                                         from tbl_employees_backup_220111
+                                         where employee_id = E.employee_id)
+                        , last_name = ( select last_name 
+                                        from tbl_employees_backup_220111
+                                        where employee_id = E.employee_id); 
+   -- 107개 행 이(가) 업데이트되었습니다.
+   -- 위와같이 올바르게 복구 되기 위해서는 Sub Query 절의 where 에서 사용된 
+   -- employee_id 컬럼은 고유한 값만 가지는 컬럼이어야 한다.
+   
+   select * 
+   from employees;
+   
+   commit;
+   -- 커밋 완료.
+   
+   
+   
+   ----- === *** Sub Query 절을 사용하여 데이터를 입력(insert) 할 수 있습니다. *** === -----
+   select * 
+   from TBL_EMPLOYEES_3060;
+   
+   desc TBL_EMPLOYEES_3060;
+   
+   insert into TBL_EMPLOYEES_3060
+   select department_id
+        , employee_id
+        , first_name || ' ' || last_name AS ENAME
+        , nvl(salary + (salary * commission_pct), salary) AS MONTHSAL
+        , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS GENDER
+        , jubun
+   from employees
+   where department_id in (40, 50)
+   order by 1;
+   -- 46개 행 이(가) 삽입되었습니다.
+   
+   select * 
+   from TBL_EMPLOYEES_3060;
+   
+ --  rollback;
+   commit;
+   
+   
+   ----- === *** Sub Query 절을 사용하여 데이터를 수정(update) 할 수 있습니다. *** === -----
+   update TBL_EMPLOYEES_3060 set monthsal = ( select TRUNC( AVG(nvl(salary +(salary * commission_pct), salary)) )
+                                              from employees
+                                              where department_id = 50
+                                            )
+   where department_id = 30;
+   -- 6개 행 이(가) 업데이트되었습니다.
+   
+   commit;
+   
+   select * 
+   from TBL_EMPLOYEES_3060;
+   
+   
+   ----- === *** Sub Query 절을 사용하여 데이터를 삭제(delete) 할 수 있습니다. *** === -----
+   
+   delete from TBL_EMPLOYEES_3060
+   where department_id = ( select department_id
+                           from employees
+                           where employee_id = 118 )
+
+   rollback
+   
+   
+   
+   ---------------------------------------------------------------------------------------
+   ---------------------------------------------------------------------------------------
+                -- !!!! 중요 JOIN 은 면접에 가시면 무조건 물어봅니다.!!      중요 !!!! --
+   ---------------------------------------------------------------------------------------
+   
+              ------- ====== **** JOIN **** ====== --------
+   /*
+       JOIN(조인)은 테이블(뷰)과 테이블(뷰)을 합치는 것을 말하는데 
+       행(ROW) 과 행(ROW)을 합치는 것이 아니라, 컬럼(COLUMN) 과 컬럼(COLUMN)을 합치는 것을 말한다.
+       위에서 말한 행(ROW) 과 행(ROW)을 합치는 것은 UNION 연산자를 사용하는 것이다.
+   
+       -- 면접질문 : INNER JOIN(내부조인) 과 OUTER JOIN(외부조인)의 차이점에 대해 말해보세요.
+       -- 면접질문 : JOIN 과 UNION 의 차이점에 대해서 말해보세요.
+       
+       
+       A = {1, 2, 3}    원소가 3개
+       B = {a, b}       원소가 2개
+       
+       A ⊙ B = { (1,a), (1,b)
+                 ,(2,a), (2,b)
+                 ,(3,a), (3,b) }
+                 
+       데카르트곱(수학)  ==> 원소의 곱 :   3 * 2 = 6개(모든 경우의 수)
+       --> 수학에서 말하는 데카르트곱을 데이터베이스에서는 Catersian Product(카테시안 프로덕트) 라고 부른다.
+       
+       
+       JOIN  =>  SQL 1992 CODE 방식  -->  테이블(뷰) 과 테이블(뷰) 사이에 콤마(,)를 찍어주는 것.  
+                                         콤마(,)를 찍어주는 것을 제외한 나머지 문법은 데이터베이스 밴더(회사) 제품마다 조금씩 다르다.   
+       
+       JOIN  =>  SQL 1999 CODE 방식(ANSI) --> 테이블(뷰) 과 테이블(뷰) 사이에 JOIN 이라는 단어를 넣어주는 것.
+                                             ANSI(표준화) SQL
+   */
+   
+   select *
+   from employees;
+   
+   select count(*)
+   from employees;
+   
+   select *
+   from departments;
+   
+   select count(*)
+   from departments;
+   
+   select *
+   from employees , departments; --> SQL 1992 CODE 방식
+   
+   
+   select count(*)
+   from employees , departments; --> SQL 1992 CODE 방식
+                                 -- 2889 개행
+                                 
+    select 107*27
+    from dual;
+    
+    select * 
+    from employees cross join departments; --> SQL 1999 CODE 방식(ANSI)
+    
+    select count(*)
+    from employees CROSS JOIN departments; --> SQL 1999 CODE 방식
+                                          -- 2889 개행
+    
+    /*
+      1. CROSS JOIN 은 프로야구를 예로 들면 10개팀이 있는데 
+         각 1팀당 경기를 몇번해야 하는지 구할때 쓰인다. 1팀당 모든 팀과 경기를 펼쳐야 한다. 
+         
+      2. CROSS JOIN 은 그룹함수로 나온 1개의 행을 가지고 어떤 데이터 값을 얻으려고 할때 사용된다. 
+    */
+    --- 100개행 * 1개행 == 100개행
+    
+    -- [ CROSS JOIN 사용 예 ]
+    /*
+      사원번호    사원명    부서번호    기본급여    모든사원들의기본급여평균    기본급여평균과의차액    
+      이 나오도록 하세요..
+    */
+    select employee_id AS 사원번호
+         , first_name || ' ' || last_name AS 사원명
+         , department_id AS 부서번호
+         , salary AS 기본급여
+         , avg(salary) as 기본급여평균
+    from employees; -- 오류!
+    
+    select employee_id AS 사원번호
+         , first_name || ' ' || last_name AS 사원명
+         , department_id AS 부서번호
+         , salary AS 기본급여
+    from employees;  -- 107 개행
+    
+    select trunc(avg(salary)) as 기본급여평균  -- 6461
+    from employees;  -- 1 개행
+    
+    -- ( 사원번호    사원명    부서번호    기본급여 ) + (기본급여평균)
+    
+    select a.employee_id
+         , FULLNAME
+         , department_id
+         , salary
+         , AVG_SALARY
+         , salary - AVG_SALARY as "평균차액"
+    from
+    (
+    select employee_id  
+         , first_name || ' ' || last_name as FULLNAME
+         , department_id 
+         , salary 
+    from employees
+    ) A
+    ,
+    (
+    select trunc(avg(salary)) as AVG_SALARY  -- 6461
+    from employees
+    ) B;
+    
+    
+    select a.employee_id
+         , FULLNAME
+         , department_id
+         , salary
+         , AVG_SALARY
+         , salary - AVG_SALARY as "평균차액"
+    from
+    (
+    select employee_id  
+         , first_name || ' ' || last_name as FULLNAME
+         , department_id 
+         , salary 
+    from employees
+    ) A
+    CROSS JOIN
+    (
+    select trunc(avg(salary)) as AVG_SALARY  -- 6461
+    from employees
+    ) B; -- SQL 1999 CODE
+    
+    
+    ---- **** EQUI JOIN (SQL 1992 CODE 방식) **** ----
+    /*
+        [EQUI JOIN 예]
+        
+        부서번호    부서명     사원번호    사원명     기본급여
+        이 나오도록 하세요...
+    */
+    
+    /*   부서번호                       부서명         사원번호    사원명     기본급여
+       -----------                     ------       ------------------------------
+       departments.department_id       departments             employees
+       employees.department_id
+    */
+    
+    select *
+    from employees, departments  -- SQL 1992 CODE
+    where employees.department_id = departments.department_id;  -- 조인조건절
+    
+    
+    select *
+    from employees E, departments D -- SQL 1992 CODE
+    where E.department_id = D.department_id;  -- 조인조건절
+    -- E.department_id(부서번호) 값이 NULL 인 것은 출력되지 않는다.
+    
+    
+    select *
+    from employees E, departments D -- SQL 1992 CODE
+    where E.department_id = D.department_id(+);  -- 조인조건절
+    -- (+) 가 없는 쪽의 테이블인 employee E 테이블의 모든 행들을 먼저 출력해줍니다. 
+    -- 즉 107 개 행을 모두 출력한 후 다음에 조인조건절이 들어간다.
+    -- E.department_id(부서번호) 값이 NULL 인 것은 출력되지 않는다.
+    
+    
+    ---- **** INNER JOIN [내부조인] SQL 1999 CODE 방식 **** ----
+    select *
+    from employees E INNER JOIN departments D
+    on E.department_id = D.department_id;
+    
+    
+     ---- **** LEFT (OUTER) JOIN [외부조인] (SQL 1999 CODE 방식) **** ----
+    select *
+ -- from employees E LEFT OUTER JOIN departments D  -- SQL 1999 CODE 
+    from employees E LEFT JOIN departments D  -- OUTER 는 생략가능하다.
+    ON E.department_id = D.department_id; -- 조인조건절
+    -- LEFT OUTER JOIN 글자를 기준으로 왼쪽에 기술된 employees E 테이블의 모든 행들을 먼저 출력해줍니다. 
+    -- 즉 107개 행을 모두 출력한 후 그런 다음에 조인조건절에 들어간다. 
+    -- E.department_id(부서번호) 값이 NULL 인 것도 출력된다.
+ 
+ 
+    ---- **** RIGHT (OUTER) JOIN [외부조인] (SQL 1999 CODE 방식) **** ----
+    select *
+ -- from employees E RIGHT OUTER JOIN departments D  -- SQL 1999 CODE 
+    from employees E RIGHT JOIN departments D  -- OUTER 는 생략가능하다. 
+    ON E.department_id = D.department_id; -- 조인조건절
+    -- RIGHT OUTER JOIN 글자를 기준으로 오른쪽에 기술된 departments D 테이블의 모든 행들을 먼저 출력해줍니다. 
+    -- 즉 27개 행을 모두 출력한 후 그런 다음에 조인조건절에 들어간다. 
+    -- E.department_id(부서번호) 값이 NULL 인 것은 출력되지 않는다.
+    
+    
+    ---- **** FULL (OUTER) JOIN [외부조인] (SQL 1999 CODE 방식) **** ----
+    select *
+ -- from employees E FULL OUTER JOIN departments D  -- SQL 1999 CODE 
+    from employees E FULL JOIN departments D  -- OUTER 는 생략가능하다. 
+    ON E.department_id = D.department_id; -- 조인조건절
+    -- FULL OUTER JOIN 글자를 기준으로 양쪽에 기술된 employees E 테이블 과 departments D 테이블의 모든 행들을 먼저 출력해줍니다. 
+    -- 즉 107개행 과 27개 행을 모두 출력한 후 그런 다음에 조인조건절에 들어간다. 
+    -- E.department_id(부서번호) 값이 NULL 인 것도 출력되고 
+    -- 페이퍼 부서인 부서번호 120번 부터 270번 부서까지도 출력된다.
+    
+    
