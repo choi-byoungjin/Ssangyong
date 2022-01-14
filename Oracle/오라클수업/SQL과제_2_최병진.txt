@@ -1,0 +1,55 @@
+WITH
+   V1 AS
+   (select D.department_id 
+         , department_name 
+         , D.manager_id 
+         , employee_id
+         , first_name || ' ' || last_name AS MANAGER_NAME 
+         , L.STREET_ADDRESS
+   from departments D JOIN employees E
+   ON D.manager_id = E.employee_id
+   JOIN locations L
+   ON D.location_id = L.location_id
+   )
+   ,
+   V2 AS
+   (
+    select department_id
+         , employee_id
+         , first_name || ' ' || last_name AS ENAME
+         , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS gender
+         , extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 AS age
+         , nvl(salary + (salary * commission_pct), salary)*12 as salary
+         , taxpercent
+         , nvl(salary + (salary * commission_pct), salary)*12 * taxpercent as tax_salary
+
+    from employees E JOIN tbl_taxindex T
+    on nvl(salary +(salary * commission_pct), salary)*12 between lowerincome and highincome
+   )
+   ,
+   V3 as
+   (
+    select department_id
+         , trunc(avg(nvl(salary + (salary * commission_pct), salary)*12)) as DEPT_AVG_SAL
+    from employees
+    group by department_id
+    )
+   select V1.department_id AS 부서번호
+        , V1.department_name AS 부서명
+        , V1.STREET_ADDRESS AS 부서주소
+        , V1.MANAGER_NAME AS 부서장성명
+        , V2.employee_id AS 사원번호
+        , V2.ENAME AS 사원명
+        , V2.gender as 성별
+        , V2.age as 나이
+        , V2.salary as 연봉
+        , V2.tax_salary as 연봉소득세액
+        , (v2.salary - v3.DEPT_AVG_SAL) as 부서내연봉평균차액
+        , rank() over(partition by v1.department_id
+                        order by v2.salary desc) as 부서내연봉등수
+        , rank() over(order by v2.salary desc) 전체연봉등수
+   from V1 RIGHT JOIN V2 
+   ON V1.department_id = V2.department_id
+   left join V3
+   ON V2.department_id = V3.department_id
+   order by 1; 

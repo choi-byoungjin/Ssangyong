@@ -5714,8 +5714,7 @@ create table tbl_panmae
     ------ ====== **** TRUNCATE table 테이블명; **** ====== ------  
     --> TRUNCATE table 테이블명; 을 실행하면 테이블명 에 존재하던 모든 행(row)들을 삭제해주고,
     --  테이블명에 해당하는 테이블은 완전초기화 가 되어진다.
-    --  중요한 사실은 TRUNCATE table 테이블명; 은 DDL 문이기에 auto commit; 되어지므로 rollback 이 불가하다.
-   
+    --  중요한 사실은 TRUNCATE table 테이블명; 은 DDL 문이기에 auto commit; 되어지므로 rollback 이 불가하다.   
     --  delete from 테이블명; 을 실행하면 이것도 테이블명 에 존재하던 모든 행(row)들을 삭제해준다.
     --  이것은 DML문 이므로 rollback 이 가능하다.
     
@@ -5816,6 +5815,7 @@ create table tbl_panmae
     -- Revoke을(를) 성공했습니다.
     
     
+    
     -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 select, update, delete 할 수 있도록 권한을 부여하겠습니다.
     grant select, update, delete on employees to orauser1;    
     -- Grant을(를) 성공했습니다.
@@ -5864,7 +5864,6 @@ create table tbl_panmae
     ----- *** sys 또는 system 에서 아래와 같은 작업을 한다. 종료 *** ----
     
     
-    
     ----- *** ORAUSER1 에서 아래와 같은 작업을 한다. 시작 *** ----
     SHOW USER
     
@@ -5889,6 +5888,18 @@ create table tbl_panmae
     
     
     ----- *** ORAUSER1 에서 아래와 같은 작업을 한다. 종료 *** ----
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
