@@ -1982,6 +1982,7 @@ from dual;\
     -- inline view 는 바로 위의 예제에 보이는 V 인 것이다. 즉, select 구문을 괄호( )를 쳐서 별칭(예 : V)을 부여한 것을 말한다.
     -- stored view 는 복잡한 SQL(Structured Query Language == 정형화된 질의어)을 저장하여 select 문을 간단하게 사용하고자 할 때 쓰인다.
     -- 그래서 inline view 는 1회성이고, stored view는 언제든지 불러내서 재사용이 가능하다.
+    -- 보안성을 높일 수 있다.
     
     --- *** Stored View(저장된 뷰) 생성하기 *** ---
     /*
@@ -4111,39 +4112,40 @@ create table tbl_panmae
   select * 
   from tbl_taxindex;
   
-  --- SQL 1992 CODE ---
-  /*
-        사원번호    사원명    연봉    세율
-        ------------------------  =====
-            employees 테이블       tbl_taxindex 테이블
-  */
-  
   ------------------------------------------------------
    사원번호     사원명     연봉     세율      소득세액
   ------------------------------------------------------
     1001       홍길동    50000    0.02      50000 *  0.02
     1002       엄정화   170000    0.08     170000 *  0.08
     ....       ......  ......    .....     .............
-    
-   select employee_id as 사원번호
-        , first_name || ' ' || last_name as 사원명
-        , nvl(salary +(salary * commission_pct), salary)*12 as 연봉
-        , taxpercent as 세율
-   from employees E, tbl_taxindex T -- SQL 1992 CODE
--- where nvl(E.salary +(E.salary * E.commission_pct), E.salary)*12 between T.lowerincome and T.highincome; -- 조인조건절
--- 또는
-   where nvl(salary +(salary * commission_pct), salary)*12 between T.lowerincome and T.highincome; -- 조인조건절
-   
-   
-  --- SQL 1999 CODE ---
   
-   select employee_id as 사원번호
-        , first_name || ' ' || last_name as 사원명
-        , nvl(salary +(salary * commission_pct), salary)*12 as 연봉
-        , taxpercent as 세율
-   from employees E left outer join tbl_taxindex T 
-   on nvl(salary +(salary * commission_pct), salary)*12 between T.lowerincome and T.highincome; -- 조인조건절
+  
+   --- SQL 1992 CODE ---
+   /*
+       사원번호     사원명     연봉     세율 
+       --------------------------    =====
+            employees 테이블          tbl_taxindex 테이블 
+   */
    
+   select employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        , nvl(salary + (salary * commission_pct), salary)*12 AS 연봉
+        , taxpercent AS 세율 
+        , nvl(salary + (salary * commission_pct), salary)*12 * taxpercent AS 소득세액
+   from employees E , tbl_taxindex T  -- SQL 1992 CODE
+-- where nvl(E.salary + (E.salary * E.commission_pct), E.salary)*12 between T.lowerincome and T.highincome;  -- 조인조건절 
+-- 또는
+   where nvl(salary + (salary * commission_pct), salary)*12 between lowerincome and highincome;  -- 조인조건절 
+   
+    
+   select employee_id AS 사원번호
+        , first_name || ' ' || last_name AS 사원명
+        , nvl(salary + (salary * commission_pct), salary)*12 AS 연봉
+        , taxpercent AS 세율 
+        , nvl(salary + (salary * commission_pct), salary)*12 * taxpercent AS 소득세액
+   from employees E JOIN tbl_taxindex T  -- SQL 1999 CODE
+   ON nvl(salary + (salary * commission_pct), salary)*12 between lowerincome and highincome; -- 조인조건절  
+  
   
     
     
@@ -5401,6 +5403,503 @@ create table tbl_panmae
   
   
   
+   -------- ====== ****   merge(병합)   **** ====== --------
+   -- 어떤 2개 이상의 테이블에 존재하는 데이터를 다른 테이블 한곳으로 모으는것(병합)이다.
+  
+   1. 탐색기에서 C:\oraclexe\app\oracle\product\11.2.0\server\network\ADMIN 에 간다.
+   
+   2. tnsnames.ora 파일을 메모장으로 연다.
+   
+   3. TEACHER =
+      (DESCRIPTION =
+        (ADDRESS = (PROTOCOL = TCP)(HOST = 211.238.142.72)(PORT = 1521))
+        (CONNECT_DATA =
+          (SERVER = DEDICATED)
+          (SERVICE_NAME = XE)
+        )
+      )
+     을 추가한다.
+     HOST = 211.238.142.72 이 연결하고자 하는 원격지 오라클서버의 IP 주소이다.
+     그런데 전제조건은 원격지 오라클서버(211.238.142.72)의 방화벽에서 포트번호 1521 을 허용으로 만들어주어야 한다.
+     
+     그리고 TEACHER 를 'Net Service Name 네트서비스네임(넷서비스명)' 이라고 부른다.
+     
+     
+   4. 명령프롬프트를 열어서 원격지 오라클서버(211.238.142.72)에 연결이 가능한지 테스트를 한다. 
+      C:\Users\sist>tnsping TEACHER 5
+
+        Used TNSNAMES adapter to resolve the alias
+        Attempting to contact (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 211.238.142.72)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))
+        OK (0 msec)
+        OK (40 msec)
+        OK (10 msec)
+        OK (30 msec)
+        OK (20 msec)
+   
+   5.  데이터베이스 링크(database link) 만들기
+    
+    create database link teacherServer
+    connect to hr identified by cclass   -- 이때 hr 과 암호 cclass 는 연결하고자 하는 원격지 오라클서버(211.238.142.72)의 계정명과 암호 이다. 
+    using 'TEACHER';                     -- TEACHER 는 Net Service Name 네트서비스네임(넷서비스명) 이다.
+    -- Database link TEACHERSERVER이(가) 생성되었습니다.
+   
+   update employees set first_name = '병진', last_name = '최'
+   where employee_id = 100;
+   -- 1 행 이(가) 업데이트되었습니다.
+
+   commit
+   
+   
+   select *
+   from employees  -- 로컬서버
+   order by employee_id;
+   
+   
+   select *
+   from employees@XE  -- 로컬서버 -- 원칙상으로 @로컬이름 이 필요함
+   order by employee_id;
+
+   
+   select *
+   from employees@teacherServer  -- 원격지 오라클서버(211.238.142.72)
+   order by employee_id;
+   
+    
+    
+    --- *** 생성되어진 데이터베이스 링크를 조회해봅니다. *** ---   
+    
+    select *
+    from user_db_links;
+    /*
+        ----------------------------------------------------------------------------------
+        DB_LINK            USERNAME         PASSWORD        HOST            CREATED
+        ----------------------------------------------------------------------------------
+        TEACHERSERVER       HR                NULL          TEACHER         22/01/14
+                                                        --  TEACHER 는 Netservice name
+    */
+    
+    
+    --- *** 생성되어진 데이터베이스 링크를 삭제해봅니다. *** ---   
+    drop database link TEACHERSERVER;
+    -- Database link TEACHERSERVER이(가) 삭제되었습니다.
+
+
+    create database link bonjumlink
+    connect to hr identified by cclass   
+    using 'TEACHER';                     
+    -- Database link BONJUMLINK이(가) 생성되었습니다.
+    
+    
+    -- 각 지점은 tbl_reservation_Cbyeongjin 이라는 테이블을 생성한다.
+    create table tbl_reservation_Cbyeongjin
+    (rsvno       varchar2(20)    -- 예약고유번호
+    ,memberid    varchar2(20)    -- 회원ID
+    ,ticketcnt   number          -- 티켓개수
+    ,constraint PK_tbl_reservation_Cbyeongjin primary key(rsvno)
+    );
+    -- Table TBL_RESERVATION_SEOYOUNGHAK이(가) 생성되었습니다.
+    
+    
+    insert into tbl_reservation_Cbyeongjin(rsvno, memberid, ticketcnt)
+    values('Cbyeongjin001', '최병진', 2);
+    
+    commit;
+
+    -- 아래는 본점DB서버(샘PC)에서만 하는 것이다.
+    create table tbl_reservation_merge
+    (rsvno       varchar2(20)    -- 예약고유번호
+    ,memberid    varchar2(20)    -- 회원ID
+    ,ticketcnt   number          -- 티켓개수
+    ,constraint PK_tbl_reservation_merge primary key(rsvno)
+    );
+    -- Table TBL_RESERVATION_MERGE이(가) 생성되었습니다.
+    
+    select *
+    from tbl_reservation_merge; -- 샘이 하는것
+    
+    select *
+    from tbl_reservation_merge@bonjumlink; -- 여러분들이 하는 것
+    
+    select * 
+    from tbl_reservation_Cbyeongjin;
+    
+    
+    -- 아래는 여러분(지사)들이 하는 것입니다.
+    merge into tbl_reservation_merge@bonjumlink R  -- Remote
+    using tbl_reservation_Cbyeongjin L  -- Local
+    on (L.rsvno = R.rsvno)
+    when matched then
+        update set R.memberid = L.memberid
+                 , R.ticketcnt = L.ticketcnt
+    when not matched then
+        insert(rsvno, memberid, ticketcnt) values(L.rsvno, L.memberid, L.ticketcnt); -- insert into 하지 않는다
+    -- 1 행 이(가) 병합되었습니다.
+
+    commit
+   
+    select *
+    from tbl_reservation_merge@bonjumlink;
+    
+    select * 
+    from tbl_reservation_Cbyeongjin;
+    
+    update tbl_reservation_Cbyeongjin set memberid = 'Choi B.J', ticketcnt = 8
+    where rsvno = 'Cbyeongjin001'
+   
+    merge into tbl_reservation_merge@bonjumlink R  -- Remote
+    using tbl_reservation_Cbyeongjin L  -- Local
+    on (L.rsvno = R.rsvno)
+    when matched then
+        update set R.memberid = L.memberid
+                 , R.ticketcnt = L.ticketcnt
+    when not matched then
+        insert(rsvno, memberid, ticketcnt) values(L.rsvno, L.memberid, L.ticketcnt);
+   
+   
+    insert into tbl_reservation_Cbyeongjin(rsvno, memberid, ticketcnt)
+    values('Cbyeongjin002', '최병진two', 20);
+    
+    commit;
+   
+    ----- **** 데이터 질의어(DQL == Data Query Language) **** -----
+    --> DQL 은 select 를 말한다.
+    
+    
+    ----- **** 트랜잭션 제어어(TCL == Transaction Control Language) **** -----
+    --> TCL 은 commit, rollback 을 말한다.
+   
+   -- *** Transaction(트랜잭션) 처리 *** --
+   --> Transaction(트랜잭션)이라 함은 관련된 일련의 DML로 이루어진 한꾸러미(한세트)를 말한다.
+   --> Transaction(트랜잭션)이라 함은 데이터베이스의 상태를 변환시키기 위하여 논리적 기능을 수행하는 하나의 작업단위를 말한다. 
+   /*
+      예>   네이버카페(다음카페)에서 활동
+            글쓰기(insert)를 1번하면 내포인트 점수가 10점이 올라가고(update),
+            댓글쓰기(insert)를 1번하면 내포인트 점수가 5점이 올라가도록 한다(update)
+           
+           위와같이 정의된 네이버카페(다음카페)에서 활동은 insert 와 update 가 한꾸러미(한세트)로 이루어져 있는 것이다.
+           이와 같이 서로 다른 DML문이 1개의 작업을 이룰때 Transaction(트랜잭션) 처리라고 부른다.
+           
+           Transaction(트랜잭션) 처리에서 가장 중요한 것은 
+           모든 DML문이 성공해야만 최종적으로 모두 commit 을 해주고,
+           DML문중에 1개라도 실패하면 모두 rollback 을 해주어야 한다는 것이다. 
+           
+           예를 들면 네이버카페(다음카페)에서 글쓰기(insert)가 성공 했다라면
+           그 이후에 내포인트 점수가 10점이 올라가는(update) 작업을 해주고, update 작업이 성공했다라면
+           commit 을 해준다. 
+           만약에 글쓰기(insert) 또는 10점이 올라가는(update) 작업이 실패했다라면
+           rolllback 을 해준다.
+           이러한 실습은 자바에서 하겠습니다.
+   */
+   
+   ---- **** === ROLLBACK TO SAVEPOINT === **** ----
+             --> 특정 시점까지 rollback 을 할 수 있습니다.
+    
+    insert --> 글쓰기     성공
+   
+    update --> 포인트증가  성공
+   
+    commit; -- insert, update 모두 성공한 후 커밋해야 함.
+    rollback -- insert, update 중 하나만 실패해도 롤백해야 한다.
+         
+            
+    select *
+    from employees
+    where department_id = 50;
+   
+    update employees set first_name = '몰라'
+    where department_id = 50;
+    -- 45개 행 이(가) 업데이트되었습니다.
+
+    savepoint point_1;
+    -- Savepoint이(가) 생성되었습니다.
+    
+    delete from employees
+    where department_id is null;
+    -- 1 행 이(가) 삭제되었습니다.
+
+    select first_name
+    from employees
+    where department_id = 50;
+    -- 전부다 '몰라' 로 나온다.
+    
+    
+    select *
+    from employees
+    where department_id is null;
+    -- 행이 없다.
+    
+    Rollback To Savepoint point_1;
+    -- 롤백 완료
+    -- savepoint point_1; 이 선언되어진 이후로 실행된 DML문을 rollback 시킨다.
+    /*
+       그러므로
+       delete from employees
+       where department_id is null; 만 롤백시킨다.
+    */
+  
+    select *
+    from employees
+    where department_id is null;
+    -- 행이 나온다.
+  
+    select first_name
+    from employees
+    where department_id = 50;
+    -- 전부다 '몰라' 로 나온다.
+  
+    rollback --> commit; 한 이후로 수행되어진 모든 DML문을 롤백시킨다.
+    -- 롤백 완료.
+
+    select first_name
+    from employees
+    where department_id = 50;
+    -- first_name 컬럼의 값이 원상복구됨.
+  
+  
+  
+  
+  
+    -------- **** 데이터 정의어(DDL == Data Defination Language) **** ---------
+    ==> DDL : create, drop, alter, truncate 
+    --> 여기서 중요한 것은 DDL 문을 실행을 하면 자동적으로 commit; 이 되어진다.
+    --  즉, auto commit 되어진다.
+    
+    
+    select *
+    from employees
+    where employee_id = 100;
+    -- salary ==> 24000
+    -- email  ==> SKING
+    
+    update employees set salary = 43000, email = 'qwerasdfz'
+    where employee_id = 100;
+    
+    create table tbl_imsi
+    (no number
+    ,name varchar2(20)
+    );
+    -- Table TBL_IMSI이(가) 생성되었습니다.
+
+    -- DDL 문을 실행했으므로 자동적으로 commit; 이 되어진다.
+    
+    
+    select *
+    from employees
+    where employee_id = 100;
+    
+    rollback;
+    -- 롤백 완료 
+    
+    
+    select *
+    from employees
+    where employee_id = 100;
+    -- 위에서 DDL문(create)을 실행했으므로 자동적으로 commit; 이 되었기 때문에
+    -- rollback 안 됨.
+
+        
+    update employees set salary = 24000
+                       , email = 'SKING'
+                       , first_name = 'Steven'
+                       , last_name = 'King'
+    where employee_id = 100;
+    
+    commit
+    
+    select *
+    from employees
+    where employee_id = 100;
+    
+    
+    ------ ====== **** TRUNCATE table 테이블명; **** ====== ------  
+    --> TRUNCATE table 테이블명; 을 실행하면 테이블명 에 존재하던 모든 행(row)들을 삭제해주고,
+    --  테이블명에 해당하는 테이블은 완전초기화 가 되어진다.
+    --  중요한 사실은 TRUNCATE table 테이블명; 은 DDL 문이기에 auto commit; 되어지므로 rollback 이 불가하다.
+   
+    --  delete from 테이블명; 을 실행하면 이것도 테이블명 에 존재하던 모든 행(row)들을 삭제해준다.
+    --  이것은 DML문 이므로 rollback 이 가능하다.
+    
+    create table tbl_emp_copy_1
+    as
+    select * from employees;
+    -- Table TBL_EMP_COPY_1이(가) 생성되었습니다.
+    
+    select *
+    from tbl_emp_copy_1;
+    
+    delete from tbl_emp_copy_1;
+    -- 107개 행 이(가) 삭제되었습니다.
+    
+    select count(*)
+    from tbl_emp_copy_1; -- 0
+    
+    rollback;
+    -- 롤백 완료
+    
+    select count(*)
+    from tbl_emp_copy_1; -- 107
+    
+    truncate table tbl_emp_copy_1;
+    -- Table TBL_EMP_COPY_1이(가) 잘렸습니다.
+
+    select *
+    from tbl_emp_copy_1;
+    
+    select count(*)
+    from tbl_emp_copy_1; -- 0
+    
+    rollback
+    
+    select *
+    from tbl_emp_copy_1;
+    
+    select count(*)
+    from tbl_emp_copy_1; -- 0
+    
+    
+    
+    
+    
+    -------- **** 데이터 제어어(DCL == Data Control Language) **** ---------
+    ==> DCL : grant(권한을 부여하기), revoke(권한 회수하기)
+    --> 여기서 중요한 것은 DCL 문을 실행을 하면 자동적으로 commit; 이 되어진다.
+    -- 즉, auto commit 되어진다.
+    
+    
+    ---- *** SYS 또는 SYSTEM 에서 아래와 같은 작업을 한다. 시작 *** ----
+    show user;
+    -- USER이(가) "SYS"입니다.
+    -- orauser1 이라는 오라클 일반사용자 계정을 생성합니다. 암호는 cclass 라고 하겠습니다.
+    create user orauser1 identified by cclass default tablespace users;
+    -- User ORAUSER1이(가) 생성되었습니다.
+    
+    -- 생성되어진 오라클 일반사용자 계정인 orauser1 에게 오라클 서버에 접속이 되어지고,
+    -- 접속이 되어진 후 테이블 등을 생성할 수 있는 권한을 부여해주겠다.
+    grant connect, resource, unlimited tablespace to orauser1
+    -- Grant을(를) 성공했습니다.
+
+    ---- *** SYS 또는 SYSTEM 에서 아래와 같은 작업을 한다. 종료 *** ----
+    
+    
+    ---- *** HR 에서 아래와 같은 작업을 한다. *** ----
+    show user;
+    -- USER이(가) "HR"입니다.
+    
+    -- 현재 오라클 서버에 접속된 사용자가 HR 이므로 HR.employees 대신에 employees 을 쓰면 HR.employees 으로 인식해준다.
+    select *
+    from HR.employees;
+    
+    -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 select 할 수 있도록 권한을 부여하겠습니다.
+    grant select on employees to orauser1;    
+    -- Grant을(를) 성공했습니다.
+    
+    -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 update 할 수 있도록 권한을 부여하겠습니다.
+    grant update on employees to orauser1;    
+    -- Grant을(를) 성공했습니다.
+    
+    -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 delete 할 수 있도록 권한을 부여하겠습니다.
+    grant delete on employees to orauser1;    
+    -- Grant을(를) 성공했습니다.
+    
+    
+    
+    -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 delete 할 수 있도록 부여한 권한을 회수하겠습니다.
+    revoke delete on employees from orauser1;    
+    -- Revoke을(를) 성공했습니다.
+    
+    -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 update 할 수 있도록 부여한 권한을 회수하겠습니다.
+    revoke update on employees from orauser1;    
+    -- Revoke을(를) 성공했습니다.
+    
+    -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 select 할 수 있도록 부여한 권한을 회수하겠습니다.
+    revoke select on employees from orauser1;    
+    -- Revoke을(를) 성공했습니다.
+    
+    
+    -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 select, update, delete 할 수 있도록 권한을 부여하겠습니다.
+    grant select, update, delete on employees to orauser1;    
+    -- Grant을(를) 성공했습니다.
+    
+     -- orauser1 에게 HR이 자신의 소유인 employees 테이블에 대해 select, update, delete 할 수 있도록 부여한 권한을 회수하겠습니다.
+    revoke select, update, delete on employees from orauser1;    
+    -- Revoke을(를) 성공했습니다.
+    
+    show user;
+    -- USER이(가) "HR"입니다.
+    
+    select *
+    from employees;
+    /*
+        == Stored View 를 생성하는 이유 2가지 ==
+        첫번째, 복잡한 SQL문을 간단히 만들어서 나중에 또 쓸려고.
+        두번째, 민감한 정보가 들어있는 테이블에 있어서 공개할 행과 공개할 컬럼만 따로
+               만들어서 오라클 사용자에게 부여하고자 할 때 Stored View 를 생성한다.
+    */
+    create or replace view view_emp_3080
+    as
+    select employee_id
+         , first_name
+         , last_name
+         , hire_date
+         , salary
+         , commission_pct
+         , department_id
+         , substr(jubun, 1, 6) as birthday 
+    from employees
+    where department_id in (30,50,80);
+    -- View VIEW_EMP_3080이(가) 생성되었습니다.
+    
+    grant select, update, delete on view_emp_3080 to orauser1; -- 뷰를 사용해서 일정 권한을 넘겨줌으로써 보안성을 높일 수 있다.
+    -- Grant을(를) 성공했습니다.
+    
+    
+    
+    ---- *** SYS 또는 SYSTEM 에서 아래와 같은 작업을 한다. 시작 *** ----
+    show user;
+    -- USER이(가) "SYS"입니다.
+    
+    grant create synonym to orauser1;
+    -- Grant을(를) 성공했습니다.
+    
+    ----- *** sys 또는 system 에서 아래와 같은 작업을 한다. 종료 *** ----
+    
+    
+    
+    ----- *** ORAUSER1 에서 아래와 같은 작업을 한다. 시작 *** ----
+    SHOW USER
+    
+    select *
+    from HR.view_emp_3080;
+    
+    select *
+    from emp;
+    
+    
+    --- *** 생성되어진 시노님(Synonym, 동의어)을 조회해본다. *** ---
+    
+    select *
+    from user_synonyms;
+    
+    /*
+        ----------------------------------------------------------
+        SYNONYM_NAME   TABLE_OWNER      TABLE_NAME      DB_LINK
+        ----------------------------------------------------------
+             EMP	       HR	      VIEW_EMP_3080	    (NULL)
+    */
+    
+    
+    ----- *** ORAUSER1 에서 아래와 같은 작업을 한다. 종료 *** ----
+
+    
+    
+  
+  
+  
+  
+  
+  
+  
+  
   
     [문제1]
     select department_id as 부서번호
@@ -5448,4 +5947,73 @@ create table tbl_panmae
     where department_id in(80, 90)
     
     
+    SQL과제_2
     
+    /*
+    == SQL 과제2 ==
+
+    --  아래와 같이 나오도록 하세요...
+    
+    /*
+        ----------------------------------------------------------------------------------------------------------------------------------------------------
+         부서번호    부서명    부서주소    부서장성명    사원번호   사원명    성별    나이    연봉    연봉소득세액    부서내연봉평균차액    부서내연봉등수     전체연봉등수 
+        ----------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    
+   WITH
+   V1 AS
+   (select D.department_id 
+         , department_name 
+         , D.manager_id 
+         , employee_id
+         , first_name || ' ' || last_name AS MANAGER_NAME 
+         , L.STREET_ADDRESS
+   from departments D JOIN employees E
+   ON D.manager_id = E.employee_id
+   JOIN locations L
+   ON D.location_id = L.location_id
+   )
+   ,
+   V2 AS
+   (
+    select department_id
+         , employee_id
+         , first_name || ' ' || last_name AS ENAME
+         , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS gender
+         , extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 AS age
+         , nvl(salary + (salary * commission_pct), salary)*12 as salary
+         , taxpercent
+         , nvl(salary + (salary * commission_pct), salary)*12 * taxpercent as tax_salary
+
+    from employees E JOIN tbl_taxindex T
+    on nvl(salary +(salary * commission_pct), salary)*12 between lowerincome and highincome
+   )
+   ,
+   V3 as
+   (
+    select department_id
+         , trunc(avg(nvl(salary + (salary * commission_pct), salary)*12)) as DEPT_AVG_SAL
+    from employees
+    group by department_id
+    )
+   select V1.department_id AS 부서번호
+        , V1.department_name AS 부서명
+        , V1.STREET_ADDRESS AS 부서주소
+        , V1.MANAGER_NAME AS 부서장성명
+        , V2.employee_id AS 사원번호
+        , V2.ENAME AS 사원명
+        , V2.gender as 성별
+        , V2.age as 나이
+        , V2.salary as 연봉
+        , V2.tax_salary as 연봉소득세액
+        , (v2.salary - v3.DEPT_AVG_SAL) as 부서내연봉평균차액
+        , rank() over(partition by v1.department_id
+                        order by v2.salary desc) as 부서내연봉등수
+        , rank() over(order by v2.salary desc) 전체연봉등수
+   from V1 RIGHT JOIN V2 
+   ON V1.department_id = V2.department_id
+   left join V3
+   ON V2.department_id = V3.department_id
+   order by 1; 
+   
+   
