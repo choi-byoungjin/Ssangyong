@@ -5897,134 +5897,1030 @@ create table tbl_panmae
     
     
     
+    ----- **** ==== 시퀀스(sequence) ==== **** -----
     
-    
-    
-
-    
-    
-  
-  
-  
-  
-  
-  
-  
-  
-  
-    [문제1]
-    select department_id as 부서번호
-         , first_name || ' ' || last_name as 사원명
-         , substr(jubun, 1, 6) || '*******' 주민번호
-         , case when substr(jubun, 7, 1) in ('1', '3') then '남' else '여' end as 성별
-    from employees
-    where department_id in (30, 50)
-    
-    [문제2]
-    select first_name || ' ' || last_name as 사원명
-         , phone_number as 공개연락처
-         , substr(phone_number, 1, instr(phone_number, '.', 1)) 
-         || lpad('*',instr(phone_number, '.', 1)-1, '*')
-         || substr(phone_number, instr(phone_number, '.', -1))as 비공개연락처
-    from employees
-    where department_id = 90
-    
-    [문제3]
-    select first_name || ' ' || last_name as 사원명
-         , phone_number as 공개연락처
-         , substr(phone_number, 1, instr(phone_number, '.', 1)) 
-         || lpad('*', instr(phone_number, '.', 1)-2, '*') 
-         || substr(phone_number, instr(phone_number, '.', 5), 6)
-         || lpad('*', instr(phone_number, '.')+2, '*')
-    from employees
-    where department_id = 80
-    
-    [문제4]
-    select department_id 부서번호
-         , first_name || ' ' || last_name as 사원명
-         , phone_number as 공개연락처
-         , case when department_id = 80 
-            then substr(phone_number, 1, instr(phone_number, '.', 1)) 
-         || lpad('*', instr(phone_number, '.', 1)-2, '*') 
-         || substr(phone_number, instr(phone_number, '.', 5), 6)
-         || lpad('*', instr(phone_number, '.')+2, '*')
-            else
-            substr(phone_number, 1, instr(phone_number, '.', 1)) 
-         || lpad('*',instr(phone_number, '.', 1)-1, '*')
-         || '.'
-         || lpad('*',instr(phone_number, '.', 1), '*')
-            end as 비공개연락처
-    from employees
-    where department_id in(80, 90)
-    
-    
-    SQL과제_2
-    
+    -- 시퀀스(sequence)란? 쉽게 생각하면 은행에서 발급해주는 대기번호표 와 비슷한 것이다.
+    -- 시퀀스(sequence)는 숫자로 이루어져 있으며 매번 정해진 증가치 만큼 숫자가 증가되어지는 것이다.    
+   
     /*
-    == SQL 과제2 ==
-
-    --  아래와 같이 나오도록 하세요...
-    
-    /*
-        ----------------------------------------------------------------------------------------------------------------------------------------------------
-         부서번호    부서명    부서주소    부서장성명    사원번호   사원명    성별    나이    연봉    연봉소득세액    부서내연봉평균차액    부서내연봉등수     전체연봉등수 
-        ----------------------------------------------------------------------------------------------------------------------------------------------------
+      create sequence seq_yeyakno   -- seq_yeyakno 은 시퀀스(sequence) 이름이다.
+      start with 1    -- 첫번째 출발은 1 부터 한다.
+      increment by 1  -- 증가치 값    2 3 4 5 ......
+      maxvalue 5      -- 최대값이 5 이다.
+   -- nomaxvalue      -- 최대값이 없는 무제한. 계속 증가시키겠다는 말이다.
+      minvalue 2      -- 최소값이 2 이다. cycle 이 있을때만 minvalue 에 주어진 값이 사용된다. 
+                     --                nocycle 일 경우에는 minvalue 에 주어진 값이 사용되지 않는다.
+                     -- minvalue 숫자 에 해당하는 숫자 값은 start with 숫자 에 해당하는 숫자 값과 같든지 
+                     -- 아니면 start with 숫자 에 해당하는 숫자보다 작아야 한다.
+                     
+   -- nominvalue      -- 최소값이 없다.   
+      cycle           -- 반복을 한다.
+   -- nocycle         -- 반복이 없는 직진.
+      nocache;
     */
     
-   WITH
-   V1 AS
-   (select D.department_id 
-         , department_name 
-         , D.manager_id 
-         , employee_id
-         , first_name || ' ' || last_name AS MANAGER_NAME 
-         , L.STREET_ADDRESS
-   from departments D JOIN employees E
-   ON D.manager_id = E.employee_id
-   JOIN locations L
-   ON D.location_id = L.location_id
-   )
-   ,
-   V2 AS
-   (
-    select department_id
-         , employee_id
-         , first_name || ' ' || last_name AS ENAME
-         , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS gender
-         , extract(year from sysdate) - ( substr(jubun,1,2) + case when substr(jubun, 7, 1) in('1','2') then 1900 else 2000 end ) + 1 AS age
-         , nvl(salary + (salary * commission_pct), salary)*12 as salary
-         , taxpercent
-         , nvl(salary + (salary * commission_pct), salary)*12 * taxpercent as tax_salary
+    create sequence seq_yeyakno_1
+    start with 1    -- 첫번째 출발은 1 부터 한다.
+    increment by 1  -- 증가치는 1 이다. 즉 1씩 증가한다.
+    maxvalue 5      -- 최대값이 5 이다.
+    minvalue 2      -- 최소값이 2 이다.
+    cycle           -- 반복을 한다.
+    nocache;
+    -- 결과 : 1 3 5 7 9
+    /*
+    오류 보고 -
+    ORA-04006: START WITH cannot be less than MINVALUE 
+    
+    minvalue 숫자에 해당하는 start with 숫자에 해당하는 숫자 값과 같든지 
+    또는 start with 숫자에 해당하는 숫자보다 작아야 한다.
+    */
+    
+    drop sequence seq_yeyakno_2; -- 시퀀스 삭제하기
+    drop sequence seq_yeyakno_1; -- 시퀀스 삭제하기
+    -- Sequence SEQ_YEYAKNO_1이(가) 삭제되었습니다.
+    
+    create sequence seq_yeyakno_1
+    start with 2    -- 첫번째 출발은 2 부터 한다.
+    increment by 1  -- 증가치는 1 이다. 즉 1씩 증가한다.
+    maxvalue 5      -- 최대값이 5 이다.
+    minvalue 1      -- 최소값이 1 이다.
+    cycle           -- 반복을 한다.
+    nocache;
+    -- 결과 : 2 3 4 5 1 2 3 4 5 1 2 3 4 5
+    -- Sequence SEQ_YEYAKNO_1이(가) 생성되었습니다.
+    
+    
+    ----- **** ==== 시퀀스(sequence) ==== **** -----
+    
+   -- 시퀀스(sequence)란? 쉽게 생각하면 은행에서 발급해주는 대기번호표 와 비슷한 것이다.
+   -- 시퀀스(sequence)는 숫자로 이루어져 있으며 매번 정해진 증가치 만큼 숫자가 증가되어지는 것이다.    
+   
+   /*
+     create sequence seq_yeyakno   -- seq_yeyakno 은 시퀀스(sequence) 이름이다.
+     start with 1    -- 첫번째 출발은 1 부터 한다.
+     increment by 1  -- 증가치 값    2 3 4 5 ......
+     maxvalue 5      -- 최대값이 5 이다.
+  -- nomaxvalue      -- 최대값이 없는 무제한. 계속 증가시키겠다는 말이다.
+     minvalue 2      -- 최소값이 2 이다. cycle 이 있을때만 minvalue 에 주어진 값이 사용된다. 
+                     --                nocycle 일 경우에는 minvalue 에 주어진 값이 사용되지 않는다.
+                     -- minvalue 숫자 에 해당하는 숫자 값은 start with 숫자 에 해당하는 숫자 값과 같든지 
+                     -- 아니면 start with 숫자 에 해당하는 숫자보다 작아야 한다.
+                     
+  -- nominvalue      -- 최소값이 없다.   
+     cycle           -- 반복을 한다.
+  -- nocycle         -- 반복이 없는 직진.
+     nocache;
+  */   
+    
+   create sequence seq_yeyakno_1
+   start with 1    -- 첫번째 출발은 1 부터 한다.
+   increment by 1  -- 증가치는 1 이다. 즉 1씩 증가한다.
+   maxvalue 5      -- 최대값이 5 이다. 
+   minvalue 2      -- 최소값이 2 이다.
+   cycle           -- 반복을 한다.
+   nocache;
+  /*
+   오류 보고 -
+   ORA-04006: START WITH cannot be less than MINVALUE
+   
+   minvalue 숫자 에 해당하는 숫자 값은 start with 숫자 에 해당하는 숫자 값과 같든지
+   또는 start with 숫자 에 해당하는 숫자보다 작아야 한다.
+  */
+  
+  drop sequence seq_yeyakno_1; -- 시퀀스 삭제하기 
+  -- Sequence SEQ_YEYAKNO_1이(가) 삭제되었습니다.
+    
+  create sequence seq_yeyakno_1
+  start with 2    -- 첫번째 출발은 2 부터 한다.
+  increment by 1  -- 증가치는 1 이다. 즉 1씩 증가한다.
+  maxvalue 5      -- 최대값이 5 이다. 
+  minvalue 1      -- 최소값이 1 이다.
+  cycle           -- 반복을 한다.
+  nocache;  
+  -- 2 3 4 5 1 2 3 4 5 1 2 3 4 5
+  -- Sequence SEQ_YEYAKNO_1이(가) 생성되었습니다.
+  
+  
+  ---- *** 생성되어진 시퀀스(sequence)를 조회해 봅니다. *** ----
+  select *
+  from user_sequences;
+   
+  select last_number   -- 다음번에 들어올 시퀀스 값을 미리 알려주는 것이다. 
+  from user_sequences
+  where sequence_name = 'SEQ_YEYAKNO_1';
+    
+    
+  create table tbl_board_test_1
+  (boardno         number
+  ,subject         varchar2(100)
+  ,registerdate    date default sysdate
+  );  
+  -- Table TBL_BOARD_TEST_1이(가) 생성되었습니다.
+  
+  insert into tbl_board_test_1(boardno, subject) values(seq_yeyakno_1.nextval, '첫번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_1 시퀀스의 start 값이 2 이었다.
+  
+  insert into tbl_board_test_1(boardno, subject) values(seq_yeyakno_1.nextval, '두번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_1 시퀀스의 increment 값이 1 이었다.  
+  
+  insert into tbl_board_test_1(boardno, subject) values(seq_yeyakno_1.nextval, '세번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_1 시퀀스의 increment 값이 1 이었다. 
+  
+  insert into tbl_board_test_1(boardno, subject) values(seq_yeyakno_1.nextval, '네번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_1 시퀀스의 increment 값이 1 이었다. 
+  -- seq_yeyakno_1 시퀀스의 maxvalue 값이 5 이었고, cycle 이었다. 즉, 반복을 한다.
+  
+  insert into tbl_board_test_1(boardno, subject) values(seq_yeyakno_1.nextval, '다섯번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_1 시퀀스의 minvalue 값이 1 이었고, cycle 이었으므로
+  -- maxvalue 값이 사용되어진 다음에 들어오는 시퀀스 값은 minvalue 값인 1 이 들어온다.  
+  
+  
+  insert into tbl_board_test_1(boardno, subject) values(seq_yeyakno_1.nextval, '여섯번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_1 시퀀스의 increment 값이 1 이었다.
+  
+  insert into tbl_board_test_1(boardno, subject) values(seq_yeyakno_1.nextval, '일곱번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_1 시퀀스의 increment 값이 1 이었다. 
+  
+  select *
+  from tbl_board_test_1;
+  
+  rollback;
+  -- 롤백 완료.
+  
+  insert into tbl_board_test_1(boardno, subject) values(seq_yeyakno_1.nextval, '여덟번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_1 시퀀스의 increment 값이 1 이었다. 
+  
+  select * 
+  from tbl_board_test_1;
+  
+  /*
+     seq_yeyakno_1 시퀀스값의 사용은 
+     2(start)  3  4  5(maxvalue) 1(minvalue) 2 3 4 5(maxvalue) 1(minvalue) 2 3 4 5 1 2 3 ...... 
+     와 같이 사용된다.
+  */
+  
+  commit;
+  
+  delete from tbl_board_test_1;
+  
+  create sequence seq_yeyakno_2
+  start with 1    -- 첫번째 출발은 1 부터 한다.
+  increment by 1  -- 증가치는 1 이다. 즉 1씩 증가한다.
+  nomaxvalue      -- 최대값이 없는 무제한. 계속 증가시키겠다는 말이다.
+  nominvalue      -- 최소값이 없다.
+  nocycle         -- 반복을 안한다.
+  nocache;
+  -- Sequence SEQ_YEYAKNO_2이(가) 생성되었습니다.
+  
+  ---- *** 생성되어진 시퀀스(sequence)를 조회해 봅니다. *** ----
+  select *
+  from user_sequences;
+    
+  create table tbl_board_test_2
+  (boardno         number
+  ,subject         varchar2(100)
+  ,registerdate    date default sysdate
+  );  
+  -- Table TBL_BOARD_TEST_2이(가) 생성되었습니다.
+  
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '첫번째 글입니다.');
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '두번째 글입니다.');
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '세번째 글입니다.');
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '네번째 글입니다.');
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '다섯번째 글입니다.');
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '여섯번째 글입니다.');
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '일곱번째 글입니다.');
+  
+  select *
+  from tbl_board_test_2;
+  
+  rollback;
+  -- 롤백 완료.
+  
+  -- *** 다음번에 들어올 seq_yeyakno_2 시퀀스의 값이 얼마가 들어오는지 알고 싶다. *** --
+  select last_number   -- 다음번에 들어올 시퀀스 값을 미리 알려주는 것이다. 
+  from user_sequences
+  where sequence_name = 'SEQ_YEYAKNO_2';
+  
+  
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '여덟번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_2 시퀀스의 increment 값이 1 이었다. 
+  
+  select * 
+  from tbl_board_test_2;
+  
+  insert into tbl_board_test_2(boardno, subject) values(seq_yeyakno_2.nextval, '아홉번째 글입니다.');
+  -- 1 행 이(가) 삽입되었습니다.
+  -- seq_yeyakno_2 시퀀스의 increment 값이 1 이었다.
+  
+  select * 
+  from tbl_board_test_2;
+  
+  -- *** 시퀀스 SEQ_YEYAKNO_2 이 마지막으로 사용되어진 값을 알아보려고 한다. *** --
+  select seq_yeyakno_2.currval 
+  from dual;  -- 9
+  
+  -- *** 다음번에 들어올 seq_yeyakno_2 시퀀스의 값이 얼마가 들어오는지 알고 싶다. *** --
+  select last_number   -- 다음번에 들어올 시퀀스 값을 미리 알려주는 것이다. 
+  from user_sequences
+  where sequence_name = 'SEQ_YEYAKNO_2';  -- 10
+  
+  --- *** 시퀀스(sequence) 삭제하기 *** ---
+  drop sequence seq_yeyakno_2;
+  -- Sequence SEQ_YEYAKNO_2이(가) 삭제되었습니다.
+  
+  
+  ---- *** 생성되어진 시퀀스(sequence)를 조회해 봅니다. *** ----
+  select *
+  from user_sequences;
+  
+  
+  
+  
+  -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! --
+  -----------------------------------------------------------------------------
+  -- ***** === Constraint(제약조건)을 사용하여 테이블을 생성해 보겠습니다. === ***** --
+  
+  /*
+     >>>> 제약조건(Constraint)의 종류 <<<<
+     
+     --   제약조건의 이름은 오라클 전체에서 고유해야 한다.
+     --   제약조건의 이름은 30 byte 이내이어야 한다.
+     
+     1. Primary Key(기본키, 대표식별자) 제약 [P]  -- 하나의 테이블당 오로지 1개만 생성할 수 있다.
+                                               -- 어떤 컬럼에 Primary Key(기본키) 제약을 주면 그 컬럼에는 자동적으로 NOT NULL 이 주어지면서 동시에 그 컬럼에는 중복된 값은 들어올 수 없고 오로지 고유한 값만 들어오게 되어진다.
+                                               -- 컬럼 1개를 가지고 생성된 Primary Key 를 Single Primary Key 라고 부르고,
+                                               -- 컬럼 2개 이상을 가지고 생성된 Primary Key 를 Composite(복합) Primary Key 라고 부른다.
+     
+     2. Unique 제약 [U]              -- 하나의 테이블당 여러개를 생성할 수 있다.                                 
+                                    -- 어떤 컬럼에 Unique 제약을 주면 그 컬럼에는 NULL 을 허용할 수 있으며, 그 컬럼에는 중복된 값은 들어올 수 없고 오로지 고유한 값만 들어오게 되어진다.             
+                                    -- Unique Key 중에 후보키, 후보식별자가 되려면 해당 컬럼은 NOT NULL 이어야 한다. 
+  
+     3. Foreign Key(외래키) 제약 [R]  -- 하나의 테이블당 여러개를 생성할 수 있다. 
+                                     -- Foreign Key(외래키) 제약에 의해 참조(Reference)받는 컬럼은 반드시 NOT NULL 이어야 하고, 중복된 값을 허락하지 않는 고유한 값만 가지는 컬럼이어야 한다. 
+                                     
+     4. Check 제약 [C]               -- 하나의 테이블당 여러개를 생성할 수 있다.
+                                    -- insert(입력) 또는 update(수정) 시 어떤 컬럼에 입력되거나 수정되는 데이터값을 아무거나 허락하는 것이 아니라 조건에 맞는 데이터값만 넣고자 할 경우에 사용되는 것이다.
+  
+     5. NOT NULL 제약 [C]            -- 하나의 테이블당 여러개를 생성할 수 있다.
+                                    -- 특정 컬럼에 NOT NULL 제약을 주면 그 컬럼에는 반드시 데이터값을 주어야 한다는 말이다. 
+  */  
+  
+  
+  ---- >>> Primary Key(기본키, 대표식별자) 제약에 대해서 알아봅니다. <<< ----
+  
+  ---- ***  "고객" 이라는 테이블을 생성해 보겠습니다. *** ----
+  create table tbl_gogek
+  (gogekID     varchar2(30)  primary key  -- Column Level 제약조건
+  ,gogekName   varchar2(30)  
+  ,gogekPhone  varchar2(30)  
+  );
+  -- Table TBL_GOGEK이(가) 생성되었습니다.
+  
+  drop table tbl_gogek purge;
+  -- Table TBL_GOGEK이(가) 삭제되었습니다.
+  
+  create table tbl_gogek
+  (gogekID     varchar2(30) 
+  ,gogekName   varchar2(30)
+  ,gogekPhone  varchar2(30)
+  ,constraint tbl_gogek_gogekID_PK primary key(gogekID) -- Row Level 제약조건
+                                   -- Single Primary Key
+  );
+  -- Table TBL_GOGEK이(가) 생성되었습니다.
+  
+  desc tbl_gogek;
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone) values(null, '이순신', null);
+  /*
+    오류 보고 -
+    ORA-01400: cannot insert NULL into ("HR"."TBL_GOGEK"."GOGEKID")
+  */
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone) values('leess', '이순신', null);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone) values('leess', '이삼식', '010-5678-0987');
+  /*
+    gogekID 컬럼에 Primary key를  Column Level 제약조건으로 주었을시 
+    오류 보고 -
+    ORA-00001: unique constraint (HR.SYS_C007013) violated
+  */
+  /*
+    gogekID 컬럼에 Primary key를  Row Level 제약조건으로 주었을시 
+    오류 보고 -
+    ORA-00001: unique constraint (HR.TBL_GOGEK_GOGEKID_PK) violated
+  */
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone) values('samsik', '이삼식', '010-5678-0987');
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone) values('soonshin', '이순신', null);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  commit;
+  
+  select *
+  from tbl_gogek;
+  
+  --- *** tbl_gogek 테이블에 생성되어진 제약조건을 조회해 보겠습니다. *** ---
+  select *
+  from user_constraints
+  where table_name = 'TBL_GOGEK';
+  
+  --- *** tbl_gogek 테이블에 생성되어진 제약조건을 조회해 보는데 어떤 컬럼에 생성되어 있는지 조회해 보겠습니다. *** ---
+  select *
+  from user_cons_columns
+  where table_name = 'TBL_GOGEK';
+  
+  --- *** 일반적으로 제약조건을 조회할 경우에는 JOIN 을 통해서 조회합니다. *** ---
+  select *
+  from user_constraints A JOIN user_cons_columns B
+  ON A.constraint_name = B.constraint_name
+  where A.table_name = 'TBL_GOGEK';
+  
+  
+  create table tbl_jumun
+  (gogekID       varchar2(30)
+  ,productCode   varchar2(30)
+  ,productName   varchar2(30)
+  ,jumunSu       number
+  ,jumunDate     date default sysdate
+  ,constraint tbl_jumun_gogekID_PK primary key(gogekID)
+  ,constraint tbl_jumun_productCode_PK primary key(productCode)
+  );
+  /*
+    오류 보고 -
+    ORA-02260: table can have only one primary key
+    -- primary key 는 하나의 테이블당 오로지 1개만 생성할 수 있다.
+  */
+  
+  create table tbl_jumun
+  (gogekID       varchar2(30)
+  ,productCode   varchar2(30)
+  ,productName   varchar2(30)
+  ,jumunSu       number
+  ,jumunDate     date default sysdate
+  ,constraint tbl_jumun_PK primary key(gogekID, productCode)
+                                    -- Composite(복합) Primary Key
+  );
+  -- Table TBL_JUMUN이(가) 생성되었습니다.
+  
+  desc tbl_jumun;
+ /*
+    이름          널?       유형           
+    ----------- -------- ------------ 
+    GOGEKID     NOT NULL VARCHAR2(30) 
+    PRODUCTCODE NOT NULL VARCHAR2(30) 
+    PRODUCTNAME          VARCHAR2(30) 
+    JUMUNSU              NUMBER       
+    JUMUNDATE            DATE  
+ */
+  
+  insert into tbl_jumun(gogekID, productCode, productName, jumunsu)
+  values('leess','swk','새우깡',10);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_jumun(gogekID, productCode, productName, jumunsu)
+  values('leess','kjk','감자깡',20);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_jumun(gogekID, productCode, productName, jumunsu)
+  values('samsik','swk','새우깡',10);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_jumun(gogekID, productCode, productName, jumunsu)
+  values('leess','swk','새우깡',50);
+  /*
+    오류 보고 -
+    ORA-00001: unique constraint (HR.TBL_JUMUN_PK) violated
+  */
+  
+  commit;
+  
+  drop table tbl_jumun purge;
+  -- Table TBL_JUMUN이(가) 삭제되었습니다.
+  
+  create table tbl_jumun
+  (gogekID       varchar2(30)
+  ,productCode   varchar2(30)
+  ,productName   varchar2(30)
+  ,jumunSu       number
+  ,jumunDate     date default sysdate
+  ,constraint tbl_jumun_PK primary key(gogekID, productCode, jumunDate)
+                                    -- Composite(복합) Primary Key
+  );
+  -- Table TBL_JUMUN이(가) 생성되었습니다.
+  
+  insert into tbl_jumun(gogekID, productCode, productName, jumunsu)
+  values('leess','swk','새우깡',10);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_jumun(gogekID, productCode, productName, jumunsu)
+  values('leess','kjk','감자깡',20);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_jumun(gogekID, productCode, productName, jumunsu)
+  values('samsik','swk','새우깡',10);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_jumun(gogekID, productCode, productName, jumunsu)
+  values('leess','swk','새우깡',50);
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  commit;
+  
+  select *
+  from tbl_jumun;
+  
+  
+  --- *** 일반적으로 제약조건을 조회할 경우에는 JOIN 을 통해서 조회합니다. *** ---
+  select *
+  from user_constraints A JOIN user_cons_columns B
+  ON A.constraint_name = B.constraint_name
+  where A.table_name = 'TBL_GOGEK' and A.constraint_type = 'P';
+  -- TBL_GOGEK 테이블에 존재하는 Primary Key 제약조건을 조회하고자 하는 것이다.
+  -- Single Primary Key
+  
+  select *
+  from user_constraints A JOIN user_cons_columns B
+  ON A.constraint_name = B.constraint_name
+  where A.table_name = 'TBL_JUMUN' and A.constraint_type = 'P';
+  -- TBL_JUMUN 테이블에 존재하는 Primary Key 제약조건을 조회하고자 하는 것이다.
+  -- Composite(복합) Primary Key
+  
+  
+  
+  ---- >>> Unique Key(후보키, 후보식별자) 제약에 대해서 알아봅니다. <<< ----
+  --   Unique Key 중에 후보키, 후보식별자가 되려면 해당 컬럼은 NOT NULL 이어야 한다.
+  --   아래의 예제에서는 gogekEmail 컬럼이 후보키, 후보식별자가 된다.
+  
+  ---- ***  "고객" 이라는 테이블을 생성해 보겠습니다. *** ----
+  drop table tbl_gogek purge;
+  -- Table TBL_GOGEK이(가) 삭제되었습니다.
+  
+  create table tbl_gogek
+  (gogekID     varchar2(30)
+  ,gogekName   varchar2(30) not null 
+  ,gogekPhone  varchar2(30) -- null  ==> null 을 허용함 
+  ,gogekEmail  varchar2(50) not null 
+  ,constraint PK_tbl_gogek_gogekID primary key(gogekID)
+  ,constraint UQ_tbl_gogek_gogekPhone unique(gogekPhone)  -- gogekPhone 컬럼에 unique 제약을 준것이다. 
+  ,constraint UQ_tbl_gogek_gogekEmail unique(gogekEmail)  -- gogekEmail 컬럼에 unique 제약을 준것이다.
+  );
+  -- Table TBL_GOGEK이(가) 생성되었습니다.
+  
+  desc tbl_gogek;
+/*
+     이름         널?       유형           
+    ---------- -------- ------------ 
+    GOGEKID    NOT NULL VARCHAR2(30) 
+    GOGEKNAME  NOT NULL VARCHAR2(30) 
+    GOGEKPHONE          VARCHAR2(30) 
+    GOGEKEMAIL NOT NULL VARCHAR2(50) 
+*/
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone, gogekEmail) 
+  values('leess', '이순신', '010-5678-0987', 'leess@gmail.com');
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone, gogekEmail) 
+  values('eomjh', '엄정화', null, 'eomjh@gmail.com');
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone, gogekEmail) 
+  values('youks', '유관순', null, 'youks@gmail.com');
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone, gogekEmail) 
+  values('seokj', '서강준', '010-5678-0987', 'seokj@gmail.com');
+  /*
+    오류 보고 -
+    ORA-00001: unique constraint (HR.UQ_TBL_GOGEK_GOGEKPHONE) violated
+  */
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone, gogekEmail) 
+  values('seokj', '서강준', '010-3567-1234', 'eomjh@gmail.com');
+  /*
+    오류 보고 -
+    ORA-00001: unique constraint (HR.UQ_TBL_GOGEK_GOGEKEMAIL) violated
+  */
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone, gogekEmail) 
+  values('seokj', '서강준', '010-3567-1234', 'seokj@gmail.com');
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  insert into tbl_gogek(gogekID, gogekName, gogekPhone, gogekEmail) 
+  values('leehr', '이혜리', '010-7788-0090', null);
+  /*
+    오류 보고 -
+    ORA-01400: cannot insert NULL into ("HR"."TBL_GOGEK"."GOGEKEMAIL")
+  */
+  
+  commit;
+  
+  select * 
+  from tbl_gogek;
+  
+  
+  --- *** Composite(복합) Unique Key 예제 *** ---
+  create table tbl_jumun_2
+  (gogekID       varchar2(30) not null 
+  ,productCode   varchar2(30) not null 
+  ,productName   varchar2(30)
+  ,jumunSu       number
+  ,jumunDate     date default sysdate not null 
+  ,constraint UQ_tbl_jumun_2 unique(gogekID, productCode, jumunDate)
+                               -- Composite(복합) Unique Key
+  );
+  -- Table TBL_JUMUN_2이(가) 생성되었습니다.
+  
+  desc tbl_jumun_2;
+  
+  
+  --- *** 일반적으로 제약조건을 조회할 경우에는 JOIN 을 통해서 조회합니다. *** ---
+  select *
+  from user_constraints A JOIN user_cons_columns B
+  ON A.constraint_name = B.constraint_name
+  where A.table_name = 'TBL_GOGEK' and A.constraint_type = 'U';
+  -- TBL_GOGEK 테이블에 존재하는 Unique Key 제약조건을 조회하고자 하는 것이다.
+  -- Unique Key
+  -- Single Unique Key 
+  
+  select *
+  from user_constraints A JOIN user_cons_columns B
+  ON A.constraint_name = B.constraint_name
+  where A.table_name = 'TBL_JUMUN_2' and A.constraint_type = 'U';
+  -- TBL_JUMUN_2 테이블에 존재하는 Unique Key 제약조건을 조회하고자 하는 것이다.
+  -- Unique Key
+  -- Composite(복합) Unique Key 
+  
+  
+  
+  
+  ---- >>> Check 제약에 대해서 알아봅니다. <<< ----
+  
+  create table tbl_sawon
+  (sano        number                      -- 사원번호
+  ,saname      varchar2(20) not null       -- 사원명
+  ,salary      number(5) not null          -- 급여는 커미션 보다 커야 한다. 
+  ,commission  number(5)                   -- 커미션은 0 이상이어야 한다. 
+  ,jik         varchar2(20) default '사원'  -- 직급의 종류는 '사장','부장','과장','대리','사원' 만 가능하다.  
+  ,email       varchar2(50) not null        -- 이메일
+  ,hire_date   date default sysdate         -- 입사일자
+  
+  ,constraint PK_tbl_sawon_sano primary key(sano)
+  ,constraint CK_tbl_sawon_salary_commission check(commission >= 0 and salary > commission)
+  ,constraint CK_tbl_sawon_jik check( jik in('사장','부장','과장','대리','사원') )
+  ,constraint UQ_tbl_sawon_email unique(email)
+  );
+  -- Table TBL_SAWON이(가) 생성되었습니다.
+  
+  insert into tbl_sawon(sano, saname, salary, commission, jik, email)
+  values(1001, '홍길동', 500, 1000, '과장', 'hongkd@naver.com');
+  /*
+    오류 보고 -
+    ORA-02290: check constraint (HR.CK_TBL_SAWON_SALARY_COMMISSION) violated
+  */
+  
+  insert into tbl_sawon(sano, saname, salary, commission, jik, email)
+  values(1001, '홍길동', 500, -100, '과장', 'hongkd@naver.com');
+  /*
+    오류 보고 -
+    ORA-02290: check constraint (HR.CK_TBL_SAWON_SALARY_COMMISSION) violated
+  */
+  
+  insert into tbl_sawon(sano, saname, salary, commission, jik, email)
+  values(1001, '홍길동', 500, 100, '장군', 'hongkd@naver.com');
+  /*
+    오류 보고 -
+    ORA-02290: check constraint (HR.CK_TBL_SAWON_JIK) violated
+  */
+  
+  insert into tbl_sawon(sano, saname, salary, commission, jik, email)
+  values(1001, '홍길동', 500, 100, '과장', 'hongkd@naver.com');
+  -- 1 행 이(가) 삽입되었습니다.
+  
+  commit;
+  -- 커밋 완료.
+  
+  
+  
+  
+  ---- >>> Foreign Key(외래키, 참조키) 제약에 대해서 알아보겠습니다. <<< ----
+  
+  ---  *** 고객들의 예약을 받아주는 "예약" 테이블을 생성해보겠습니다. *** ---
+  
+  select A.constraint_name, A.constraint_type, A.search_condition,
+         B.column_name, B.position
+  from user_constraints A JOIN user_cons_columns B
+  ON A.constraint_name = B.constraint_name
+  where A.table_name = 'TBL_GOGEK';
+  
+  --- 어떤 한명의 고객은(예: leess  이순신) 예약을 1번도 안 할 수도 있고,
+  --- 예약을 딱 1번만 할 수 있고, 예약을 여러번 할 수도 있다.
+  drop table tbl_yeyak purge;
+  
+  select *
+  from tbl_yeyak
+  
+  create table tbl_yeyak
+  (yeyakno      number  --> 예약번호. 예약번호의 값은 NOT NULL 이면서 고유한 값만 가져야 한다.
+                        --  그러므로 yeyakno 컬럼에는 Primary Key 제약을 주어야 한다.
+                        /*
+                            예약번호는 사용자가 수동적으로 입력치 않고 자동적으로 들어와야 한다.
+                            그리고 예약번호는 매번 그 숫자가 증가되면서 고유해야 한다.
+                            이렇게 되려면 sequence 를 사용하면 된다.
+                        */
+  ,fk_gogekID   varchar2(30) not null -- 고객아이디 
+                                      -- fk_gogekID 컬럼에 들어올 수 있는 값은 tbl_gogek 테이블의 gogekId 컬럼의 값만 들어와야 한다. 
+                                      -- 참조를 받는 컬럼은 (여기서는 tbl_gogek 테이블의 gogekid 임) 반드시 고유한 값을 가지는 컬럼이어야 한다.
+                                      -- 즉, 참조를 받는 컬럼은 (여기서는 tbl_gogek 테이블의 gogekid 임) Primary Key 또는 Unique 제약을 가져야 한다.
+                                      
+  ,ticketCnt    number(2) not null    -- 예약티켓개수   
+                                      -- 데이터 타입이 number(2) 이므로 -99 ~ 99 값들이 들어온다.
+                                      -- 그런데 예약티켓개수는 1번 예약에 최대 10개 까지만 허락하고자 한다.
+                                      -- 즉, ticketCnt 컬럼에 들어오는 값은 1 ~ 10 까지만 가능하도록 해야 한다.
+                                      -- 이러한 경우 값을 검사해야 하므로 Check 제약을 사용하면 된다.
+  ,registerDay date default sysdate
+  ,constraint PK_tbl_yeyak_yeyakno primary key(yeyakno)
+  ,constraint Fk_tbl_yeyak_fk_gogekID Foreign key(fk_gogekID) references tbl_gogek
+  /*
+      tbl_yeyak 테이블의 fk_gogekID 컬럼에는 foreign key 제약을 만들었는데
+      그 뜻은 tbl_yeyak 테이블의 fk_gogekID 컬럼에 입력되거나 수정되어지는 값은 반드시 tbl_gogek 테이블의 gogekID 컬럼에 존재하는 값들만 가능하다는 말이다.
+      즉, tbl_gogek 테이블의 gogekid 컬럼에 존재하지 않는 값은 tbl_yeyak 테이블의 fk_gogekID 컬럼에 들어올 수 없다는 말이다.
+      그리고 중요한 것은 tbl_gogek 의 gogekid 컬럼은 식별자 컬럼(Primary Key, Unique Key)이어야 한다. 
+  */
+  ,constraint CK_tbl_yeyak_ticketCnt check( 1<= ticketCnt and ticketCnt <= 10)
+  );
+  
+  
+  create sequence seq_tbl_yeyak
+  start with 1
+  increment by 1
+  nomaxvalue
+  nominvalue
+  nocycle
+  nocache;
+  
+  insert into tbl_yeyak(yeyakno, fk_gogekID, ticketCnt)
+  values(seq_tbl_yeyak.nextval, 'leess', 1)
+  
+  insert into tbl_yeyak(yeyakno, fk_gogekID, ticketCnt)
+  values(seq_tbl_yeyak.nextval, 'leess', 5)
+  
+  insert into tbl_yeyak(yeyakno, fk_gogekID, ticketCnt)
+  values(seq_tbl_yeyak.nextval, 'superman', 3)
+  /*
+    오류 보고 -
+    ORA-02291: integrity constraint (HR.FK_TBL_YEYAK_FK_GOGEKID) violated - parent key not found
+    -- 참조를 받는 테이블이 parent 테이블
+  */
+  
+  insert into tbl_yeyak(yeyakno, fk_gogekID, ticketCnt)
+  values(seq_tbl_yeyak.nextval, 'eomjh', 3)
+  
+  insert into tbl_yeyak(yeyakno, fk_gogekID, ticketCnt)
+  values(seq_tbl_yeyak.nextval, 'eomjh', 10)
+  
+  insert into tbl_yeyak(yeyakno, fk_gogekID, ticketCnt)
+  values(seq_tbl_yeyak.nextval, 'eomjh', 7)
+  
+  commit
+  
+  ---- **** foreign key 제약이 있는 테이블을 "자식" 테이블 이라고 하고, 
+  ----      foreign key 에 의해 참조를 받는 테이블을 "부모" 테이블 이라고 한다. **** ----
+  
+  --- "자식" 테이블(여기서는 tbl_yeyak 테이블)에 입력되어진 데이터가 "부모" 테이블(여기서는 tbl_gogek)에 존재하는 경우에
+  --- "부모" 테이블의 행을 삭제할 때 어떻게 되어지는지 알아봅니다.
+  select *
+  from tbl_yeyak; -- "자식" 테이블
+  /*
+    ----------------------------------------------------
+     yeyakno    fk_gogekid    ticketcnt    registerday
+    ----------------------------------------------------
+        1         leess           5         22/01/17
+        3	      eomjh	          3	        22/01/17
+        5	      eomjh	          10	    22/01/17
+        6	      eomjh	          7	        22/01/17
+  */
+  
+  select *
+  from tbl_gogek; -- "부모" 테이블
+  /*
+    ------------------------------------------------------------
+      gogekid   gogekname     gogekphone         gogekemail
+    ------------------------------------------------------------
+       leess	  이순신	     010-5678-9087	   leess@gmail.com
+       eomjh	  엄정화		                   eomjh@gmail.com
+       youks	  유관순		                   youks@gmail.com
+       seokj	  서강준	     010-3567-1234	   seokj@gmail.com
+    ------------------------------------------------------------
+  */
+  
+    delete from tbl_gogek
+    where gogekid = 'seokj';
+    -- 1 행 이(가) 삭제되었습니다.
 
-    from employees E JOIN tbl_taxindex T
-    on nvl(salary +(salary * commission_pct), salary)*12 between lowerincome and highincome
-   )
-   ,
-   V3 as
-   (
-    select department_id
-         , trunc(avg(nvl(salary + (salary * commission_pct), salary)*12)) as DEPT_AVG_SAL
-    from employees
-    group by department_id
-    )
-   select V1.department_id AS 부서번호
-        , V1.department_name AS 부서명
-        , V1.STREET_ADDRESS AS 부서주소
-        , V1.MANAGER_NAME AS 부서장성명
-        , V2.employee_id AS 사원번호
-        , V2.ENAME AS 사원명
-        , V2.gender as 성별
-        , V2.age as 나이
-        , V2.salary as 연봉
-        , V2.tax_salary as 연봉소득세액
-        , (v2.salary - v3.DEPT_AVG_SAL) as 부서내연봉평균차액
-        , rank() over(partition by v1.department_id
-                        order by v2.salary desc) as 부서내연봉등수
-        , rank() over(order by v2.salary desc) 전체연봉등수
-   from V1 RIGHT JOIN V2 
-   ON V1.department_id = V2.department_id
-   left join V3
-   ON V2.department_id = V3.department_id
-   order by 1; 
+    delete from tbl_gogek
+    where gogekid = 'leess';
+    /*
+        오류 보고 -
+        ORA-02292: integrity constraint (HR.FK_TBL_YEYAK_FK_GOGEKID) violated - child record found
+        -- 자식 테이블인 예약테이블에 이순신을 참조하는 행이 남아있기때문에 삭제할 수 없다 
+    */
+    select *
+    from tbl_gogek
+/*
+    오류 보고 -
+    ORA-02292: integrity constraint (HR.FK_TBL_YEYAK_FK_GOGEKID) violated - child record found
+    
+    child ==> 자식 테이블인 tbl_yeyak 을 말한다.
+    child record found 말은 tbl_yeyak 테이블에 존재하는 1         leess           5         22/01/17 행을 말한다.
+*/
+
+     --- [!!중요!!] tbl_gogek 테이블에 모든 행들을 삭제하려고 한다. 
+  delete from tbl_gogek; -- [부모] 테이블 
+  /*
+    오류 보고 -
+    ORA-02292: integrity constraint (HR.FK_TBL_YEYAK_FK_GOGEKID) violated - child record found
+    
+    HR.FK_TBL_YEYAK_FK_GOGEKID 은 tbl_gogek 테이블의 자식테이블인 곳에서 Foreign Key 제약조건 이름으로 FK_TBL_YEYAK_FK_GOGEKID 이 사용되어지고 있다.
+    
+    그러면 Foreign Key 제약조건 이름으로 FK_TBL_YEYAK_FK_GOGEKID 을 사용하는 테이블명을 알아와야 한다.
+  */
+ 
+  -- *** Foreign Key 제약조건 이름으로 FK_TBL_YEYAK_FK_GOGEKID 을 사용하는 테이블명 알아오기 *** --
+  select table_name
+  from user_constraints
+  where constraint_type = 'R' and constraint_name = 'FK_TBL_YEYAK_FK_GOGEKID';
+  -- TBL_YEYAK
+
+ 
+  -- !!!!! [퀴즈] TBL_YEYAK 테이블에 존재하는 제약조건 중에 Foreign Key 제약조건을 조회하는데 아래와 같이 나오도록 하세요.. !!!!!
+  ----------------------------------------------------------------------------------------------------------
+   제약조건명                   제약조건타입     컬럼명          참조를받는부모테이블명       참조를받는식별자컬럼명
+  ----------------------------------------------------------------------------------------------------------
+   FK_TBL_YEYAK_FK_GOGEKID         R         FK_GOGEKID          TBL_GOGEK                 GOGEKID 
+ 
+ 
+   select constraint_name, constraint_type, r_constraint_name
+   from user_constraints
+   where table_name = 'TBL_YEYAK' and constraint_type = 'R';
+   /*
+     -------------------------------------------------------------------
+      constraint_name           constraint_type    r_constraint_name
+     -------------------------------------------------------------------
+      FK_TBL_YEYAK_FK_GOGEKID          R           PK_TBL_GOGEK_GOGEKID
+   */
    
+   select constraint_name, column_name
+   from user_cons_columns
+   where table_name = 'TBL_YEYAK';
+ /*
+    ------------------------------------------
+     constraint_name            column_name
+    ------------------------------------------   
+     SYS_C007040               FK_GOGEKID
+     SYS_C007041               TICKETCNT
+     CK_TBL_YEYAK_TICKETCNT       TICKETCNT
+     PK_TBL_YEYAK_YEYAKNO       YEYAKNO
+     FK_TBL_YEYAK_FK_GOGEKID   FK_GOGEKID
+ */
    
+   select constraint_name, table_name, column_name
+   from user_cons_columns
+   where constraint_name = (select r_constraint_name
+                            from user_constraints
+                            where table_name = 'TBL_YEYAK' and constraint_type = 'R');
+ /*  
+    ---------------------------------------------------
+     constraint_name        table_name     column_name
+    ---------------------------------------------------
+     PK_TBL_GOGEK_GOGEKID   TBL_GOGEK      GOGEKID
+ */
+ 
+ WITH
+ A as
+ (
+   select constraint_name, constraint_type, r_constraint_name
+   from user_constraints
+   where table_name = 'TBL_YEYAK' and constraint_type = 'R'
+ )
+ , 
+ B as
+ (
+   select constraint_name, column_name
+   from user_cons_columns
+   where table_name = 'TBL_YEYAK'
+ )
+ ,
+ C as
+ (
+   select constraint_name, table_name, column_name
+   from user_cons_columns
+   where constraint_name = (select r_constraint_name
+                            from user_constraints
+                            where table_name = 'TBL_YEYAK' and constraint_type = 'R')
+ )
+ select A.constraint_name AS 제약조건명
+      , A.constraint_type AS 제약조건타입
+      , B.column_name AS 컬럼명
+      , C.table_name AS 참조를받는부모테이블
+      , C.column_name AS 참조를받는식별자컬럼
+ from A JOIN B
+ ON A.constraint_name = B.constraint_name
+ JOIN C
+ ON A.r_constraint_name = C.constraint_name;
+ 
+ delete from tbl_gogek;
+ /*
+    오류 보고 -
+    ORA-02292: integrity constraint (HR.FK_TBL_YEYAK_FK_GOGEKID) violated - child record found
+ */
+ 
+ -- TBL_YEYAK 테이블에 존재하는 foreign key 제약조건인 FK_TBL_YEYAK_FK_GOGEKID 을 삭제 하겠습니다.
+ alter table TBL_YEYAK
+ drop constraint FK_TBL_YEYAK_FK_GOGEKID;
+ -- Table TBL_YEYAK이(가) 변경되었습니다.
+
+select *
+from tbl_gogek;
+
+delete from tbl_gogek;
+-- 3개 행 이(가) 삭제되었습니다.
+
+commit
+
+
+
+ ---- **** ==== !!!! Foreign Key 생성시 on delete cascade 옵션을 주는 것 !!!! ==== **** ----
+
+ create table tbl_sangpum  --> "상품" 테이블
+ (sangpum_code      varchar2(20)
+ ,sangpum_name      varchar2(20) not null
+ ,price             number(10)
+ ,constraint PK_tbl_sangpum_sangpum_code primary key(sangpum_code)
+ );
+ -- Table TBL_SANGPUM이(가) 생성되었습니다.
+
+ insert into tbl_sangpum(sangpum_code, sangpum_name, price) values('swk', '새우깡', 3000); 
+ insert into tbl_sangpum(sangpum_code, sangpum_name, price) values('kjk', '감자깡', 4000);
+ insert into tbl_sangpum(sangpum_code, sangpum_name, price) values('ypr', '양파링', 5000);
+ 
+ commit;
+ 
+ create table tbl_sangpum_review
+ (review_no        number                       -- 후기글번호
+ ,fk_sangpum_code  varchar2(20) not null        -- 후기를 남길 상품코드
+ ,review_contents  Nvarchar2(2000) not null     -- 후기내용물
+ ,register_day     date default sysdate         -- 작성일자
+ ,constraint PK_tbl_sangpum_review primary key(review_no)
+ ,constraint FK_tbl_sangpum_review foreign key(fk_sangpum_code) references tbl_sangpum(sangpum_code)
+ );
+ 
+ insert into tbl_sangpum_review(review_no, fk_sangpum_code, review_contents)
+ values(1, 'swk', '아주 맛있어요!!');
+ 
+ insert into tbl_sangpum_review(review_no, fk_sangpum_code, review_contents)
+ values(2, 'kjk', '맛이 고소해요~~');
+ 
+ insert into tbl_sangpum_review(review_no, fk_sangpum_code, review_contents)
+ values(3, 'swk', '가성비 만점!!');
+ 
+ commit;
+
+ select *
+ from tbl_sangpum_review;
+ 
+ select *
+ from tbl_sangpum;
+ 
+ delete from tbl_sangpum
+ where sangpum_code = 'ypr';
+ -- 1 행 이(가) 삭제되었습니다.
+
+ delete from tbl_sangpum
+ where sangpum_code = 'swk';
+ /*
+    오류 보고 -
+    ORA-02292: integrity constraint (HR.FK_TBL_SANGPUM_REVIEW) violated - child record found
+ */
+ 
+ delete from tbl_sangpum_review
+ where fk_sangpum_code = 'swk';
+ -- 2개 행 이(가) 삭제되었습니다.
+
+ select *
+ from tbl_sangpum_review;
+ 
+ delete from tbl_sangpum
+ where sangpum_code = 'swk';
+ -- 1 행 이(가) 삭제되었습니다.
+
+ rollback;
+ 
+ drop table tbl_sangpum_review
+ 
+ 
+ create table tbl_sangpum_review_2
+ (review_no        number                       -- 후기글번호
+ ,fk_sangpum_code  varchar2(20) not null        -- 후기를 남길 상품코드
+ ,review_contents  Nvarchar2(2000) not null     -- 후기내용물
+ ,register_day     date default sysdate         -- 작성일자
+ ,constraint PK_tbl_sangpum_review_2 primary key(review_no)
+ ,constraint FK_tbl_sangpum_review_2 foreign key(fk_sangpum_code) references tbl_sangpum(sangpum_code) on delete cascade
+ /*
+    on delete cascade 를 해주었으므로 부모테이블인 tbl_sangpum 테이블에서 행을 delete 를 할 때 먼저 자식테이블인 tbl_sangpum_review_2 테이블에서 자식레코드(행)를 먼저 delete를 해준다.
+ */
+ );
+ -- Table TBL_SANGPUM_REVIEW_2이(가) 생성되었습니다.
+
+ insert into tbl_sangpum_review_2(review_no, fk_sangpum_code, review_contents)
+ values(1, 'swk', '아주 맛있어요!!');
+ 
+ insert into tbl_sangpum_review_2(review_no, fk_sangpum_code, review_contents)
+ values(2, 'kjk', '맛이 고소해요~~');
+ 
+ insert into tbl_sangpum_review_2(review_no, fk_sangpum_code, review_contents)
+ values(3, 'swk', '가성비 만점!!');
+ 
+ commit;
+
+ select *
+ from tbl_sangpum_review_2;
+ 
+ select *
+ from tbl_sangpum;
+ 
+ delete from tbl_sangpum
+ where sangpum_code = 'ypr';
+ -- 1 행 이(가) 삭제되었습니다.
+
+ commit;
+
+ delete from tbl_sangpum
+ where sangpum_code = 'swk';
+ /*
+    오류 보고 -
+    ORA-02292: integrity constraint (HR.FK_TBL_SANGPUM_REVIEW) violated - child record found
+ */
+ 
+ delete from tbl_sangpum_review_2
+ where fk_sangpum_code = 'swk';
+ -- 2개 행 이(가) 삭제되었습니다.
+
+ select *
+ from tbl_sangpum_review_2;
+ 
+ delete from tbl_sangpum
+ where sangpum_code = 'swk';
+ -- 1 행 이(가) 삭제되었습니다.
+ /*
+    on delete cascade 를 해주었으므로 부모테이블인 tbl_sangpum 테이블에서 행을 delete 를 할 때 먼저 자식테이블인 tbl_sangpum_review_2 테이블에서 자식레코드(행)를 먼저 delete를 해준다.    
+    즉, 아래의 DML 문이 먼저 자동적으로 실행되어진다.
+    delete from tbl_sangpum_review_2
+    where fk_sangpum_code = 'swk';
+    -- 2개 행 이(가) 삭제되었습니다.
+ */
+ 
+ select *
+ from tbl_sangpum_review_2;
+ 
+ select *
+ from tbl_sangpum;
+ 
+ select *
+ from tbl_sangpum_review_2;
+ 
+ select *
+ from tbl_sangpum;
+ 
+ select *
+ from departments;
+ 
+ select * 
+ from employees;
+ 
+ update employees set department_id = 500
+ where employee_id = 100;
+ 
+ delete from departments
+ where department_id = 60;
+ 
+ rollback;
+ 
+ 
+ 
+ 
+ 
+ ---- **** ==== !!!! Foreign Key 생성시 on delete set null 옵션을 주는 것 !!!! ==== **** ----
