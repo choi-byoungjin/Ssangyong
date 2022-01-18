@@ -6910,13 +6910,24 @@ commit
  
  select * 
  from employees;
+ -- department_id 컬럼이 departments 테이블의 department_id 컬럼을 참조하는 foreign key 로 사용된다.
  
  update employees set department_id = 500
  where employee_id = 100;
  
  delete from departments
  where department_id = 60;
- 
+ -- 부서 통폐합시 특정 부서가 delete 된다 하더라도 그 부서에 근무하는 사원들은 delete 가 되면 안된다.
+ -- 그러므로 employees 테이블에서 department_id 컬럼네 foreign key 를 생성시 on delete cascade 옵션을 주면 안된다.
+ /* 예시
+     원글테이블
+     원글글번호  글내용
+     P.K
+     
+     댓글테이블
+     댓글번호  F.K 원글글번호  댓글내용
+      P.K         F.K  on delete cascade
+ */
  rollback;
  
  
@@ -6924,3 +6935,1084 @@ commit
  
  
  ---- **** ==== !!!! Foreign Key 생성시 on delete set null 옵션을 주는 것 !!!! ==== **** ----
+ create table tbl_buseo
+ (buno      number(2)
+ ,buname    varchar2(30) not null
+ ,constraint  PK_tbl_buseo_buno primary key(buno)
+ );
+ -- Table TBL_BUSEO이(가) 생성되었습니다.
+
+ drop table tbl_jikwon purge;
+ -- Table TBL_JIKWON이(가) 삭제되었습니다.
+
+ create table tbl_jikwon
+ (jikwonno  number(5)
+ ,name      varchar2(30) not null
+ ,fk_buno   number(2) -- not null 을 주면 안된다!!
+ ,constraint    PK_tbl_jikwon_jikwonno primary key(jikwonno)
+ ,constraint    FK_tbl_jikwon_fk_buno  foreign key(fk_buno) references tbl_buseo(buno) on delete set null
+ );
+ -- on delete set null 을 넣어주면 부모테이블인 tbl_buseo 테이블에서 특정 행을 delete 시
+ -- 자식 테이블인 tbl_jikwon 테이블에서 참조하던 행들의 fk_buno 컬럼의 값을 먼저 null 로 update 시켜버린다.
+ -- 그런 다음에 부모테이블인 tbl_buseo 테이블에서 특정 행을 delete 해준다.
+ 
+ insert into tbl_buseo(buno, buname) values(10,'관리부'); 
+ insert into tbl_buseo(buno, buname) values(20,'영업부');
+ insert into tbl_buseo(buno, buname) values(30,'생산부');
+ 
+ commit
+ 
+ insert into tbl_jikwon(jikwonno, name, fk_buno) values(1001, '이순신', 10);
+ insert into tbl_jikwon(jikwonno, name, fk_buno) values(1002, '삼순신', 20);
+ insert into tbl_jikwon(jikwonno, name, fk_buno) values(1003, '사순신', 20);
+ insert into tbl_jikwon(jikwonno, name, fk_buno) values(1004, '오순신', 30);
+ insert into tbl_jikwon(jikwonno, name, fk_buno) values(1005, '육순신', 30);
+ 
+ select *
+ from tbl_buseo;
+ 
+ select *
+ from tbl_jikwon;
+ 
+ delete from tbl_buseo
+ where buno = 30;
+ -- 1 행 이(가) 삭제되었습니다.
+
+ rollback
+ 
+ 
+ 
+ 
+ 
+ 
+ ------- >>> NOT NULL 제약에 대해서 알아보겠습니다 <<< -------
+ -- 어떤 컬럼에 값을 입력하거나 수정할 때 NULL 을 허락하지 않는다는 말이다.
+ 
+  drop table tbl_jikwon purge;
+  
+  create table tbl_jikwon
+  (sano         number 
+  ,saname       varchar2(20) constraint NN_tbl_jikwon_saname not null 
+  ,salary       number(5) not null          -- 급여는 커미션 보다 커야 한다.
+  ,commission   number(5)                   -- 커미션은 0 이상이어야 한다. 
+  ,jik          varchar2(20) default '사원'  -- 직급의 종류는 '사장','부장','과장','대리','사원' 만 가능하다.
+  ,email        varchar2(50) not null 
+  ,hire_date    date default sysdate 
+  ,constraint  PK_tbl_jikwon_sano  primary key(sano)
+  ,constraint  UQ_tbl_jikwon_email unique(email)
+  ,constraint  CK_tbl_jikwon_jik check( jik in('사장','부장','과장','대리','사원') )
+  ,constraint  CK_tbl_jikwon_salaryCommission check( salary > commission and commission >= 0 )
+  );
+  -- Table TBL_JIKWON이(가) 생성되었습니다.
+  
+  insert into tbl_jikwon(sano, saname, salary, commission, jik, email)
+  values(1001, '홍길동', 500, 200, '부장', 'hongkd@gmail.com');
+  
+  insert into tbl_jikwon(sano, saname, salary, commission, jik, email)
+  values(1002, '엄정화', 600, 300, '과장', 'eomjh@gmail.com');
+  
+  insert into tbl_jikwon(sano, saname, salary, commission, jik, email)
+  values(1003, '이순신', 300, 100, '대리', 'leess@gmail.com');
+  
+  commit;
+  
+  select A.constraint_name, A.constraint_type, A.search_condition, 
+         B.column_name, B.position 
+  from user_constraints A join user_cons_columns B 
+  on A.constraint_name = B.constraint_name
+  where A.table_name = 'TBL_JIKWON';
+  
+  --- *** Sub Query 를 사용하여 어떤 테이블을 생성할 경우 원본테이블에 존재하던 제약조건중 NOT NULL 제약만 복사가 되어지고 
+  ---     나머지 제약조건은 복사가 안 됩니다.  또한 복사되는 NOT NULL 제약의 제약조건명은 SYS_C뭐뭐뭐로 변경되어집니다.
+  create table tbl_jikwon_copy
+  as
+  select *
+  from tbl_jikwon_copy;
+  -- Table TBL_JIKWON_COPY이(가) 생성되었습니다.
+
+  select A.constraint_name, A.constraint_type, A.search_condition, 
+         B.column_name, B.position 
+  from user_constraints A join user_cons_columns B 
+  on A.constraint_name = B.constraint_name
+  where A.table_name = 'TBL_JIKWON_COPY';
+  
+  
+  
+  ----- *** 어떤 테이블에 제약조건을 추가하기 *** -----
+  /*
+     제약조건 추가시 NOT NULL 제약을 제외한 나머지 4개는 아래와 같이 한다.
+     
+     alter table 테이블명 add constraint 제약조건명 primary key(컬럼명 , ..);
+     alter table 테이블명 add constraint 제약조건명 unique(컬럼명 , ..);
+     alter table 테이블명 add constraint 제약조건명 check(.....);
+     
+     alter table 테이블명 add constraint 제약조건명 foreign key(컬럼명) references 부모테이블명(식별자컬럼명);
+     alter table 테이블명 add constraint 제약조건명 foreign key(컬럼명) references 부모테이블명(식별자컬럼명) on delete cascade;
+     alter table 테이블명 add constraint 제약조건명 foreign key(컬럼명) references 부모테이블명(식별자컬럼명) on delete set null;
+  */
+  
+  /*
+     NOT NULL 제약을 추가할 때는 아래와 같이 한다.
+     
+     alter table 테이블명 modify 컬럼명 not null;  --> 제약조건명이 SYS_C뭐뭐뭐 로 된다.
+     
+     alter table 테이블명 modify 컬럼명 제약조건명 not null;
+  */
+  
+  alter table TBL_JIKWON_COPY
+  add constraint PK_TBL_JIKWON_COPY_SANO primary key(SANO);
+  -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+  
+  alter table TBL_JIKWON_COPY 
+  add constraint UQ_TBL_JIKWON_COPY_EMAIL unique(EMAIL);
+  -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+  
+  alter table TBL_JIKWON_COPY 
+  add constraint CK_TBL_JIKWON_COPY_JIK check( jik in('사장','부장','과장','대리','사원') );
+  -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+  
+  alter table TBL_JIKWON_COPY 
+  add constraint CK_TBL_JIKWON_COPY_SALCOMM check( salary > commission and commission >= 0 );
+  -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+  
+  
+  
+  ---- *** 어떤 테이블에 제약조건을 삭제하기 *** ----
+  /*
+      alter table 테이블명 drop constraint 제약조건명;
+        
+      그런데 NOT NULL 제약은 위의 것처럼 해도 되고, 또는 아래처럼 해도 된다.
+      alter table 테이블명 modify 컬럼명 null;
+        
+      어떤 테이블에 primary key 제약조건을 삭제할 경우에는 위의 것처럼 해도 되고, 또는 아래처럼 해도 된다.
+      alter table 테이블명 drop primary key;
+  */ 
+  
+  -- *** TBL_JIKWON_COPY 테이블의 Check 제약 CK_TBL_JIKWON_COPY_SALCOMM 삭제하기 *** --
+  alter table TBL_JIKWON_COPY
+  drop constraint CK_TBL_JIKWON_COPY_SALCOMM;
+  -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+  
+  
+  -- *** TBL_JIKWON_COPY 테이블의 SALARY 컬럼에 존재하는 NOT NULL 제약 삭제하기 *** --
+ /* 
+  alter table TBL_JIKWON_COPY
+  drop constraint SYS_C007078;
+ */
+ -- 또는
+ alter table TBL_JIKWON_COPY 
+ modify SALARY null;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ 
+ -- *** TBL_JIKWON_COPY 테이블의 Pimary Key 제약 삭제하기 *** --
+ /*
+   alter table TBL_JIKWON_COPY 
+   drop constraint PK_TBL_JIKWON_COPY_SANO;
+ */
+ -- 또는
+ alter table TBL_JIKWON_COPY 
+ drop primary key;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ select A.constraint_name, A.constraint_type, A.search_condition, 
+        B.column_name, B.position 
+ from user_constraints A join user_cons_columns B 
+ on A.constraint_name = B.constraint_name
+ where A.table_name = 'TBL_JIKWON_COPY';
+ 
+ 
+ 
+ 
+ ---- *** 어떤 테이블에 생성되어진 제약조건의 내용을 변경하기 *** ----
+ --->     기존 제약조건을 삭제하고서 내용이 변경되어진 제약조건을 추가하는 것이다. 
+ --- TBL_JIKWON_COPY 테이블에 생성되어진 JIK 컬럼에 대한 check 제약의 내용을 변경하겠습니다.
+ alter table TBL_JIKWON_COPY
+ drop constraint CK_TBL_JIKWON_COPY_JIK;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ alter table TBL_JIKWON_COPY
+ add constraint CK_TBL_JIKWON_COPY_JIK check( jik in('사장','이사','부장','과장','대리','사원') );
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ 
+ --- *** 어떤 테이블에 생성되어진 제약조건의 이름을 변경하기 *** ---
+ /*
+     alter table 테이블명
+     rename constraint 현재사용중인제약조건명 to 새로운제약조건명;
+ */
+ alter table TBL_JIKWON_COPY
+ rename constraint SYS_C007077 to NN_TBL_JIKWON_COPY_SANAME;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+    
+ 
+ 
+ --- *** 어떤 테이블에 존재하는 제약조건을 비활성화 시키기 *** ---
+ /*
+     alter table 테이블명 disable constraint 제약조건명;
+ */
+ select constraint_name, constraint_type, search_condition, status 
+ from user_constraints
+ where table_name = 'TBL_JIKWON_COPY';
+ 
+ alter table TBL_JIKWON_COPY 
+ disable constraint CK_TBL_JIKWON_COPY_JIK;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ 
+ 
+ --- *** 어떤 테이블에 존재하는 제약조건을 활성화 시키기 *** ---
+ /*
+     alter table 테이블명 enable constraint 제약조건명;
+ */
+ alter table TBL_JIKWON_COPY 
+ enable constraint CK_TBL_JIKWON_COPY_JIK;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ select constraint_name, constraint_type, search_condition, status 
+ from user_constraints
+ where table_name = 'TBL_JIKWON_COPY';
+ 
+ 
+ 
+ 
+ ---- *** 어떤 테이블에 새로운 컬럼 추가하기 *** ----
+ /*
+     alter table 테이블명 add 추가할컬럼명 데이터타입;
+ */
+ desc TBL_JIKWON_COPY;
+ 
+ alter table TBL_JIKWON_COPY 
+ add jubun varchar2(13);
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ select *
+ from TBL_JIKWON_COPY;
+ 
+ 
+ --- *** TBL_JIKWON_COPY 테이블의 jubun 컬럼에 NOT NULL 제약 추가하기 *** ---
+ alter table TBL_JIKWON_COPY
+ modify jubun constraint NN_TBL_JIKWON_COPY_JUBUN not null;
+ /*
+   오류 보고 -
+   ORA-02296: cannot enable (HR.NN_TBL_JIKWON_COPY_JUBUN) - null values found
+   
+   왜냐하면 TBL_JIKWON_COPY 테이블에 입력된 행들중에 JUBUN 컬럼의 값이 NULL 인 것이 존재하기 때문이다. 
+ */
+ 
+ update TBL_JIKWON_COPY set jubun = ' '
+ where jubun is null;
+ -- 3개 행 이(가) 업데이트되었습니다.
+ 
+ alter table TBL_JIKWON_COPY
+ modify jubun constraint NN_TBL_JIKWON_COPY_JUBUN not null;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ select *
+ from TBL_JIKWON_COPY;
+ 
+ 
+ 
+ ---- *** 어떤 테이블에 존재하는 컬럼 삭제하기 *** ----
+ /*
+     alter table 테이블명 drop column 삭제할컬럼명;
+ */
+ 
+ -- *** TBL_JIKWON_COPY 테이블에 존재하는 jubun 컬럼을 삭제하기 *** --
+ alter table TBL_JIKWON_COPY 
+ drop column jubun;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ desc TBL_JIKWON_COPY;
+ 
+ select *
+ from TBL_JIKWON_COPY;
+ 
+ 
+ 
+ ---- *** 어떤 테이블에 새로운 컬럼을 추가하는데 NOT NULL 을 주고 싶다. *** ----
+ /*
+     alter table 테이블명 add 추가할컬럼명 데이터타입 NOT NULL; 이 아니라
+     
+     alter table 테이블명 add 추가할컬럼명 데이터타입 default 기본값 NOT NULL; 이다.
+ */
+ 
+ alter table TBL_JIKWON_COPY 
+ add jubun varchar2(13) NOT NULL;
+ /*
+   오류 보고 -
+   ORA-01758: table must be empty to add mandatory (NOT NULL) column
+ */
+ 
+ alter table TBL_JIKWON_COPY 
+ add jubun varchar2(13) default ' ' NOT NULL;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ desc TBL_JIKWON_COPY;
+ 
+ select *
+ from TBL_JIKWON_COPY;
+ 
+ 
+ 
+ ---- *** 어떤 테이블에 존재하는 컬럼명을 변경하기 *** ----
+ /*
+     alter table 테이블명
+     rename column 현재컬럼명 to 새로이변경할컬럼명;
+ */
+ 
+ -- *** TBL_JIKWON_COPY 테이블에 존재하는 jubun 컬럼명을 juminbunho 컬럼명으로 변경하기 *** --
+ alter table TBL_JIKWON_COPY
+ rename column jubun to juminbunho;
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ desc TBL_JIKWON_COPY;
+ 
+ select *
+ from TBL_JIKWON_COPY;
+ 
+ 
+ 
+ --- *** 어떤 테이블에 존재하는 컬럼의 데이터타입 변경하기 *** ---
+ /*
+     alter table 테이블명
+     modify 컬럼명 새로운데이터타입;
+ */
+ desc TBL_JIKWON_COPY;
+ -- EMAIL      NOT NULL  VARCHAR2(50) 
+ 
+ alter table TBL_JIKWON_COPY
+ modify email VARCHAR2(100);
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ desc TBL_JIKWON_COPY;
+ -- EMAIL      NOT NULL  VARCHAR2(100) 
+ 
+ select email
+ from TBL_JIKWON_COPY;
+ 
+ alter table TBL_JIKWON_COPY
+ modify email VARCHAR2(10);
+ /*
+   오류 보고 -
+   ORA-01441: cannot decrease column length because some value is too big
+ */
+ 
+ alter table TBL_JIKWON_COPY
+ modify email VARCHAR2(20);
+ -- Table TBL_JIKWON_COPY이(가) 변경되었습니다.
+ 
+ desc TBL_JIKWON_COPY;
+ -- EMAIL      NOT NULL  VARCHAR2(20)
+ 
+ 
+ 
+ 
+ ---- *** 어떤 테이블의 테이블명 변경하기 *** ----
+ /*
+     rename 현재테이블명 to 새로운테이블명;
+ */
+ -- *** TBL_JIKWON_COPY 테이블 이름을 TBL_JIKWON_BACKUP 이라는 테이블명으로 변경하겠습니다. *** --
+ 
+ select *
+ from TBL_JIKWON_COPY;
+ 
+ rename TBL_JIKWON_COPY to TBL_JIKWON_BACKUP;
+ -- 테이블 이름이 변경되었습니다.
+ 
+ select *
+ from TBL_JIKWON_COPY;
+ -- ORA-00942: table or view does not exist
+ 
+ select *
+ from TBL_JIKWON_BACKUP;
+ 
+ 
+ 
+ 
+ --- *** 어떤 테이블이 부모 테이블로 사용하고 있을 경우 부모 테이블을 DROP 하기 *** ---
+ /*
+     drop table 부모테이블명 cascade constraints purge;
+     
+     -- cascade constraints 이 있으면 
+        부모테이블명 을 drop 하기전 먼저 부모테이블명 에 딸려진 자식테이블의 foreign key 제약조건을 먼저 drop 해준다.
+        그런 다음에 부모테이블명 drop 해준다.
+ */
+ create table tbl_board_a   -- 게시판 테이블 (부모 테이블)
+ (boardno         number
+ ,board_content   varchar2(4000) not null
+ ,constraint PK_tbl_board_a_boardno primary key(boardno)
+ );
+ -- Table TBL_BOARD_A이(가) 생성되었습니다.
+ 
+ insert into tbl_board_a(boardno, board_content) values(1, '안녕하세요?');
+ insert into tbl_board_a(boardno, board_content) values(2, '건강하세요~~');
+ 
+ commit;
+ 
+ create table tbl_board_a_add    -- 게시판 댓글 테이블 (자식 테이블)
+ (addno         number
+ ,add_content   varchar2(4000) not null
+ ,fk_boardno    number not null 
+ ,constraint  PK_tbl_board_a_add_addno primary key(addno)
+ ,constraint  FK_tbl_board_a_add_fk_boardno foreign key(fk_boardno) references tbl_board_a(boardno) on delete cascade 
+ );
+ -- Table TBL_BOARD_A_ADD이(가) 생성되었습니다.
+ 
+ insert into tbl_board_a_add(addno, add_content, fk_boardno)
+ values(1001, '안녕하세요? 에 대한 댓글입니다', 1);
+ -- 1 행 이(가) 삽입되었습니다.
+ 
+ commit;
+ 
+ select * 
+ from tbl_board_a;
+ 
+ select * 
+ from tbl_board_a_add;
+ 
+ drop table tbl_board_a purge;
+ /*
+    오류 보고 -
+    ORA-02449: unique/primary keys in table referenced by foreign keys
+    
+    왜냐하면 tbl_board_a 테이블은 자식테이블(tbl_board_a_add)에 의해 참조를 받는 부모테이블 이므로
+    바로 drop table 이 불가하다.!!
+ */
+ 
+ select *
+ from user_constraints
+ where table_name = 'TBL_BOARD_A_ADD' and constraint_type = 'R';
+ -- 결과물이 나온다.
+ 
+ 
+ drop table tbl_board_a cascade constraints purge;
+ -- Table TBL_BOARD_A이(가) 삭제되었습니다.
+ 
+ select * 
+ from tbl_board_a;
+ -- ORA-00942: table or view does not exist
+ 
+ select * 
+ from tbl_board_a_add;
+ 
+ select *
+ from user_constraints
+ where table_name = 'TBL_BOARD_A_ADD' and constraint_type = 'R';
+ -- 결과물이 없다. 왜냐하면 foreign key 제약조건을 자동적으로 drop 해주었기 때문이다.
+ 
+ 
+ 
+ 
+ 
+   ---- !!!! 테이블을 생성한 이후에 웬만하면 테이블명에 대한 주석문을 달아주도록 합시다.!!!! ----
+   
+   --- *** 테이블명에 달려진 주석문 조회하기 *** --
+   select *
+   from user_tab_comments;
+   
+   comment on table TBL_JIKWON
+   is '우리회사 사원들의 정보가 들어있는 테이블';
+   -- Comment이(가) 생성되었습니다.
+   
+   
+   ---- !!!! 테이블을 생성한 이후에 웬만하면 컬럼명에 대한 주석문을 달아주도록 합시다.!!!! ----
+   select * 
+   from user_col_comments
+   where table_name = 'EMPLOYEES';
+   
+   
+   select * 
+   from user_col_comments
+   where table_name = 'TBL_JIKWON';
+   
+   
+   comment on column TBL_JIKWON.SANO is '사원번호 Primary Key';  -- Comment이(가) 생성되었습니다.
+   comment on column TBL_JIKWON.SANAME is '사원명 NOT NULL';     -- Comment이(가) 생성되었습니다.
+   comment on column TBL_JIKWON.SALARY is '기본급여 0보다 크면서 COMMISSION 보다 크다';  -- Comment이(가) 생성되었습니다.
+   comment on column TBL_JIKWON.COMMISSION is '커미션 최소 0이면서 SALARY 보다 작다';    -- Comment이(가) 생성되었습니다.
+   comment on column TBL_JIKWON.JIK is '직급 사장,이사,부장,과장,대리,사원 만 가능함';     -- Comment이(가) 생성되었습니다.
+   comment on column TBL_JIKWON.EMAIL is '이메일';  -- Comment이(가) 생성되었습니다.
+   comment on column TBL_JIKWON.HIRE_DATE is '입사일자 기본값은 sysdate';  -- Comment이(가) 생성되었습니다.
+      
+   select column_name, comments  
+   from user_col_comments
+   where table_name = 'TBL_JIKWON';
+   
+   
+   
+   
+    
+    
+    
+    ----------------------------------------------------------------------------------------------------------------------------
+    ---- !!!! 테이블을 삭제시 휴지통에 버리기 
+    ----  ==> drop 되어진 테이블을 복구가 가능하도록 만들어 주는 것이다. !!!! ----
+    
+   create table tbl_exam_01
+   (name  varchar2(20));
+   insert into tbl_exam_01(name) values('연습1');
+   commit;
+   
+   create table tbl_exam_02
+   (name  varchar2(20));
+   insert into tbl_exam_02(name) values('연습2');
+   commit;
+   
+   create table tbl_exam_03
+   (name  varchar2(20));
+   insert into tbl_exam_03(name) values('연습3');
+   commit;
+   
+   create table tbl_exam_04
+   (name  varchar2(20));
+   insert into tbl_exam_04(name) values('연습4');
+   commit;
+   
+   create table tbl_exam_05
+   (name  varchar2(20));
+   insert into tbl_exam_05(name) values('연습5');
+   commit;
+      
+   create table tbl_exam_06
+   (name  varchar2(20));
+   insert into tbl_exam_06(name) values('연습6');
+   commit;
+    
+    drop table tbl_exam_01;  --> tbl_exam_01 테이블을 영구히 삭제하는 것이 아니라 휴지통에 버리는 것이다.
+    -- Table TBL_EXAM_01이(가) 삭제되었습니다.
+    
+    select * from tab;
+    -- 결과물에서  TNAME 컬럼에 BIN$ 로 시작하는 것은 휴지통에 버려진 테이블이다.
+    
+    
+    drop table tbl_exam_02;  --> tbl_exam_02 테이블을 영구히 삭제하는 것이 아니라 휴지통에 버리는 것이다.
+    -- Table TBL_EXAM_02이(가) 삭제되었습니다.
+    
+    select * from tab;
+    -- 결과물에서  TNAME 컬럼에 BIN$ 로 시작하는 것은 휴지통에 버려진 테이블이다.
+    
+    select *
+    from tbl_exam_01;
+    -- ORA-00942: table or view does not exist
+    
+    
+    select *
+    from tbl_exam_02;
+    -- ORA-00942: table or view does not exist
+    
+    select *
+    from "BIN$SGqwpemiSeComyBCWRPsVw==$0";
+    
+    
+    ----- ==== *** 휴지통 조회하기 *** ==== -----
+    select *
+    from user_recyclebin;
+    
+    
+    ----- ==== *** 휴지통에 있던 테이블을 복원하기 *** ==== -----
+    flashback table TBL_EXAM_01 to before drop;
+    -- Flashback을(를) 성공했습니다.
+    -- TBL_EXAM_01 은 original_name 컬럼에 나오는 것이다.
+    
+    select *
+    from TBL_EXAM_01;
+    -- 복원됨.
+    
+    
+    ----- ==== *** 휴지통에 있던 특정 테이블을 영구히 삭제하기 *** ==== -----
+    select *
+    from user_recyclebin;
+    
+    purge table TBL_EXAM_02;
+    -- Table이(가) 비워졌습니다.
+    -- TBL_EXAM_02 는 originam_name 컬럼에 나오는 것이다.
+    
+    
+    
+    ----- ==== *** 휴지통에 있던 모든 테이블을 영구히 삭제하기 *** ==== -----
+    drop table tbl_exam_03; -- Table TBL_EXAM_03이(가) 삭제되었습니다.
+    drop table tbl_exam_04; -- Table TBL_EXAM_04이(가) 삭제되었습니다.
+
+    select *
+    from user_recyclebin;
+    
+    purge recyclebin; -- 휴지통에 있던 모든 테이블을 영구히 삭제하기
+    -- Recyclebin이(가) 비워졌습니다.
+
+    select *
+    from user_recyclebin;
+    
+    select * from tab
+    
+    
+    -- *** 테이블을 영구히 삭제하기 ==> drop 되어진 테이블은 복원이 불가하다. *** --
+    select *
+    from tbl_exam_05;
+    
+    drop table tbl_exam_05 purge; -- purge는 영구삭제
+    -- Table TBL_EXAM_05이(가) 삭제되었습니다.
+
+    
+    
+    
+    -------- ==== *** 계층형 쿼리 *** === --------
+    /*
+        계층형 쿼리는 Spring 프레임워크 시간에 답변형 게시판에서 사용한다.
+        또한 전자결제 에서도 사용된다.
+    */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    -------- ==== *** INDEX(인덱스, 색인) *** === --------
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ----- ===== **** 데이터사전(Data Ditionary) **** ===== ----- 
+    
+    ---- **** ORACLE DATA DICTIONARY VIEW(오라클 데이터 사전 뷰) **** ----
+    show user;
+    -- USER이(가) "HR"입니다.
+    
+    
+    select *
+    from dictionary;
+    -- 또는
+    select *
+    from dict;
+    /*
+        USER_CONS_COLUMNS
+        ALL_CONS_COLUMNS
+    */
+    
+    ---------------------------------------------------------------------
+    -- === SYS 로 접속한 것 시작 === --
+    
+    show user;
+    -- USER이(가) "SYS"입니다.
+
+    
+    select *
+    from dictionary;
+    -- 또는
+    select *
+    from dict;
+    /*
+        USER_CONS_COLUMNS
+        ALL_CONS_COLUMNS
+        DBA_CONS_COLUMNS
+    */
+    
+    
+    select *
+    from dba_tables;
+    
+    select *
+    from dba_tables
+    where owner = 'HR';
+    
+    -- === SYS 로 접속한 것 끝 === --
+    ---------------------------------------------------------------------
+    
+    /*
+     DBA_로 시작하는 것 
+     ==> 관리자만 조회가능한 것으로 모든오라클사용자정보, 모든테이블, 모든인덱스, 모든데이터베이스링크 등등등 의 정보가 다 들어있는 것.
+     
+     USER_로 시작하는 것 
+     ==> 오라클서버에 접속한 사용자 소유의 자신의오라클사용자정보, 자신이만든테이블, 자신이만든인덱스, 자신이만든데이터베이스링크 등등등 의 정보가 다 들어있는 것.
+     
+     ALL_로 시작하는 것 
+     ==> 오라클서버에 접속한 사용자 소유의 즉, 자신의오라클사용자정보, 자신이만든테이블, 자신이만든인덱스, 자신이만든데이터베이스링크 등등등 의 정보가 다 들어있는 것
+         과(와)
+         자신의 것은 아니지만 조회가 가능한 다른사용자의오라클사용자정보, 다른사용자소유의테이블, 다른사용자소유의인덱스, 다른사용자소유의데이터베이스링크 등등등 의 정보가 다 들어있는 것. 
+    */
+    
+    
+    -- === HR 로 접속한 것 시작 === --
+    show user;
+    -- USER이(가) "HR"입니다.
+
+    select *
+    from dba_tables;
+    -- ORA-00942: table or view does not exist
+    
+    select *
+    from user_tables;
+    
+    select *
+    from all_tables;
+    
+    
+    -- *** 자신이 만든 테이블에 대한 모든 정보를 조회하고 싶다. 어디서 보면 될까요? *** ---
+    select *
+    from dict
+    where table_name like 'USER_%' and lower(comments) like '%table%';
+    
+    select *
+    from USER_TABLES;
+    
+    
+    -- *** USER_TABLES 에서 보여지는 컬럼에 대한 설명을 보고 싶으면 아래와 같이하면 됩니다. *** --
+    
+    select *
+    from dict_columns
+    where table_name = 'USER_TABLES'
+    
+    
+    -- *** 자신이 만든 테이블의 컬럼에 대한 모든 정보를 조회하고 싶다. 어디서 보면 될까요? *** ---
+    
+    select *
+    from tbl_jikwon
+    
+    select *
+    from dict
+    where table_name like 'USER_%' and lower(comments) like '%column%';
+    
+    select *
+    from USER_TAB_COLUMNS;
+    
+    select *
+    from USER_TAB_COLUMNS
+    where table_name = 'TBL_JIKWON';
+    
+    --- *** TBL_JIKWON 테이블의 jik  컬럼에 default 를 '대리' 로 변경하려고 한다. *** ---
+    alter table TBL_JIKWON
+    modify jik default '대리';
+    -- Table TBL_JIKWON이(가) 변경되었습니다.
+
+    --- *** TBL_JIKWON 테이블의 jik  컬럼에 default 를 삭제 하려고 한다. *** ---
+    alter table TBL_JIKWON
+    modify jik default null;
+    -- Table TBL_JIKWON이(가) 변경되었습니다.
+    
+    --- *** TBL_JIKWON 테이블의 jik  컬럼에 default 를 '사원' 으로 변경하려고 한다. *** ---
+    alter table TBL_JIKWON
+    modify jik default '사원';
+    -- Table TBL_JIKWON이(가) 변경되었습니다.
+
+
+    
+    -- *** 자신이 만든 테이블의 제약조건에 대한 모든 정보를 조회하고 싶다. 어디서 보면 될까요? *** ---
+    select *
+    from dict
+    where table_name like 'USER_%' and lower(comments) like '%constraint%';
+    
+    select *
+    from user_constraints
+    where table_name = 'EMPLOYEES';
+    
+    select constraint_name, column_name, position
+    from USER_CONS_CONSTRAINTS
+    where table_name = 'EMPLOYEES';
+
+    
+    -- *** 자신이 만든 데이터베이스 링크에 대한 모든 정보를 조회하고 싶다. 어디서 보면 될까요? *** ---
+    
+    select *
+    from dict
+    where table_name like 'USER_%' and lower(comments) like '%database link%';
+    
+    
+    
+    
+    -- *** 자신이 만든 시퀀스에 대한 모든 정보를 조회하고 싶다. 어디서 보면 될까요? *** ---
+    select *
+    from dict
+    where table_name like 'USER_%' and lower(comments) like '%sequence%';
+    
+    select *
+    from USER_SEQUENCES;
+    
+    
+    
+    
+    
+    ----------------------------------------------------------------------------------------------------------------------------
+    ----- *** PL/SQL(Procedure Language / Structured Query Language) *** -----
+    
+    
+    ----- *** PL/SQL 구문에서 변수의 사용법 *** ----
+    
+    execute pcd_empInfo(101);
+    /*
+        <결과물>
+        ----------------------------------------
+        사원번호   사원명   성별   월급
+        ----------------------------------------
+        101 Neena Kochhar 남     $17,000
+    */
+    
+    exec pcd_empInfo(103);
+    /*
+        <결과물>
+        ----------------------------------------
+        사원번호   사원명   성별   월급
+        ----------------------------------------
+        103 Alexander Hunold 남      $9,000
+
+    */
+    
+    /* 
+        === SQL Developer 의 메뉴의 보기를 클릭하여 DBMS 출력을 클릭해주어야 한다. ===
+        === 이어서 하단부에 나오는 DBMS 출력 부분의 녹색 + 기호를 클릭하여 local_hr 로 연결을 해준다. === 
+    */
+    
+    select lpad('-',40,'-')
+    from dual;
+    
+    create or replace procedure pcd_empInfo
+    (p_employee_id IN number) -- 파라미터에는 3가지 모드가 있다. IN, OUT, IN OUT 모드이다.
+                              -- IN 은 입력모드를 말한다. 
+                              -- IN 은 생략가능하다. 
+                              -- 중요한 것은 파라미터에 설정된 타입은 원형만 사용해야지 자리수를 표현하면 오류이다.!!
+                              -- 예> (p_employee_id IN number(5)) 이렇게 하면 오류이다.
+    is
+        -- 변수의 선언부
+        v_employee_id   number(5);      -- 자리수를 사용한다.
+        v_ename         varchar2(50);   -- 자리수를 사용한다.
+        v_gender        varchar2(10);   
+        v_monthsal      varchar2(15);
+        v_age           number(3);
+    begin
+        -- 실행부
+        select employee_id, first_name || ' ' || last_name,
+               case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end,
+               to_char(nvl(salary +(salary*commission_pct), salary), '$9,999,999'),
+               extract(year from sysdate) - ( case when substr(jubun, 7, 1) in ('1','2') then 1900 else 2000 end + to_number(substr(jubun,1,2)) ) + 1
+               INTO
+               v_employee_id, v_ename, v_gender, v_monthsal, v_age
+        from employees
+        where employee_id = p_employee_id;
+        
+        dbms_output.put_line(lpad('-',50,'-'));
+        dbms_output.put_line('사원번호   사원명   성별   월급   나이');
+        dbms_output.put_line(lpad('-',50,'-'));
+        
+        dbms_output.put_line( v_employee_id || ' ' || v_ename || ' ' || v_gender || ' ' || v_monthsal || ' ' || v_age);
+        
+    end pcd_empInfo;
+    -- Procedure PCD_EMPINFO이(가) 컴파일되었습니다.
+    
+    exec pcd_empInfo(104);
+
+    /*
+        -----------------------------------
+        사원번호   사원명   성별   월급   나이
+        -----------------------------------
+        104 Bruce Ernst 여      $6,000 62
+    */
+    
+    
+    ---------- **** 생성되어진 프로시저의 소스를 조회해봅니다. **** ----------
+    select *
+    from user_source
+    where type = 'PROCEDURE' and name = 'PCD_EMPINFO';
+    
+    /*
+    "procedure pcd_empInfo
+"
+"    (p_employee_id IN number) -- 파라미터에는 3가지 모드가 있다. IN, OUT, IN OUT 모드이다.
+"
+"                              -- IN 은 입력모드를 말한다. 
+"
+"                              -- IN 은 생략가능하다. 
+"
+"                              -- 중요한 것은 파라미터에 설정된 타입은 원형만 사용해야지 자리수를 표현하면 오류이다.!!
+"
+"                              -- 예> (p_employee_id IN number(5)) 이렇게 하면 오류이다.
+"
+"    is
+"
+"        -- 변수의 선언부
+"
+"        v_employee_id   number(5);      -- 자리수를 사용한다.
+"
+"        v_ename         varchar2(50);   -- 자리수를 사용한다.
+"
+"        v_gender        varchar2(10);   
+"
+"        v_monthsal      varchar2(15);
+"
+"        v_age           number(3);
+"
+"    begin
+"
+"        -- 실행부
+"
+"        select employee_id, first_name || ' ' || last_name,
+"
+"               case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end,
+"
+"               to_char(nvl(salary +(salary*commission_pct), salary), '$9,999,999'),
+"
+"               extract(year from sysdate) - ( case when substr(jubun, 7, 1) in ('1','2') then 1900 else 2000 end + to_number(substr(jubun,1,2)) ) + 1
+"
+"               INTO
+"
+"               v_employee_id, v_ename, v_gender, v_monthsal, v_age
+"
+"        from employees
+"
+"        where employee_id = p_employee_id;
+"
+"
+"
+"        dbms_output.put_line(lpad('-',50,'-'));
+"
+"        dbms_output.put_line('사원번호   사원명   성별   월급   나이');
+"
+"        dbms_output.put_line(lpad('-',50,'-'));
+"
+*/
+
+
+    create or replace procedure pcd_empInfo_2
+    (p_employee_id IN employees.employee_id%type) -- p_employeeid 변수의 타입은 employees 테이블에 있는 employee_id 컬럼의 데이터타입과 동일하게 쓰겠다는 말이다.
+    is
+        v_employee_id   employees.employee_id%type;      
+        v_ename         varchar2(50);   
+        v_gender        varchar2(10);   
+        v_monthsal      varchar2(15);
+        v_age           number(3);
+    begin
+        select employee_id, first_name || ' ' || last_name,
+               case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end,
+               to_char(nvl(salary +(salary*commission_pct), salary), '$9,999,999'),
+               extract(year from sysdate) - ( case when substr(jubun, 7, 1) in ('1','2') then 1900 else 2000 end + to_number(substr(jubun,1,2)) ) + 1
+               INTO
+               v_employee_id, v_ename, v_gender, v_monthsal, v_age
+        from employees
+        where employee_id = p_employee_id;
+        
+        dbms_output.put_line(lpad('-',50,'-'));
+        dbms_output.put_line('사원번호   사원명   성별   월급   나이');
+        dbms_output.put_line(lpad('-',50,'-'));
+        
+        dbms_output.put_line( v_employee_id || ' ' || v_ename || ' ' || v_gender || ' ' || v_monthsal || ' ' || v_age);
+        
+    end pcd_empInfo_2;
+    
+    -- Procedure PCD_EMPINFO_2이(가) 컴파일되었습니다.
+
+    exec pcd_empInfo_2(105);
+    /*
+        --------------------------------------------------
+        사원번호   사원명   성별   월급   나이
+        --------------------------------------------------
+        105 David Austin 남      $4,800 58
+    */
+    
+    
+    create or replace procedure pcd_empInfo_3
+    (p_employee_id IN employees.employee_id%type)
+    is
+        -- record 타입 생성 -- 
+        type myEmpType is record
+        (
+            employee_id   employees.employee_id%type
+           ,ename         varchar2(50)
+           ,gender        varchar2(10)
+           ,monthsal      varchar2(15)
+           ,age           number(3)
+        );    
+        
+        v_rcd myEmpType;
+        
+    begin
+        select employee_id, first_name || ' ' || last_name,
+               case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end,
+               to_char(nvl(salary +(salary*commission_pct), salary), '$9,999,999'),
+               extract(year from sysdate) - ( case when substr(jubun, 7, 1) in ('1','2') then 1900 else 2000 end + to_number(substr(jubun,1,2)) ) + 1
+               INTO
+               v_rcd
+        from employees
+        where employee_id = p_employee_id;
+        
+        dbms_output.put_line(lpad('-',50,'-'));
+        dbms_output.put_line('사원번호   사원명   성별   월급   나이');
+        dbms_output.put_line(lpad('-',50,'-'));
+        
+        dbms_output.put_line( v_rcd.employee_id || ' ' || 
+                              v_rcd.ename || ' ' || 
+                              v_rcd.gender || ' ' || 
+                              v_rcd.monthsal|| ' ' || 
+                              v_rcd.age);
+        
+    end pcd_empInfo_3;
+    
+    exec pcd_empInfo_3(106);
+
+    /*
+        --------------------------------------------------
+        사원번호   사원명   성별   월급   나이
+        --------------------------------------------------
+        106 Valli Pataballa 남      $4,800 63
+
+    */
+
+               
+
+    create or replace procedure pcd_empInfo_4
+    (p_employee_id IN employees.employee_id%type)
+    is
+        v_all       employees%rowtype; -- v_all 변수의 타입은 employees 테이블의 모든 컬럼을 받아주는 행타입이다.
+        v_result    varchar2(1000);
+    begin
+        select * INTO v_all
+        from employees
+        where employee_id = p_employee_id;
+        
+        v_result := v_all.employee_id || ' ' ||
+                    v_all.first_name || ' ' || 
+                    v_all.last_name || ' ' || 
+                    case when substr(v_all.jubun, 7, 1) in('1','3') then '남' else '여' end || ' ' || 
+                    to_char(nvl(v_all.salary +(v_all.salary*v_all.commission_pct), v_all.salary), '$9,999,999') || ' ' || 
+                    ( extract(year from sysdate) - ( case when substr(v_all.jubun, 7, 1) in ('1','2') then 1900 else 2000 end + to_number(substr(v_all.jubun,1,2)) ) + 1 );
+        
+        dbms_output.put_line(lpad('-',50,'-'));
+        dbms_output.put_line('사원번호   사원명   성별   월급   나이');
+        dbms_output.put_line(lpad('-',50,'-'));
+        dbms_output.put_line( v_result );
+        
+    end pcd_empInfo_4;    
+    
+    
+    exec pcd_empInfo_4(107);
+    /*
+        --------------------------------------------------
+        사원번호   사원명   성별   월급   나이
+        --------------------------------------------------
+        107 Diana Lorentz 남      $4,200 15
+    */
