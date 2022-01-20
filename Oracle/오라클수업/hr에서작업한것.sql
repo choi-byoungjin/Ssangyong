@@ -6176,6 +6176,9 @@ create table tbl_panmae
   */  
   
   
+  
+  
+  
   ---- >>> Primary Key(기본키, 대표식별자) 제약에 대해서 알아봅니다. <<< ----
   
   ---- ***  "고객" 이라는 테이블을 생성해 보겠습니다. *** ----
@@ -6360,6 +6363,17 @@ create table tbl_panmae
   
   
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   ---- >>> Unique Key(후보키, 후보식별자) 제약에 대해서 알아봅니다. <<< ----
   --   Unique Key 중에 후보키, 후보식별자가 되려면 해당 컬럼은 NOT NULL 이어야 한다.
   --   아래의 예제에서는 gogekEmail 컬럼이 후보키, 후보식별자가 된다.
@@ -6463,6 +6477,20 @@ create table tbl_panmae
   -- TBL_JUMUN_2 테이블에 존재하는 Unique Key 제약조건을 조회하고자 하는 것이다.
   -- Unique Key
   -- Composite(복합) Unique Key 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
@@ -7556,10 +7584,502 @@ commit
     
     
     
+    
+    
+    
+    
+    
     -------- ==== *** 계층형 쿼리 *** === --------
     /*
         계층형 쿼리는 Spring 프레임워크 시간에 답변형 게시판에서 사용한다.
         또한 전자결제 에서도 사용된다.
+    */
+    
+    /*
+        1.          정경은
+                      |
+        2.          최병진
+                      |
+                -------------
+                 |          |
+        3.     임유리      정환모
+                 |          
+        4.     조덕노
+    */
+    
+    select *
+    from employees
+    order by employee_id asc;
+    
+    
+    -- 결제라인을 만들어 보겠습니다.
+    -- 출발     104 ==> 103 ==> 102 ==> 100 ==> null
+    -- level    1       2       3       4
+    
+    
+    ------------------------------------------------
+     level   사원번호    사원명     직속결제권자사원번호
+    ------------------------------------------------
+       1       104   Bruce Ernst        103
+       2       103   Alexander Hunold   102
+       3       102   Lex De Haan        100
+       4       100   Steven	King        null
+      
+    select level
+         , employee_id as 사원번호
+         , first_name || ' ' || last_name as 사원명
+         , manager_id as 직속결제권자사원번호
+    from employees
+    start with employee_id = 104 -- start with employee_id = 103  start with employee_id = 102   start with employee_id = 100
+    connect by prior manager_id = employee_id;
+    -- *** !!! prior 다음에 나오는 manager_id 컬럼은 start with 되어지는 행의 manager_id 컬럼의 값이다. !!! *** --
+    /*
+        connect by prior 103 = employee_id;
+        connect by prior 102 = employee_id;
+        connect by prior 100 = employee_id;
+        connect by prior null = employee_id;
+    */
+    
+    
+    select level
+         , employee_id as 사원번호
+         , first_name || ' ' || last_name as 사원명
+         , manager_id as 직속결제권자사원번호
+    from employees
+    start with employee_id = 109
+    connect by prior employee_id = manager_id;
+    /*
+        connect by prior 100 = manager_id;
+        connect by prior 101 = manager_id;
+        connect by prior 108 = manager_id;
+        connect by prior 109 = manager_id;
+    */
+    select *
+    from employees
+    where manager_id = 109
+    -- 없다.
+    
+    select level
+         , employee_id as 사원번호
+         , first_name || ' ' || last_name as 사원명
+         , manager_id as 직속결제권자사원번호
+    from employees
+    start with employee_id = 100
+    connect by prior employee_id = manager_id
+    order by 1;
+    
+    
+    
+    
+    -------- ==== *** INDEX(인덱스, 색인) *** === --------
+    
+    /* 
+       index(==색인)는 예를 들어 설명하면 아주 두꺼운 책 뒤에 나오는 "찾아보기" 와 같은 기능을 하는 것이다.
+       "찾아보기" 의 특징은 정렬되어 있는 것인데 index(==색인) 에 저장된 데이터도 정렬되어 저장되어 있다는 것이 특징이다.
+    */
+    -- index(==색인)를 생성해서 사용하는 이유는 where 절이 있는 select 명령문의 속도를 향상 시키기 위함이다.
+    -- index(==색인)은 어떤 컬럼에 만들어 할까요?
+    /*
+       1. where 절에서 "자주" 사용되어진 컬럼에 만들어야 한다.
+       2. 조인조건절에 "자주" 사용되어진 컬럼에 만들어야 한다.
+       3. order by 절에 "자주" 사용되어진 컬럼에 만들어야 한다.
+          group by 절에 "자주" 사용되어진 컬럼에 만들어야 한다.
+       
+       4. 선택도(selectivity)가 높은 컬럼에 만들어야 한다.0
+       ※ 선택도(selectivity)가 높다라는 것은 고유한 데이터일수록 선택도(selectivity)가 높아진다.
+       예: 성별컬럼 --> 선택도(selectivity)가 아주 낮다. 왜냐하면 수많은 사람중 남자 아니면 여자중 하나만 골라야 하므로 선택의 여지가 아주 낮다.
+           학번    --> 선택도(selectivity)가 아주 좋다. 왜냐하면 학번은 다양하고 고유하므로 골라야할 대상이 아주 많으므로 선택도가 높은 것이다.
+    
+       5. 카디널리티(cardinality)가 높은 컬럼에 만들어야 한다.
+       ※ 카디널리티(cardinality)의 사전적인 뜻은 집합원의 갯수를 뜻하는 것으로서,
+          카디널리티(cardinality)가 높다라는 것은 중복도가 낮아 고유한 데이터일수록 카디널리티(cardinality)가 상대적으로 높다 라는 것이다.
+          카디널리티(cardinality)가 낮다라는 것은 중복도가 높아 중복된 데이터가 많을수록 카디널리티(cardinality)가 상대적으로 낮다 라는 것이다.
+          
+          카디널리티(cardinality)는 "상대적인 개념" 이다.
+          예를들어, 주민등록번호 같은 경우는 중복되는 값이 없으므로 카디널리티(cardinality)가 높다고 할 수 있다.
+          이에 비해 성명같은 경우는 "주민등록번호에 비해" 중복되는 값이 많으므로, 성명은 "주민등록번호에 비해" 카디널리티가 낮다고 할 수 있다.
+          이와같이 카디널리티(cardinality)는 상대적인 개념으로 이해해야 한다.
+    */ 
+    
+    create table tbl_student_1
+    (hakbun      varchar2(20) not null
+    ,name        varchar2(20)
+    ,email       varchar2(30)
+    ,address     varchar2(200)
+    );
+    -- Table TBL_STUDENT_1이(가) 생성되었습니다.
+    
+    
+    --- *** unique 한 index 생성하기 *** ---
+   /* 
+      어떤 컬럼에 unique 한 index 를 생성하면 그 컬럼에 들어오는 값은 중복된 값은 들어올 수 없으며 오로지 고유한 값만 들어오게 된다.
+      unique 한 index 가 뒤에 나오는 non-unique 한 index 보다 검색속도가 조금 더 빠르다.
+   */ 
+   /*
+      [문법]
+      create unique index 인덱스명
+      on 해당테이블명(컬럼명 asc|desc);
+   */
+   
+    create unique index idx_tbl_student_1_hakbun
+    on tbl_student_1(hakbun); -- on tbl_student_1(hakbun asc); 와 동일하다.
+    -- Index IDX_TBL_STUDENT_1_HAKBUN이(가) 생성되었습니다.
+
+    insert into tbl_student_1(hakbun, name, email, address) values('1', '일미자', 'ilmj@naver.com', '서울시 강동구');
+    --1 행 이(가) 삽입되었습니다.
+
+    insert into tbl_student_1(hakbun, name, email, address) values('1', '이미자', 'twomj@naver.com', '서울시 강서구');
+    /*
+        오류 보고 -
+        ORA-00001: unique constraint (HR.IDX_TBL_STUDENT_1_HAKBUN) violated
+    */
+    
+    insert into tbl_student_1(hakbun, name, email, address) values('2', '이미자', 'twomj@naver.com', '서울시 강서구');
+    -- 1 행 이(가) 삽입되었습니다.
+
+    commit;
+    
+    
+    
+    ----- **** TBL_STUDENT_1 테이블에 생성 되어진 index 조회하기 **** -----
+    
+    select *
+    from user_indexes
+    where table_name = 'TBL_STUDENT_1'
+    
+    
+    select *
+    from user_ind_columns
+    where table_name = 'TBL_STUDENT_1';
+    
+    
+    select A.index_name, uniqueness, column_name, descend
+    from user_indexes A JOIN user_ind_columns B
+    ON A.index_name = B.index_name
+    where A.table_name = 'TBL_STUDENT_1';
+    
+    
+    --- *** non-unique 한 index 생성하기 *** ---
+  /* 
+     어떤 컬럼에 non-unique 한 index 생성하면 그 컬럼에 들어오는 값은 중복된 값이 들어올 수 있다는 것이다.
+     non-unique 한 index 는 unique 한 index 보다 검색속도가 다소 늦은 편이다.
+  */ 
+  /*
+    [문법]
+    create index 인덱스명
+    on 해당테이블명(컬럼명 asc|desc);
+  */
+  
+  create index idx_tbl_student_1_name
+  on tbl_student_1(name);
+  -- Index IDX_TBL_STUDENT_1_NAME이(가) 생성되었습니다.
+
+  insert into tbl_student_1(hakbun, name, email, address) values('3', '삼미자', 'threemj@naver.com', '서울시 강서구');
+    -- 1 행 이(가) 삽입되었습니다.
+    
+  insert into tbl_student_1(hakbun, name, email, address) values('4', '삼미자', 'threemj2@naver.com', '서울시 강남구');
+    -- 1 행 이(가) 삽입되었습니다.
+    
+  commit;
+  
+  
+  select *
+  from tbl_student_1;
+  
+  select A.index_name, uniqueness, column_name, descend
+  from user_indexes A JOIN user_ind_columns B
+  ON A.index_name = B.index_name
+  where A.table_name = 'TBL_STUDENT_1';
+  
+  /*
+  -------------------------------------------------------------------
+    index_name                  uniqueness    column_name    descend
+  -------------------------------------------------------------------  
+    IDX_TBL_STUDENT_1_HAKBUN	UNIQUE	        HAKBUN	       ASC
+    IDX_TBL_STUDENT_1_NAME	    NONUNIQUE	    NAME	       ASC
+  -------------------------------------------------------------------  
+  */
+  
+    select *
+    from tbl_student_1
+    where hakbun = '2';  -->  unique한 인덱스 IDX_TBL_STUDENT_1_HAKBUN 를 사용하여 빠르게 조회해옴.
+    
+    
+    select *
+    from tbl_student_1
+    where name = '이미자';  --> non-unique한 인덱스 IDX_TBL_STUDENT_1_NAME 를 사용하여 빠르게 조회해옴.
+    
+    
+    select *
+    from tbl_student_1
+    where address = '서울시 강동구';  --> address 컬럼에는 인덱스가 없으므로 tbl_student_1 테이블에 있는 모든 데이터를 조회해서 
+                                    --  address 컬럼의 값이  '서울시 강동구' 인 데이터를 가져온다.
+                                    --  이와 같이 인덱스를 사용하지 않고 데이터를 조회해올 때를 Table Full-scan(인덱스를 사용하지 않고 테이블 전체 조회) 이라고 부른다.
+                                    --  Table Full-scan(인덱스를 사용하지 않고 테이블 전체 조회)이 속도가 가장 느린 것이다.
+                                    
+    
+    delete from tbl_student_1;  
+    -- 4개 행 이(가) 삭제되었습니다.
+    
+    commit;
+    -- 커밋 완료.
+    
+    
+    -- drop sequence seq_tbl_student_1;
+    
+    create sequence seq_tbl_student_1
+    start with 1
+    increment by 1
+    nomaxvalue
+    nominvalue
+    nocycle
+    nocache;
+    -- Sequence SEQ_TBL_STUDENT_1이(가) 생성되었습니다.
+    
+    
+    declare
+       v_cnt  number := 1;
+       v_seq  number;
+       v_day  varchar2(8);
+    begin
+        loop 
+           exit when v_cnt > 10000;
+        
+           select seq_tbl_student_1.nextval, to_char(sysdate, 'yyyymmdd') 
+                  into v_seq, v_day
+           from dual;
+        
+           insert into tbl_student_1(hakbun, name, email, address)
+           values(v_day||'-'||v_seq, '이순신'||v_seq, 'leess'||v_seq||'@gmail.com', '서울시 마포구 월드컵로 '||v_seq);
+           
+           v_cnt := v_cnt + 1;
+        end loop;
+    end;
+    -- PL/SQL 프로시저가 성공적으로 완료되었습니다.
+    
+    commit;
+    -- 커밋 완료.
+    
+    
+    select *
+    from tbl_student_1;
+    
+    select count(*)
+    from tbl_student_1;   -- 10000
+    
+    select seq_tbl_student_1.currval as 최근에사용한시퀀스값
+    from dual;
+    
+    insert into tbl_student_1(hakbun, name, email, address)
+    values(to_char(sysdate, 'yyyymmdd')||'-'||(seq_tbl_student_1.currval + 1), '배수지'||(seq_tbl_student_1.currval + 1), 'baesuji'||(seq_tbl_student_1.currval + 1)||'@gmail.com', '서울시 마포구 월드컵로 '||(seq_tbl_student_1.currval + 1));
+    --      '20210120-10001'
+    
+    
+    insert into tbl_student_1(hakbun, name, email, address)
+    values(to_char(sysdate, 'yyyymmdd')||'-'||(seq_tbl_student_1.currval + 2), '배수지'||(seq_tbl_student_1.currval + 2), 'baesuji'||(seq_tbl_student_1.currval + 2)||'@gmail.com', '서울시 마포구 월드컵로 '||(seq_tbl_student_1.currval + 2));
+    --      '20210120-10002'
+    
+    insert into tbl_student_1(hakbun, name, email, address)
+    values(to_char(sysdate, 'yyyymmdd')||'-'||(seq_tbl_student_1.currval + 3), '배수지'||(seq_tbl_student_1.currval + 3), 'baesuji'||(seq_tbl_student_1.currval + 3)||'@gmail.com', '서울시 마포구 월드컵로 '||(seq_tbl_student_1.currval + 3));
+    --      '20210120-10003'
+    
+    commit;
+    
+    select count(*)
+    from tbl_student_1;   -- 10003
+    
+    
+    
+    select A.index_name, uniqueness, column_name, descend
+    from user_indexes A JOIN user_ind_columns B
+    ON A.index_name = B.index_name
+    where A.table_name = 'TBL_STUDENT_1';
+  
+    /*
+    -------------------------------------------------------------------
+      index_name                  uniqueness    column_name    descend
+    -------------------------------------------------------------------  
+      IDX_TBL_STUDENT_1_HAKBUN	    UNIQUE	        HAKBUN	       ASC
+      IDX_TBL_STUDENT_1_NAME	    NONUNIQUE	    NAME	       ASC
+    -------------------------------------------------------------------  
+    */
+       
+    
+    
+    
+    -- ==== *** SQL*Developer 에서 Plan(실행계획) 확인하는 방법 *** ==== --
+    /*
+      select 문이 실행될 때 인덱스를 사용하여 데이터를 얻어오는지 인덱스를 사용하지 않고 
+      Table Full Scan 하여 얻어오는지 알아봐야 한다.
+      이럴때 사용하는 것이 SQL Plan(실행계획)이다. 
+      
+      SQL*Developer 에서는 "SQL편집창(SQL 워크시트)"에 Plan(실행계획) 과 Trace(자동추적) 메뉴가 상단에 있다.
+      
+      Plan(실행계획) 과 Trace(자동추적) 의 차이는,
+      Plan(실행계획) 은 SQL을 실행하기 전에 Oracle Optimizer(옵티마이저, 최적화기)가 SQL을 어떻게 실행할지를 미리 알려주는 것이고,
+      Trace(자동추적) 는 SQL을 실행해보고, Oracle Optimizer(옵티마이저, 최적화기)가 SQL을 어떻게 실행했는지 그 결과를 알려주는 것이다.
+
+      그러므로, 정확도로 말하자면, Trace(자동추적)가 Plan(실행계획) 보다 훨씬 정확한 것이다.
+      Plan(실행계획) 은 말그대로 계획이라서 Oracle Optimizer가 계획은 그렇게 세우긴 했으나 
+      실제 실행할때는 여러가지 이유로 다르게 실행할 수도 있기 때문이다.
+      그래서 Trace(자동추적)가 정확하기는 하나 Trace(자동추적)는 한번 실행해봐야 하는것이라서 
+      시간이 오래 걸리는 SQL인 경우에는 한참 기다려야 하는 단점이 있기는 하다.
+   */       
+    
+    
+   /* 
+      실행해야할 SQL문을 블럭으로 잡은 후에
+      "SQL 워크시트" 의 상단 아이콘들중에 3번째 아이콘( 계획 설명... (F10) )을 클릭하면 현재 SQL의 Plan(실행계획)을 아래에 보여준다.
+      COST(비용)의 값이 적을 수록 속도가 빠른 것이다.
+   */
+    
+    select *
+    from tbl_student_1
+    where hakbun = '20220120-6789';  --> unique 한 인덱스 IDX_TBL_STUDENT_1_HAKBUN 를 사용하여 빠르게 조회해옴.
+    
+    
+    select *
+    from tbl_student_1
+    where name = '이순신5783';  --> non-unique 한 인덱스 IDX_TBL_STUDENT_1_NAME 를 사용하여 빠르게 조회해옴.
+    
+    
+    select *
+    from tbl_student_1
+    where address = '서울시 마포구 월드컵로 3987';  --> address 컬럼에는 인덱스가 없으므로 tbl_student_1 테이블에 있는 모든 데이터를 조회해서 
+                                    --  address 컬럼의 값이  '서울시 마포구 월드컵로 3987' 인 데이터를 가져온다.
+                                    --  이와 같이 인덱스를 사용하지 않고 데이터를 조회해올 때를 Table Full-scan(인덱스를 사용하지 않고 테이블 전체 조회) 이라고 부른다.
+                                    --  Table Full-scan(인덱스를 사용하지 않고 테이블 전체 조회)이 속도가 가장 느린 것이다.
+    
+    select *
+    from tbl_student_1
+    where email = 'leess2654@gmail.com';  -- email 컬럼에는 인덱스가 없으므로 Table Full-scan(인덱스를 사용하지 않고 테이블 전체 조회)하여 조회해 오는 것임.
+    
+    
+    -----------------------------------------------------------------------------------------------------------
+    -- *** Trace(자동추적)을 하기 위해서는 SYS 또는 SYSTEM 으로 부터 권한을 부여 받은 후 HR은 재접속을 해야 한다. *** --
+    show user;
+    -- USER이(가) "SYS"입니다.
+    
+    grant SELECT_CATALOG_ROLE to HR;
+    -- Grant을(를) 성공했습니다.
+    
+    grant SELECT ANY DICTIONARY to HR;
+    -- Grant을(를) 성공했습니다.
+    -----------------------------------------------------------------------------------------------------------
+    
+    /* 
+      실행해야할 SQL문을 블럭으로 잡은 후에
+      "SQL 워크시트" 의 상단 아이콘들중에 4번째 아이콘( 자동 추적... (F6) )을 클릭하면 현재 SQL의 Trace(자동추적)을 아래에 보여준다.
+      
+      Trace(자동추적)을 하면 Plan(실행계획) 도 나오고, 동시에 아래쪽에 통계정보도 같이 나온다.
+
+      오른쪽에 Plan(실행계획)에서는 보이지 않던 LAST_CR_BUFFER_GETS 와 LAST_ELAPSED_TIME 컬럼이 나온다.
+      LAST_CR_BUFFER_GETS 는 SQL을 실행하면서 각 단계에서 읽어온 블록(Block) 갯수를 말하는 것이고,
+      LAST_ELAPSED_TIME 은 경과시간 정보이다.
+      즉, 이 정보를 통해서 어느 구간에서 시간이 많이 걸렸는지를 확인할 수 있으므로, 이 부분의 값이 적게 나오도록 SQL 튜닝을 하게 된다.
+    */
+    
+    
+    ---- *** DML(insert, update, delete)이 빈번하게 발생하는 테이블에 index가 생성되어 있으면
+    ---      DML(insert, update, delete) 작업으로 인해 Index 에 나쁜 결과를 초래하므로  
+    ---      index 가 많다고 해서 결코 좋은 것이 아니기에 테이블당 index 의 개수는 최소한의 개수로 만드는 것이 좋다.
+    
+    ---- *** index 가 생성되어진 테이블에 insert 를 하면 Index Split(인덱스 쪼개짐) 가 발생하므로
+    ----     index 가 없을시 보다 insert 의 속도가 떨어지게 된다.
+    ----     그러므로 index 가 많다고 결코 좋은 것이 아니므로 최소한의 개수로 index 를 만드는 것이 좋다.
+    ----     Index Split(인덱스 쪼개짐)란 Index 의 block(블럭)들이 1개에서 2개로 나뉘어지는 현상을 말한다.
+    ----     Index Split(인덱스 쪼개짐)이 발생하는 이유는 Index 는 정렬이 되어 저장되기 때문에 
+    ---      Index 의 마지막 부분에 추가되는 것이 아니라 정렬로 인해 중간 자리에 끼워들어가는 현상이
+    ----     발생할 수 있기 때문이다. 
+    
+    
+    ---- *** index 가 생성되어진 테이블에 delete 를 하면 테이블의 데이터는 삭제가 되어지지만
+    ----     Index 자리에는 데이터는 삭제되지 않고서 사용을 안한다는 표시만 하게 된다.
+    ----     그래서 10만 건이 들어있던 테이블에 9만건의 데이터를 delete 를 하면 테이블에는 데이터가 삭제되어 지지만
+    ----     Index 자리에는 10만 건의 정보가 그대로 있고 1만건만 사용하고 9만건은 사용되지 않은채로 되어있기에
+    ----     사용하지 않는 9만건의 Index 정보로 인해서 index를 사용해서 select를 해올 때 index 검색속도가 떨어지게 된다.
+    ----     이러한 경우 Index Rebuild 작업을 해주어 사용하지 않는 9만건의 index 정보를 삭제해주어야만 
+    ----     select를 해올 때 index 검색속도가 빨라지게 된다. 
+    
+    
+    ---- *** index 가 생성되어진 테이블에 update 를 하면 테이블의 데이터는 "수정" 되어지지만 
+    ----     Index 는 "수정" 이라는 작업은 없고 index 를 delete 를 하고 새로이 insert 를 해준다.
+    ----     그러므로 index 를 delete 할 때 발생하는 단점 및 index 를 insert 를 할 때 발생하는 Index Split(인덱스 쪼개짐) 가 발생하므로
+    ----     Index 에는 최악의 상황을 맞게 된다. 
+    ----     이로 인해 테이블의 데이터를 update를 빈번하게 발생시켜 버리면 select를 해올 때 index 검색속도가 현저히 느려지게 된다. 
+    ----     이러한 경우도 select를 해올 때 index 검색속도가 빨라지게끔 Index Rebuild 작업을 해주어야 한다.       
+    
+    
+    ---- **** Index(인덱스)의 상태 확인하기 **** ----
+    analyze index IDX_TBL_STUDENT_1_NAME validate structure;
+    -- Index IDX_TBL_STUDENT_1_NAME이(가) 분석되었습니다.
+    
+    
+    select (del_lf_rows_len / lf_rows_len) * 100 "인덱스상태(Balance)"
+    from index_stats
+    where name = 'IDX_TBL_STUDENT_1_NAME';
+    /*
+       인덱스상태(Balance)
+       ------------------
+              0          <== 0 에 가까울 수록 인덱스 상태가 좋은 것이다.
+    */
+    
+    
+    select count(*)
+    from tbl_student_1;  
+    -- 10003
+    
+    delete from tbl_student_1
+    where hakbun between '20220120-400' and '20220120-9400';
+    -- 6,001개 행 이(가) 삭제되었습니다.
+    
+    commit;
+    -- 커밋 완료.
+    
+    select count(*)
+    from tbl_student_1; 
+    -- 4002
+    
+    
+    
+    select (del_lf_rows_len / lf_rows_len) * 100 "인덱스상태(Balance)"
+    from index_stats
+    where name = 'IDX_TBL_STUDENT_1_NAME';
+    /*
+       인덱스상태(Balance)
+       ------------------
+              0          <== delete 하기전의 index를 분석한 것이므로 0 이라고 나올 뿐이다.
+    */
+    
+    analyze index IDX_TBL_STUDENT_1_NAME validate structure;
+    -- Index IDX_TBL_STUDENT_1_NAME이(가) 분석되었습니다.
+
+    select (del_lf_rows_len / lf_rows_len) * 100 "인덱스상태(Balance)"
+    from index_stats
+    where name = 'IDX_TBL_STUDENT_1_NAME';
+    /*
+       인덱스상태(Balance)
+       ------------------
+       59.99108333467217197114534967787542374243  <== 인덱스의 밸런스가 대략 60% 정도가 깨진 것이다.
+    */
+    
+    update tbl_student_1 set name = '홍길동'
+    where hakbun between '20220120-9401' and '20220120-9901'
+    -- 556개 행 이(가) 업데이트되었습니다.
+
+    commit;
+    -- 커밋 완료.
+    
+    analyze index IDX_TBL_STUDENT_1_NAME validate structure;
+    -- Index IDX_TBL_STUDENT_1_NAME이(가) 분석되었습니다.
+
+    select (del_lf_rows_len / lf_rows_len) * 100 "인덱스상태(Balance)"
+    from index_stats
+    where name = 'IDX_TBL_STUDENT_1_NAME';
+    /*
+       인덱스상태(Balance)
+       ------------------
+       60.72728298586622281152142635483961971394  <== 인덱스의 밸런스가 대략 60% 정도가 깨진 것이다.
     */
     
     
@@ -7567,37 +8087,59 @@ commit
     
     
     
+    ----- *** ==== Index Rebuild(인덱스 재건축) 하기 ==== *** -----
+    -- 인덱스 밸런스가 대략 60% 정도 깨진 IDX_TBL_STUDENT_1_NAME 을 Index Rebuild(인덱스 재건축) 하겠습니다. --
+    alter index IDX_TBL_STUDENT_1_NAME rebuild;
+    -- Index IDX_TBL_STUDENT_1_NAME이(가) 변경되었습니다.
+    
+    analyze index IDX_TBL_STUDENT_1_NAME validate structure;
+    -- Index IDX_TBL_STUDENT_1_NAME이(가) 분석되었습니다.
+    
+    select (del_lf_rows_len / lf_rows_len) * 100 "인덱스상태(Balance)"
+    from index_stats
+    where name = 'IDX_TBL_STUDENT_1_NAME';
+    /*
+       인덱스상태(Balance)
+       ------------------
+              0   <== 0 에 가까울 수록 인덱스 상태가 좋은 것이다.
+    */
     
     
     
     
+    ----- **** index 삭제하기 **** -----
+    -- drop index 삭제할인덱스명;
+    
+    select A.index_name, uniqueness, column_name, descend
+    from user_indexes A JOIN user_ind_columns B
+    ON A.index_name = B.index_name
+    where A.table_name = 'TBL_STUDENT_1';
+  
+    /*
+    -------------------------------------------------------------------
+      index_name                  uniqueness    column_name    descend
+    -------------------------------------------------------------------  
+      IDX_TBL_STUDENT_1_HAKBUN	    UNIQUE	        HAKBUN	       ASC
+      IDX_TBL_STUDENT_1_NAME	    NONUNIQUE	    NAME	       ASC
+    -------------------------------------------------------------------  
+    */
+    
+    drop index IDX_TBL_STUDENT_1_NAME;
+    -- Index IDX_TBL_STUDENT_1_NAME이(가) 삭제되었습니다.
+
+    drop index IDX_TBL_STUDENT_1_HAKBUN;
+    -- Index IDX_TBL_STUDENT_1_HAKBUN이(가) 삭제되었습니다.
+
+
+    select *
+    from tbl_student_1; -- 테이블은 그대로 존재하고 인덱스만 삭제되었다.
     
     
-    
-    -------- ==== *** INDEX(인덱스, 색인) *** === --------
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    ------ **** !!!!! 복합인덱스(Composite index) 생성하기 !!!!! **** -------
+    -- 복합인덱스(composite index)란? 
+    -- 2개 이상의 컬럼으로 묶어진 인덱스를 말하는 것으로서
+    -- where 절에 2개의 컬럼이 사용될 경우 각각 1개 컬럼마다 각각의 인덱스를 만들어서 사용하는 것보다
+    -- 2개의 컬럼을 묶어서 하나의 인덱스로 만들어 사용하는 것이 속도가 좀 더 빠르다.
     
     
     ----- ===== **** 데이터사전(Data Ditionary) **** ===== ----- 
@@ -7903,7 +8445,7 @@ commit
     is
         v_employee_id   employees.employee_id%type;      
         v_ename         varchar2(50);   
-        v_gender        varchar2(10);   
+        v_gender        varchar2(10);   23
         v_monthsal      varchar2(15);
         v_age           number(3);
     begin
@@ -7994,7 +8536,7 @@ commit
         from employees
         where employee_id = p_employee_id;
         
-        v_result := v_all.employee_id || ' ' ||
+        v_result := v_all.employee_id || ' ' || -- := 는 변수선언에 사용되는 대입연산자
                     v_all.first_name || ' ' || 
                     v_all.last_name || ' ' || 
                     case when substr(v_all.jubun, 7, 1) in('1','3') then '남' else '여' end || ' ' || 
@@ -8990,3 +9532,586 @@ commit
      | 119 |
      -------
  */
+ 
+ 
+ ----- **** [위에서 만든 pcd_employees_info_deptid 을 올바르게 작동하도록 해결하기] **** -----
+ 
+   create or replace procedure pcd_employees_info_deptid
+   (p_department_id  IN  employees.department_id%type)
+   is
+      type department_id_type
+      is table of employees.department_id%type index by binary_integer;
+      
+      type department_name_type
+      is table of departments.department_name%type index by binary_integer;
+      
+      type employee_id_type
+      is table of employees.employee_id%type index by binary_integer;
+      
+      type ename_type
+      is table of varchar2(30) index by binary_integer; -- 새로 만든 타입이므로 형식 설정
+      
+      type hiredate_type
+      is table of varchar2(10) index by binary_integer;
+      
+      type gender_type
+      is table of varchar2(6) index by binary_integer;
+      
+      type age_type
+      is table of number(3) index by binary_integer;
+      
+      v_department_id      department_id_type;
+      v_department_name    department_name_type;
+      v_employee_id        employee_id_type;
+      v_ename              ename_type;
+      v_hiredate           hiredate_type;
+      v_gender             gender_type;
+      v_age                age_type;
+      
+      i binary_integer := 0; -- i가 마치 배열의 방번호 용도처럼 쓰인다.
+                             -- 그런데 자바에서 배열의 시작은 0 번 부터 시작하지만
+                             -- 오라클에서는 1번부터 시작한다.
+   
+   begin
+        
+        FOR v_rcd IN ( select E.department_id, D.department_name, E.employee_id, E.ename, E.hiredate, E.gender, E.age
+                       FROM departments D RIGHT JOIN
+                          (select department_id
+                                , employee_id
+                                , first_name || ' ' || last_name AS ENAME
+                                , to_char(hire_date, 'yyyy-mm-dd') AS HIREDATE
+                                , func_gender(jubun) AS GENDER
+                                , func_age(jubun) AS AGE
+                           from employees
+                           where department_id = p_department_id) E
+                       ON D.department_id = E.department_id ) LOOP
+           
+           i := i+1;
+           
+           v_department_id(i) := v_rcd.department_id; -- 자바에서는 대괄호[i]
+           v_department_name(i) := v_rcd.department_name;
+           v_employee_id(i) := v_rcd.employee_id;
+           v_ename(i) := v_rcd.ename;
+           v_hiredate(i) := v_rcd.hiredate;
+           v_gender(i) := v_rcd.gender;
+           v_age(i) := v_rcd.age;
+           
+        END LOOP;
+        
+        -- dbms_output.put_line('확인용 i => ' || i);
+        
+        if(i = 0) then
+           raise no_data_found; -- 오라클에서 데이터가 존재하지 않을 경우 발생하는 오류이다.
+                 dbms_output.put_line('>> 부서번호 ' || p_department_id || '은 존재하지 않습니다. <<');
+        else
+            dbms_output.put_line( lpad('-',60,'-') );
+            dbms_output.put_line( '부서번호    부서명     사원번호     사원명    입사일자   성별   나이' );
+            dbms_output.put_line( lpad('-',60,'-') );
+            
+            FOR k IN 1..i LOOP
+                dbms_output.put_line( v_department_id(k) || ' ' ||
+                                      v_department_name(k) || ' ' ||
+                                      v_employee_id(k) || ' ' ||
+                                      v_ename(k) || ' ' ||
+                                      v_hiredate(k) || ' ' ||
+                                      v_gender(k) || ' ' ||
+                                      v_age(k)
+                                     ); 
+            END LOOP;
+        end if;
+            
+        EXCEPTION
+             WHEN no_data_found THEN   -- no_data_found 은 오라클에서 데이터가 존재하지 않을 경우 발생하는 오류임.
+                dbms_output.put_line('>> 부서번호 ' || p_department_id || '은 존재하지 않습니다. <<');
+                
+   end pcd_employees_info_deptid;
+  -- Procedure PCD_EMPLOYEES_INFO_DEPTID이(가) 컴파일되었습니다.
+
+   exec pcd_employees_info_deptid(9999);
+   -- >> 부서번호 9999은 존재하지 않습니다. <<
+   
+   exec pcd_employees_info_deptid(10);
+/*
+    ------------------------------------------------------------
+    부서번호    부서명     사원번호     사원명    입사일자   성별   나이
+    ------------------------------------------------------------
+    10 Administration 200 Jennifer Whalen 2003-09-17 여 45
+*/
+   
+   exec pcd_employees_info_deptid(30);
+/*
+    ------------------------------------------------------------
+    부서번호    부서명     사원번호     사원명    입사일자   성별   나이
+    ------------------------------------------------------------
+    30 Purchasing 114 Den Raphaely 2002-12-07 여 56
+    30 Purchasing 115 Alexander Khoo 2003-05-18 남 62
+    30 Purchasing 116 Shelli Baida 2005-12-24 남 63
+    30 Purchasing 117 Sigal Tobias 2005-07-24 여 62
+    30 Purchasing 118 Guy Himuro 2006-11-15 남 45
+    30 Purchasing 119 Karen Colmenares 2007-08-10 남 44
+*/
+ 
+ 
+  -----------------------------------------------------------------------------
+  
+                    ---- ===== **** CURSOR **** ===== -----
+              
+  --  PL/SQL 에서 SELECT 되어져 나오는 행의 개수가 2개 이상인 경우에는 위에서 한 것처럼
+  --  table 타입의 변수를 사용하여 나타낼 수 있고, 또는 CURSOR 를 사용하여 나타낼 수도 있다. 
+  --  table 타입의 변수를 사용하는 것 보다 CURSOR 를 사용하는 것이 더 편하므로 
+  --  대부분 CURSOR 를 많이 사용한다.
+  
+  
+  ----- *** 명시적 CURSOR 만들기 *** -----
+  ※ 형식
+
+  1.단계 -- CURSOR 의 선언(정의)
+     
+    CURSOR 커서명
+    IS
+    SELECT 문;  
+
+  2.단계 -- CURSOR 의 OPEN
+
+    OPEN 커서명;
+
+  3.단계 -- CURSOR 의 FETCH
+           (FETCH 란? SELECT 되어진 결과물을 끄집어 내는 작업을 말한다)
+    
+    FETCH  커서명 INTO 변수;
+
+  4.단계 -- CURSOR 의 CLOSE
+
+    CLOSE 커서명;
+      
+
+
+ ※ ==== 커서의 속성변수 ==== ※
+
+ 1. 커서명%ISOPEN   ==> 커서가 OPEN 되어진 상태인가를 체크하는 것.
+                       만약에 커서가 OPEN 되어진 상태이라면 TRUE.
+
+ 2. 커서명%FOUND    ==> FETCH 된 레코드(행)이 있는지 체크하는 것.
+                       만약에 FETCH 된 레코드(행)이 있으면 TRUE.
+
+ 3. 커서명%NOTFOUND ==> FETCH 된 레코드(행)이 없는지 체크하는 것.
+                       만약에 FETCH 된 레코드(행)이 없으면 TRUE.
+
+ 4. 커서명%ROWCOUNT ==> 현재까지 FETCH 된 레코드(행)의 갯수를 반환해줌.
+ 
+ 
+ 
+  create or replace procedure pcd_employees_deptid_cursor
+  (p_department_id  IN  employees.department_id%type)
+  is
+     -- 1.단계 -- CURSOR 의 선언(정의)
+     cursor cur_empinfo
+     is
+     select E.department_id, D.department_name, E.employee_id, E.ename, E.hiredate, E.gender, E.age 
+     from departments D RIGHT JOIN
+     (select department_id
+           , employee_id
+           , first_name || ' ' || last_name AS ENAME
+           , to_char(hire_date, 'yyyy-mm-dd') AS HIREDATE
+           , func_gender(jubun) AS GENDER
+           , func_age(jubun) AS AGE
+      from employees
+      where department_id = p_department_id) E
+    ON D.department_id = E.department_id;
+    
+    v_department_id      employees.department_id%type;
+    v_department_name    departments.department_name%type;
+    v_employee_id        employees.employee_id%type;
+    v_ename              varchar2(30);
+    v_hiredate           varchar2(10);
+    v_gender             varchar2(6);
+    v_age                number(3);
+    
+    v_cnt  number := 0;
+  begin
+      -- 2.단계 -- CURSOR 의 OPEN
+      OPEN cur_empinfo;
+      
+      -- 3.단계 -- CURSOR 의 FETCH
+      --          (FETCH 란? SELECT 되어진 결과물을 끄집어 내는 작업을 말한다)
+      LOOP
+          FETCH cur_empinfo 
+          INTO 
+          v_department_id, v_department_name, v_employee_id, v_ename, v_hiredate, v_gender, v_age;
+    
+          v_cnt :=  cur_empinfo%ROWCOUNT;
+      --  dbms_output.put_line('>> 확인용 fetch 되어진 행의 개수 => ' || cur_empinfo%ROWCOUNT);
+          
+          EXIT WHEN cur_empinfo%NOTFOUND;  -- 더 이상 select 되어진 행이 없다라면 반복문을 빠져나간다. 
+          
+          if (v_cnt = 1) then 
+              dbms_output.put_line( lpad('-',60,'-') );
+              dbms_output.put_line( '부서번호    부서명     사원번호     사원명    입사일자   성별   나이' );
+              dbms_output.put_line( lpad('-',60,'-') );
+          end if;
+          
+          dbms_output.put_line( v_department_id || ' ' || 
+                                v_department_name || ' ' ||
+                                v_employee_id || ' ' ||
+                                v_ename || ' ' || 
+                                v_hiredate || ' ' || 
+                                v_gender || ' ' ||
+                                v_age );
+      END LOOP;
+      
+      -- 4.단계 -- CURSOR 의 CLOSE
+      CLOSE cur_empinfo;
+      
+      if(v_cnt = 0) then
+         dbms_output.put_line('>> 부서번호 ' || p_department_id || '은 존재하지 않습니다. <<');
+      else
+         dbms_output.put_line(' ');
+         dbms_output.put_line('>> 조회된 행의 개수 : ' || v_cnt || '개  << ');
+      end if;
+      
+  end pcd_employees_deptid_cursor;
+    
+    
+    exec pcd_employees_deptid_cursor(9999);
+    -- >> 부서번호 9999은 존재하지 않습니다. <<
+
+    exec pcd_employees_deptid_cursor(10);
+/*
+    ------------------------------------------------------------
+    부서번호    부서명     사원번호     사원명    입사일자   성별   나이
+    ------------------------------------------------------------
+    10 Administration 200 Jennifer Whalen 2003-09-17 여 45
+     
+    >> 조회된 행의 개수 : 1개  << 
+
+*/
+    exec pcd_employees_deptid_cursor(30);
+ /*
+    ------------------------------------------------------------
+    부서번호    부서명     사원번호     사원명    입사일자   성별   나이
+    ------------------------------------------------------------
+    30 Purchasing 114 Den Raphaely 2002-12-07 여 56
+    30 Purchasing 115 Alexander Khoo 2003-05-18 남 62
+    30 Purchasing 116 Shelli Baida 2005-12-24 남 63
+    30 Purchasing 117 Sigal Tobias 2005-07-24 여 62
+    30 Purchasing 118 Guy Himuro 2006-11-15 남 45
+    30 Purchasing 119 Karen Colmenares 2007-08-10 남 44
+     
+    >> 조회된 행의 개수 : 6개  << 
+ */
+ 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+ 
+ 
+ 
+ 
+ 
+   -------------- *****  FOR LOOP CURSOR 만들기 ***** -----------------
+ /*
+     FOR LOOP CURSOR 문을 사용하면
+     커서의 OPEN, 커서의 FETCH, 커서의 CLOSE 가 자동적으로 발생되어지기 때문에
+     우리는 커서의 OPEN, 커서의 FETCH, 커서의 CLOSE 문장을 기술할 필요가 없다.
+ */
+  
+  ※ 형식
+  FOR 변수명(select 되어진 행의 정보가 담기는 변수) IN 커서명 LOOP
+      실행문장;
+  END LOOP;
+ 
+ 
+  create or replace procedure pcd_employees_deptid_forcursor
+  (p_department_id  IN  employees.department_id%type)
+  is
+     -- 1.단계 -- CURSOR 의 선언(정의)
+     cursor cur_empinfo
+     is
+     select E.department_id, D.department_name, E.employee_id, E.ename, E.hiredate, E.gender, E.age 
+     from departments D RIGHT JOIN
+     (select department_id
+           , employee_id
+           , first_name || ' ' || last_name AS ENAME
+           , to_char(hire_date, 'yyyy-mm-dd') AS HIREDATE
+           , func_gender(jubun) AS GENDER
+           , func_age(jubun) AS AGE
+      from employees
+      where department_id = p_department_id) E
+    ON D.department_id = E.department_id;
+    
+    v_cnt   number := 0;
+    
+  begin 
+        /*
+          -- 2단계
+          
+          FOR 변수명(select 되어진 행의 정보가 담기는 변수) IN 커서명 LOOP
+              실행문장;
+          END LOOP; 
+        */
+          FOR v_rcd IN cur_empinfo LOOP
+            v_cnt := cur_empinfo%ROWCOUNT;
+         -- dbms_output.put_line('>> 확인용 fetch 되어진 행의 개수 => ' || v_cnt);
+         
+            if (v_cnt = 1) then 
+              dbms_output.put_line( lpad('-',60,'-') );
+              dbms_output.put_line( '부서번호    부서명     사원번호     사원명    입사일자   성별   나이' );
+              dbms_output.put_line( lpad('-',60,'-') );
+            end if;
+            
+            dbms_output.put_line( v_rcd.department_id || ' ' || 
+                                  v_rcd.department_name || ' ' ||
+                                  v_rcd.employee_id || ' ' ||
+                                  v_rcd.ename || ' ' || 
+                                  v_rcd.hiredate || ' ' || 
+                                  v_rcd.gender || ' ' ||
+                                  v_rcd.age );
+            
+          END LOOP; 
+          
+          if(v_cnt = 0) then
+             dbms_output.put_line('>> 부서번호 ' || p_department_id || '은 존재하지 않습니다. <<');
+          else
+             dbms_output.put_line(' ');
+             dbms_output.put_line('>> 조회된 행의 개수 : ' || v_cnt || '개  << ');
+          end if;
+  end pcd_employees_deptid_forcursor;
+ 
+ 
+  exec PCD_EMPLOYEES_DEPTID_FORCURSOR(9999);
+  -- >> 부서번호 9999은 존재하지 않습니다. <<
+
+  exec PCD_EMPLOYEES_DEPTID_FORCURSOR(30);
+ /*
+    ------------------------------------------------------------
+    부서번호    부서명     사원번호     사원명    입사일자   성별   나이
+    ------------------------------------------------------------
+    30 Purchasing 114 Den Raphaely 2002-12-07 여 56
+    30 Purchasing 115 Alexander Khoo 2003-05-18 남 62
+    30 Purchasing 116 Shelli Baida 2005-12-24 남 63
+    30 Purchasing 117 Sigal Tobias 2005-07-24 여 62
+    30 Purchasing 118 Guy Himuro 2006-11-15 남 45
+    30 Purchasing 119 Karen Colmenares 2007-08-10 남 44
+     
+    >> 조회된 행의 개수 : 6개  << 
+ */
+ 
+  exec PCD_EMPLOYEES_DEPTID_FORCURSOR(10);
+ /*
+    ------------------------------------------------------------
+    부서번호    부서명     사원번호     사원명    입사일자   성별   나이
+    ------------------------------------------------------------
+    10 Administration 200 Jennifer Whalen 2003-09-17 여 45
+     
+    >> 조회된 행의 개수 : 1개  << 
+    
+    ------------------------------------------------------------
+    부서번호    부서명     사원번호     사원명    입사일자   성별   나이
+    ------------------------------------------------------------
+    10 Administration 200 Jennifer Whalen 2003-09-17 여 45
+     
+    >> 조회된 행의 개수 : 1개  << 
+ */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ -------------------- ****** PACKAGE(패키지) ****** ----------------------
+   
+ --->   PACKAGE(패키지)란?  여러개의 Procedure 와 여러개의 Function 들의 묶음
+ 
+ 
+ --- 1. PACKAGE(패키지)의 선언하기
+ create or replace package employee_pack
+ is
+    -- employee_pack 패키지에 들어올 프로시저 또는 함수를 선언해준다.
+    procedure pcd_emp_info(p_deptno IN employees.department_id%type);
+    procedure pcd_dept_info(p_deptno IN departments.department_id%type);
+    function func_sex(p_jubun IN employees.jubun%type) return varchar2;
+ end employee_pack;
+ -- Package EMPLOYEE_PACK이(가) 컴파일되었습니다.
+
+ 
+ --- 2. PACKAGE(패키지)의 Body(본문) 생성하기
+ create or replace package body employee_pack
+ is
+    procedure pcd_emp_info(p_deptno IN employees.department_id%type)
+    is
+        cursor cur_empinfo
+        is
+        select D.department_id, D.department_name,
+               E.employee_id, E.first_name || ' ' || E.last_name as ENAME
+        from departments D JOIN employees E
+        ON D.department_id = E.department_id
+        where E.department_id = p_deptno;
+        
+        v_cnt number := 0;
+    begin
+        for v_rcd in cur_empinfo loop
+            v_cnt := cur_empinfo%rowcount;
+            if(v_cnt = 1) then
+                dbms_output.put_line( lpad('-',60,'-') );
+                dbms_output.put_line( '부서번호   부서명        사원번호   사원명' );
+                dbms_output.put_line( lpad('-',60,'-') );
+            end if;
+            
+            dbms_output.put_line(v_rcd.department_id || ' ' ||
+                                 v_rcd.department_name || ' ' ||
+                                 v_rcd.employee_id || ' ' ||
+                                 v_rcd.ename
+                                 );
+        end loop;
+        
+        if( v_cnt = 0 ) then
+            dbms_output.put_line('>> 부서번호 ' || p_deptno || '은 없습니다. <<');
+        else
+            dbms_output.put_line(' ');
+            dbms_output.put_line('>> 조회건수 : ' || v_cnt || '개');
+        end if;
+        
+    end pcd_emp_info;
+    
+    
+    procedure pcd_dept_info(p_deptno IN departments.department_id%type)
+    is
+        v_department_id   departments.department_id%type;
+        v_department_name   departments.department_name%type;
+    begin
+        select department_id, department_name
+               into
+               v_department_id, v_department_name
+        from departments
+        where department_id = p_deptno;
+        
+        dbms_output.put_line( lpad('-',40,'-'));
+        dbms_output.put_line( '부서번호  부서명' );
+        dbms_output.put_line( lpad('-',40,'-'));
+        
+        dbms_output.put_line( v_department_id || ' ' || v_department_name);
+        
+        exception
+            when no_data_found then
+                 dbms_output.put_line('>> 부서번호 ' || p_deptno || '은 없습니다. <<');
+        
+    end pcd_dept_info;
+    
+    
+    function func_sex(p_jubun IN employees.jubun%type) 
+    return varchar2
+    is
+        v_result        varchar2(100);
+        v_gender_num    varchar2(1);
+    begin
+        if( length(p_jubun) = 13 ) then
+            v_gender_num := substr(p_jubun, 7, 1);
+            
+            if( v_gender_num in('1','3') ) then
+                v_result := '남';
+            elsif( v_gender_num in('2','4') ) then
+                v_result := '여';
+            else
+                v_result := '주민번호가 올바르지 않습니다.';
+            end if;
+            
+        else
+            v_result := '주민번호의 길이가 13자리가 아닙니다.';
+        end if;
+        
+        return v_result;
+    end func_sex;
+ 
+ end employee_pack;
+ -- Package Body EMPLOYEE_PACK이(가) 컴파일되었습니다.
+
+
+
+
+     begin
+        employee_pack.pcd_emp_info(30); 
+     end;
+ 
+ /*
+    ------------------------------------------------------------
+    부서번호   부서명        사원번호   사원명
+    ------------------------------------------------------------
+    30 Purchasing 114 Den Raphaely
+    30 Purchasing 115 Alexander Khoo
+    30 Purchasing 116 Shelli Baida
+    30 Purchasing 117 Sigal Tobias
+    30 Purchasing 118 Guy Himuro
+    30 Purchasing 119 Karen Colmenares
+     
+    >> 조회건수 : 6개
+ 
+ */
+ 
+ 
+ 
+     begin
+        employee_pack.pcd_emp_info(9999); 
+     end;
+  -- >> 부서번호 9999은 없습니다. <<
+
+
+    begin
+        employee_pack.pcd_dept_info(30);
+    end;
+/*
+    ----------------------------------------
+    부서번호  부서명
+    ----------------------------------------
+    30 Purchasing
+*/
+
+    begin
+        employee_pack.pcd_dept_info(9999);
+    end;
+    -- >> 부서번호 9999은 없습니다. <<
+    
+    select employee_pack.func_sex('0101013222222')
+         , employee_pack.func_sex('0101014222222')
+         , employee_pack.func_sex('9901011222222')
+         , employee_pack.func_sex('9901012222222')
+    from dual;
+    -- 남	여	남	여
+    
+    select employee_pack.func_sex('01010132222')
+         , employee_pack.func_sex('010101s222222')
+    from dual;
+    -- 주민번호의 길이가 13자리가 아닙니다.	주민번호가 올바르지 않습니다.
+    
+    
+    select employee_id, first_name, jubun, employee_pack.func_sex(jubun)
+    from employees
+    order by 1;
+    
+    
+    ---- **** 패키지 소스 보기 **** ----
+    
+    select line, text
+    from user_source
+    where type = 'PACKAGE' and name = 'EMPLOYEE_PACK';
+    
+    
+    ---- **** 패키지 BODY(본문) 소스 보기 **** ----
+    
+    select line, text
+    from user_source
+    where type = 'PACKAGE BODY' and name = 'EMPLOYEE_PACK';
+    
+    
