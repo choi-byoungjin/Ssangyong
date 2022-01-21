@@ -8141,6 +8141,270 @@ commit
     -- where 절에 2개의 컬럼이 사용될 경우 각각 1개 컬럼마다 각각의 인덱스를 만들어서 사용하는 것보다
     -- 2개의 컬럼을 묶어서 하나의 인덱스로 만들어 사용하는 것이 속도가 좀 더 빠르다.
     
+    select *
+    from tbl_student_1
+    where name = '배수지10001' and address = '서울시 마포구 월드컵로 10001';
+    
+    -- !!!!  중요  !!!! --
+    -- 복합인덱스(composite index) 생성시 중요한 것은 선행컬럼을 정하는 것이다.
+    -- 선행컬럼은 맨처음에 나오는 것으로 아래에서는 name 이 선행컬럼이 된다.
+    -- 복합인덱스(composite index)로 사용되는 컬럼중 선행컬럼으로 선정되는 기준은 where 절에 가장 많이 사용되는 것이며 
+    -- 선택도(selectivity)가 높은 컬럼이 선행컬럼으로 선정되어야 한다.
+    
+    create index idx_tbl_student_1_name_addr
+    on tbl_student_1(name, address); -- name 컬럼이 선행컬럼이 된다.
+    -- Index IDX_TBL_STUDENT_1_NAME_ADDR이(가) 생성되었습니다.
+
+
+/*
+    create index idx_tbl_student_1_name_addr
+    on tbl_student_1(address, name); -- adress 컬럼이 선행컬럼이 된다.
+*/
+    
+    select A.index_name, uniqueness, column_name, descend, B.column_position
+    from user_indexes A JOIN user_ind_columns B
+    ON A.index_name = B.index_name
+    where A.table_name = 'TBL_STUDENT_1';
+    
+/*
+    ----------------------------------------------------------------------------------------------
+        index_name                  uniqueness      column_name     descend     column_position
+    ----------------------------------------------------------------------------------------------
+    IDX_TBL_STUDENT_1_NAME_ADDR	    NONUNIQUE	    NAME	        ASC	            1(숫자 1이 선행컬럼이다.)
+    IDX_TBL_STUDENT_1_NAME_ADDR	    NONUNIQUE	    ADDRESS	        ASC	            2
+*/
+    
+    select *
+    from tbl_student_1
+    where name = '배수지10001' and address = '서울시 마포구 월드컵로 10001';
+    -- where 절에 선행컬럼인 name 이 사용되어지면 복합인덱스(composite index)인 IDX_TBL_STUDENT_1_NAME_ADDR 을 사용하여 빨리 조회해온다.
+    
+    
+    select *
+    from tbl_student_1
+    where address = '서울시 마포구 월드컵로 10001' and name = '배수지10001';
+    -- where 절에 선행컬럼인 name 이 사용되어지면 복합인덱스(composite index)인 IDX_TBL_STUDENT_1_NAME_ADDR 을 사용하여 빨리 조회해온다.
+    
+    select *
+    from tbl_student_1
+    where name = '배수지10001'
+    -- where 절에 선행컬럼인 name 이 사용되어지면 복합인덱스(composite index)인 IDX_TBL_STUDENT_1_NAME_ADDR 을 사용하여 빨리 조회해온다.
+    
+    select *
+    from tbl_student_1
+    where address = '서울시 마포구 월드컵로 10001';
+    -- where 절에 선행컬럼이 없으므로 복합인덱스(composite index)인 IDX_TBL_STUDENT_1_NAME_ADDR 을 사용하지 못하고 Table Full Scan 하여 조회해오므로 속도가 떨어진다.
+    
+    
+    create table tbl_member
+    (userid      varchar2(20)
+    ,passwd      varchar2(30) not null
+    ,name        varchar2(20) not null 
+    ,address     varchar2(100)
+    ,email       varchar2(50) not null 
+    ,constraint  PK_tbl_member_userid primary key(userid)
+    ,constraint  UQ_tbl_member_email unique(email)
+    );
+    -- Table TBL_MEMBER이(가) 생성되었습니다.
+
+    declare 
+         v_cnt  number := 1;  
+    begin
+         loop
+             exit when v_cnt > 10000;
+             
+             insert into tbl_member(userid, passwd, name, address, email)
+             values('hongkd'||v_cnt, 'qwer1234$', '홍길동'||v_cnt, '서울시 마포구 '||v_cnt, 'hongkd'||v_cnt||'@gmail.com');
+             
+             v_cnt := v_cnt + 1;
+         end loop;
+    end;
+    -- PL/SQL 프로시저가 성공적으로 완료되었습니다.
+
+    commit;
+    -- 커밋 완료.
+    
+    select *
+    from tbl_member;
+    
+    
+    --- 로그인을 하는데 로그인이 성공되어지면 그 회원의 성명만을 보여주도록 한다.
+    select name
+    from tbl_member
+    where userid = 'hongkd5001' and passwd = 'qwer1234$';
+    
+    
+    --- **** userid, passwd, name 컬럼을 가지고 복합인덱스(composite index)를 생성해 봅니다. **** ---
+    create index idx_tbl_member_id_pwd_name
+    on tbl_member( userid, passwd, name );
+    -- Index IDX_TBL_MEMBER_ID_PWD_NAME이(가) 생성되었습니다.
+
+    select name
+    from tbl_member
+    where userid = 'hongkd5001' and passwd = 'qwer1234$';
+    -- where 절 및 select 에 복합인덱스(composite index)인 IDX_TBL_MEMBER_ID_PWD_NAME 에 사용되어진 컬럼만 있으므로
+    -- 테이블 tbl_member 에는 접근하지 않고 인덱스 IDX_TBL_MEMBER_ID_PWD_NAME 에만 접근해서 조회하므로 속도가 빨라진다.
+    
+    
+    drop index idx_tbl_member_id_pwd_name;
+    -- Index IDX_TBL_MEMBER_ID_PWD_NAME이(가) 삭제되었습니다.
+    
+    
+    
+    
+    
+    
+    
+    ------ **** 함수기반 인덱스(function based index) 생성하기 **** -------
+    
+    drop index IDX_TBL_STUDENT_1_NAME_ADDR;
+    -- Index IDX_TBL_STUDENT_1_NAME_ADDR이(가) 삭제되었습니다.
+    
+    select A.index_name, uniqueness, column_name, descend, B.column_position
+    from user_indexes A JOIN user_ind_columns B
+    ON A.index_name = B.index_name
+    where A.table_name = 'TBL_STUDENT_1';
+    
+    
+    create index idx_tbl_student_1_name
+    on tbl_student_1(name);
+    -- Index IDX_TBL_STUDENT_1_NAME이(가) 생성되었습니다.
+    
+    
+    select *
+    from tbl_student_1
+    where name = '배수지10002';
+    -- IDX_TBL_STUDENT_1_NAME 인덱스를 사용하여 조회해온다.
+    
+    select *
+    from tbl_student_1
+    where substr(name, 2, 2) = '수지';
+    -- IDX_TBL_STUDENT_1_NAME 인덱스를 사용하지 않고, Table Full Scan 하여 조회해온다.
+    
+    
+    select *
+    from tbl_student_1
+    where name||'A' = '배수지10002A';
+    -- IDX_TBL_STUDENT_1_NAME 인덱스를 사용하지 않고, Table Full Scan 하여 조회해온다.
+    
+    
+    create index idx_func_student_1_name
+    on tbl_student_1( substr(name, 2, 2) ); -- 함수기반 인덱스 생성
+    -- Index IDX_FUNC_STUDENT_1_NAME이(가) 생성되었습니다. 
+
+    create index idx_func_age_jubun
+    on employees( func_age(jubun) ); 
+    /*
+        오류 보고 -
+        ORA-30553: The function is not deterministic
+        
+        func_age(jubun) 함수내에 sysdate 가 사용되어지므로 년도가 바뀌면 나이도 변경되어지므로
+        인덱스로 만들 수가 없다. 즉, 매번 값이 변동되어지는 sysdate 는 인덱스로 생성이 불가하다.
+    */
+    
+    select *
+    from tbl_student_1
+    where substr(name, 2, 2) = '수지';
+    -- 함수기반 인덱스인 IDX_FUNC_STUDENT_1_NAME 을 사용하여 조회해온다.
+    
+    
+    drop index IDX_FUNC_STUDENT_1_NAME;
+    -- Index IDX_FUNC_STUDENT_1_NAME이(가) 삭제되었습니다.
+
+    
+    select *
+    from tbl_student_1
+    where name = '배수지10002';
+    -- IDX_TBL_STUDENT_1_NAME 인덱스를 사용하여 조회해온다.
+
+    
+    select *
+    from tbl_student_1
+    where name like '배수지%';
+    -- 맨앞에 % 또는 _ 가 나오면 IDX_TBL_STUDETN_1_NAME 인덱스를 사용하지 않고,
+    -- Table Full Scan 하여 조회해온다.
+    
+    select *
+    from tbl_student_1
+    where name like '%배수지%';
+    -- 맨앞에 % 또는 _ 가 나오면 IDX_TBL_STUDETN_1_NAME 인덱스를 사용하지 않고,
+    -- Table Full Scan 하여 조회해온다.
+    
+    
+    
+    
+    --- **** 어떤 테이블의 어떤 컬럼에 Primary Key 제약 또는 Unique 제약을 주면
+    --       자동적으로 그 컬럼에는 unique 한 index가 생성되어진다.
+    --       인덱스명은 제약조건명이 된다. **** 
+    
+    create table tbl_student_2
+    (hakbun      varchar2(10) 
+    ,name        varchar2(20)
+    ,email       varchar2(20) not null
+    ,address     varchar2(20)
+    ,constraint PK_tbl_student_2_hakbun primary key(hakbun)
+    ,constraint UQ_tbl_student_2_email unique(email)
+    );
+    -- Table TBL_STUDENT_2이(가) 생성되었습니다.
+    
+    select A.index_name, uniqueness, column_name, descend 
+    from user_indexes A JOIN user_ind_columns B
+    ON A.index_name = B.index_name
+    where A.table_name = 'TBL_STUDENT_2';
+    
+    
+    -- Primary Key 제약 또는 Unique 제약으로 생성되어진 index 의 제거는 
+    -- drop index index명; 이 아니라
+    -- alter table 테이블명 drop constraint 제약조건명; 이다.
+    -- 제약조건을 삭제하면 자동적으로 index 도 삭제가 된다.
+    
+    drop index PK_TBL_STUDENT_2_HAKBUN;
+/*
+    오류 보고 -
+    ORA-02429: cannot drop index used for enforcement of unique/primary key
+*/
+
+    drop index UQ_TBL_STUDENT_2_EMAIL;
+/*
+    오류 보고 -
+    ORA-02429: cannot drop index used for enforcement of unique/primary key
+*/
+
+    alter table tbl_student_2
+    drop primary key;
+    -- Table TBL_STUDENT_2이(가) 변경되었습니다.
+    
+    alter table tbl_student_2
+    drop constraint UQ_tbl_student_2_email;
+    -- Table TBL_STUDENT_2이(가) 변경되었습니다.
+    
+    
+    
+    select A.constraint_name, A.constraint_type, A.search_condition, 
+           B.column_name, B.position 
+    from user_constraints A join user_cons_columns B 
+    on A.constraint_name = B.constraint_name
+    where A.table_name = 'TBL_STUDENT_2';
+    
+    
+    select A.index_name, uniqueness, column_name, descend 
+    from user_indexes A JOIN user_ind_columns B
+    ON A.index_name = B.index_name
+    where A.table_name = 'TBL_STUDENT_2';
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     ----- ===== **** 데이터사전(Data Ditionary) **** ===== ----- 
     
