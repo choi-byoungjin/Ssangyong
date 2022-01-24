@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 <논리 모델링 과제 1>
  HR 스키마의 샘플 테이블을 기반으로 
@@ -25,3 +26,32 @@ REGIONS	                      TABLE
 
 
 
+=======
+
+<논리 모델링 과제 1>
+ HR 스키마의 샘플 테이블을 기반으로 
+ 논리모델링 및 물리모델링 ERD(Entity Relation Diagram) 를 완성해서 제출하세요.
+
+COUNTRIES	        TABLE
+DEPARTMENTS	        TABLE
+EMPLOYEES	        TABLE
+JOBS	                      TABLE
+JOB_HISTORY	        TABLE
+LOCATIONS	        TABLE
+REGIONS	                      TABLE
+
+<물리 모델링 과제 2>
+위에서 생성한 물리모델링 ERD 를 기반으로 직접 테이블을 생성하는 SQL문장을 완성해서
+제출하세요..
+
+제출기한 : 2022년 1월 28일(금) 오후 11:59:59 
+메일제목 : 데이터베이스모델링_과제_김민정
+제출방법 : 데이터베이스모델링_과제_김민정.zip
+              ( 데이터베이스모델링_과제_김민정.zip 파일속에는 
+                hr.exerd 파일과  SQL문장이 들어있는 hr.txt 파일이 있어야 합니다 )
+메일주소 : tjdudgkr0959@naver.com 
+
+
+
+
+>>>>>>> branch 'main' of https://github.com/choi-byoungjin/Ssangyong.git
