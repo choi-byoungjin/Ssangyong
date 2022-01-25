@@ -70,9 +70,3 @@ from JDBC_TBL_EXAMTEST;
 select *
 from user_sequences
 where sequence_name = 'JDBC_SEQ_EXAMTEST';
-
-
-
-
-
-
