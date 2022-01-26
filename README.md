@@ -357,3 +357,5 @@ get, set 하는 이유 - 변수에 직접적으로 접근할 수 없게 하여 �
 JDBC
 java build path 에 ojdbc6.jar 추가 (jar는 class 파일의 모음(압축))
 java 버전 1.8로 변경
+
+정보를 모두 DTO에 넣어서 전달해야 함, DAO는 SQL의 모든 처리를 맡아서 한다.
