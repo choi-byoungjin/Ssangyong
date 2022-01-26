@@ -3,7 +3,6 @@ set hidden param parseThreshold = 150000;
 show user;
 -- USER이(가) "HR"입니다.
 
-
 ---- *** 회원 테이블 생성하기 *** ----
 select *
 from user_tables
@@ -36,15 +35,37 @@ select *
 from jdbc_member
 order by userseq asc;
 
--- 블럭지정 -> 우클릭 -> 포함 -> JAVA대상 하면 자동변경됨
-String sql = "select name\n"+
-"from jdbc_member\n"+
-"where status = 1 and userid = 'leess' and passwd = '1234'";
 
 
-update jdbc_member set status = 0
-where userseq = 1; 
 
-commit
+---- *** 게시판 테이블 생성하기 *** ----
+create table jdbc_board
+(boardno       number        not null          -- 글번호
+,fk_userid     varchar2(30)  not null          -- 작성자아이디
+,subject       varchar2(100) not null          -- 글제목
+,contents      varchar2(200) not null          -- 글내용
+,writeday      date default sysdate not null   -- 작성일자
+,viewcount     number default 0 not null       -- 조회수 
+,boardpasswd   varchar2(20) not null           -- 글암호 
+,constraint PK_jdbc_board primary key(boardno)
+,constraint FK_jdbc_board foreign key(fk_userid) references jdbc_member(userid) 
+);
 
-rollback
+
+create sequence board_seq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+desc jdbc_board;
+
+select *
+from jdbc_board
+order by boardno desc;
+
+select *
+from jdbc_member
+where userid = ''; -- rs.next()가 있는지 확인한다
