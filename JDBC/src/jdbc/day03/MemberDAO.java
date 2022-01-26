@@ -1,6 +1,7 @@
 package jdbc.day03;
 
 import java.sql.*;
+import java.util.Map;
 
 //DAO(Database Access Object) ==> 데이터베이스에 연결하여 SQL구문을 실행시켜주는 객체 // DAO에서 연걸은 전부한다.
 
@@ -32,7 +33,6 @@ public class MemberDAO implements InterMemberDAO{
 		int result = 0;
 
 		try {
-			
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			
 			conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
@@ -49,7 +49,7 @@ public class MemberDAO implements InterMemberDAO{
 			result = pstmt.executeUpdate();
 			
 		} catch (ClassNotFoundException e) {
-			System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");	
+			System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
 		} catch(SQLIntegrityConstraintViolationException e) {
 		//	System.out.println("에러코드번호 : " + e.getErrorCode());
 		//	System.out.println("에러메시지 : " + e.getMessage());
@@ -65,7 +65,83 @@ public class MemberDAO implements InterMemberDAO{
 		
 		return result;
 	}// end of public int memberRegister(MemberDTO member)------------------------------
-	
-	
+
+
+	// === 로그인처리(select) 메소드 구현하기 === //
+	@Override
+	public MemberDTO login(Map<String, String> paraMap) {
+		
+		MemberDTO member = null;
+		
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
+		
+			String sql = "select userseq, name, mobile, point, to_char(registerday, 'yyyy-mm-dd') AS registerday\n"+
+						 "from jdbc_member\n"+
+						 "where status = 1 and userid = ? and passwd = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, paraMap.get("userid") ); // paraMap 의 key인 "userid"는 MemberCtrl 클래스에서 정의해둔 것이다.(95 라인)
+			pstmt.setString(2, paraMap.get("passwd") ); // paraMap 의 key인 "passwd"는 MemberCtrl 클래스에서 정의해둔 것이다.(96 라인)
+			
+			rs = pstmt.executeQuery(); // select 되어진 결과가 모두 rs에 담겨온다.
+			
+			if( rs.next() ) {// 행이 있으면 true, 없으면 false
+				member = new MemberDTO();
+				member.setUserseq( rs.getInt("USERSEQ") );
+			//	member.setName( rs.getString(1) );
+			//	또는
+				member.setName( rs.getString("NAME") );
+				member.setMobile( rs.getString("MOBILE") );
+				member.setPoint( rs.getInt("POINT") );
+				member.setRegisterday( rs.getString("REGISTERDAY") );
+			}
+			
+		} catch (ClassNotFoundException e) {
+			System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return member;
+	}// end of public MemberDTO login(Map<String, String> paraMap)--------------------------------------------------------
+
+
+	// === 회원탈퇴(update) 메소드 구현하기 === //
+	@Override
+	public int memberDelete(int userseq) {
+
+		int result = 0;
+
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
+			
+			String sql = " update jdbc_member set status = 0 "
+					   + " where userseq = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, userseq);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (ClassNotFoundException e) {
+			System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close();
+		}
+		//login에서 userseq 추가 필요
+		return result;
+		
+	}// public int memberDelete(int userseq)------------------------------------
+
+
 	
 }

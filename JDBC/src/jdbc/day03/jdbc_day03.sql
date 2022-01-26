@@ -35,3 +35,12 @@ nocache;
 select *
 from jdbc_member
 order by userseq asc;
+
+-- 블럭지정 -> 우클릭 -> 포함 -> JAVA대상 하면 자동변경됨
+String sql = "select name\n"+
+"from jdbc_member\n"+
+"where status = 1 and userid = 'leess' and passwd = '1234'";
+
+
+update jdbc_member set status = 0
+where userseq = 1;

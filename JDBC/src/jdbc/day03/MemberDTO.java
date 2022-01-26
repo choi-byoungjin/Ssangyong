@@ -80,4 +80,16 @@ public class MemberDTO {
 	public void setStatus(int status) {
 		this.status = status;
 	}
+	
+	/////////////////////////////////////////////////////////////////////////////
+	
+	@Override
+	public String toString() {// 오버라이딩에서 접근제한자는 부모보다 크거나 같아야한다.
+	
+		return "◇ 성명 : "+ name +"\n"
+			 + "◇ 휴대폰 : "+ mobile +"\n"
+			 + "◇ 포인트 : "+ point +"\n"
+			 + "◇ 가입일자 : "+ registerday +"\n";
+		
+	}
 }
