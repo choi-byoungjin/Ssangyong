@@ -93,10 +93,6 @@ public class MemberDAO implements InterMemberDAO {
 				
 			} catch(ClassNotFoundException e) {
 				System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
-			} catch(SQLIntegrityConstraintViolationException e) {
-				if( e.getErrorCode() == 1) {
-					System.out.println(">> 아이디가 중복되었습니다. 새로운 아이디를 입력하세요! <<");
-				}
 			} catch(SQLException e) {
 			//	e.printStackTrace(); // 오류메세지 출력하지 않고 result가 0으로 넘어간다.
 			} finally {
@@ -119,7 +115,7 @@ public class MemberDAO implements InterMemberDAO {
 			
 			conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
 			
-			String sql = "select userseq, name, mobile, point, to_char(registerday, 'yyyy-mm-dd') AS registerday\n"+
+			String sql = "select userseq, userid, name, mobile, point, to_char(registerday, 'yyyy-mm-dd') AS registerday\n"+
 						 "from jdbc_member\n"+
 						 "where status = 1 and userid = ? and passwd = ?";
 			
@@ -133,10 +129,11 @@ public class MemberDAO implements InterMemberDAO {
 				member = new MemberDTO();
 				
 				member.setUserseq(rs.getInt(1));
-				member.setName(rs.getString(2));
-				member.setMobile(rs.getString(3));
-				member.setPoint(rs.getInt(4));
-				member.setRegisterday(rs.getString(5));
+				member.setUserid(rs.getString(2));
+				member.setName(rs.getString(3));
+				member.setMobile(rs.getString(4));
+				member.setPoint(rs.getInt(5));
+				member.setRegisterday(rs.getString(6));
 			
 			}
 			
@@ -144,10 +141,76 @@ public class MemberDAO implements InterMemberDAO {
 			System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			close();
 		}
 		
 		return member;
 	}// end of public MemberDTO login(Map<String, String> paraMap)---------------------------------------
+
+
+	
+	// *** 관리자를 제외한 모든 회원들을 선택한 정렬기준으로 보여주는 메소드 구현하기 *** //
+	@Override
+	public List<MemberDTO> selectAllMember(String sortChoice) {
+		
+		List<MemberDTO> memberList = new ArrayList<>();
+		
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
+			
+			String sql = " select userseq, userid, name, mobile, point, to_char(registerday, 'yyyy-mm-dd hh24:mi:ss'), status "+
+						 " from jdbc_member "+
+						 " where userid != 'admin' ";
+			
+			switch (sortChoice) {
+				case "1": // 회원명의 오름차순
+					sql += " order by name asc ";
+					break;
+					
+				case "2": // 회원명의 내림차순
+					sql += " order by name desc ";
+					break;
+									
+				case "3": // 가입일자의 오름차순
+					sql += " order by 6 asc ";
+					break;
+					
+				case "4": // 가입일자의 내림차순
+					sql += " order by 6 desc ";
+					break;
+			}
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				MemberDTO member = new MemberDTO();
+				
+				member.setUserseq(rs.getInt(1));
+				member.setUserid(rs.getString(2));
+				member.setName(rs.getString(3));
+				member.setMobile(rs.getString(4));
+				member.setPoint(rs.getInt(5));
+				member.setRegisterday(rs.getString(6));
+				member.setStatus(rs.getInt(7));
+				
+				memberList.add(member);
+			}
+			
+		} catch (ClassNotFoundException e) {
+			System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return memberList;
+	}// end of public List<MemberDTO> selectAllMember(String sortChoice) ----------------------------------
 
 
 	

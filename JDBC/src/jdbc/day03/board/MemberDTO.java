@@ -1,6 +1,6 @@
 package jdbc.day03.board;
 
-public class MemberDTO {
+public class MemberDTO { // MemberDTO 가 오라클의 jdbc_member(부모테이블) 테이블의 한행을 의미하는 것이다.
 
 	// attribute, field, property, 속성
 	private int userseq;		// 회원번호

@@ -69,3 +69,40 @@ order by boardno desc;
 select *
 from jdbc_member
 where userid = ''; -- rs.next()가 있는지 확인한다
+
+update jdbc_member set status = 1
+where userid = 'leess';
+
+commit;
+
+-----------------------------------------------------------------------------
+insert into jdbc_board(boardno, fk_userid, subject, contents, boardpasswd)
+values(board_seq.nextval, 'eomjh', '짜장면', '맛있어요', '1234');
+
+insert into jdbc_board(boardno, fk_userid, subject, contents, boardpasswd)
+values(board_seq.nextval, 'leess', '돈까스', '좋아해요~!!', '1234');
+
+insert into jdbc_board(boardno, fk_userid, subject, contents, boardpasswd)
+values(board_seq.nextval, 'eomjh', '치킨', '맥주와 함께', '1234');
+
+insert into jdbc_board(boardno, fk_userid, subject, contents, boardpasswd)
+values(board_seq.nextval, 'leehr', '피자', '아주 좋아해요~~!!', '1234');
+
+commit;
+
+
+select *
+from jdbc_board
+where boardno = 2 and fk_userid = 'leess';
+
+
+select *
+from jdbc_board
+where boardno = 35434 and fk_userid = 'leess';
+
+
+String sql = "select B.boardno, B.subject, M.name\n"+
+"     , to_char(B.writeday, 'yyyy-mm-dd hh24:mi:ss'), B.viewcount\n"+
+"from jdbc_board B join jdbc_member M\n"+
+"ON B.fk_userid = M.userid\n"+
+"order by boardno desc";
