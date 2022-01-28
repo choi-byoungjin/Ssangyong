@@ -20,5 +20,4 @@ public interface InterMemberDAO {
 	// 관리자를 제외한 모든 회원들을 선택한 정렬기준으로 보여주는 메소드 호출하기
 	List<MemberDTO> selectAllMember(String sortChoice);
 
-	
 }

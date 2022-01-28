@@ -10,6 +10,12 @@ public interface InterBoardDAO {
 
 	BoardDTO viewContents(Map<String, String> paraMap); // 글내용보기
 
+	int write(BoardDTO board); // 글쓰기
+	
+	int write_comment(BoardCommentDTO comment); // 댓글쓰기
+
+	List<BoardCommentDTO> commentList(String boardno); // 원글번호에 딸린 댓글보여주기
+
 	
 	
 }

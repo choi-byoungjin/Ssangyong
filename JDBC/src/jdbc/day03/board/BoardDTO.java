@@ -16,6 +16,9 @@ public class BoardDTO { // BoardDTO 가 오라클의 jdbc_board(자식테이블)
 	
 	private MemberDTO member; // 오라클의 jdbc_board 테이블과 jdbc_member 테이블을 JOIN 하여 select 하는 용도
 	
+	private int commentcnt; // 오라클의 jdbc_board 테이블과 jdbc_comment 테이블을 JOIN 하여 select 하는 용도
+	
+	
 	public int getBoardno() {
 		return boardno;
 	}
@@ -78,6 +81,14 @@ public class BoardDTO { // BoardDTO 가 오라클의 jdbc_board(자식테이블)
 
 	public void setMember(MemberDTO member) {
 		this.member = member;
+	}
+
+	public int getCommentcnt() {
+		return commentcnt;
+	}
+
+	public void setCommentcnt(int commentcnt) {
+		this.commentcnt = commentcnt;
 	} 
 	
 }
