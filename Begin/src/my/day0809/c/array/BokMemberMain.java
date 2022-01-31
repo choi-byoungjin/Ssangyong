@@ -126,11 +126,115 @@ public class BokMemberMain {
 						}
 						
 						break;
-	
+					
+					case 2:
+						
+						if(loginMbr == null) {
+							System.out.print("▷ ID : ");
+							String id = sc.nextLine();
+							
+							System.out.print("▷ 암호 : ");
+							String passwd = sc.nextLine();
+							
+							boolean isLoginSuccess = false;
+							for (int i = 0; i < Member.count; i++) {
+								if(mbrArr[i].id.equals(id) && mbrArr[i].passwd.equals(passwd)) {
+									isLoginSuccess = true;
+									loginMbr = mbrArr[i];
+									
+									loginMbr.point += 10;
+									break;
+								}
+							}
+							
+							if(isLoginSuccess == true) {
+								System.out.println(">> 로그인 성공 <<\n");
+							} else {
+								System.out.println(">> 로그인 실패 <<\n");
+							}
+						} else {
+							loginMbr = null;
+							System.out.println(">> 로그아웃 되었습니다. <<\n");
+						}
+						break;
+						
+					case 3:
+						
+						if(loginMbr != null) {
+							System.out.println("----------------------------------------------");
+							System.out.println("아이디\t성명\t포인트");
+							System.out.println("----------------------------------------------");
+							
+							String str_allMember_info = "";
+							for (int i = 0; i < Member.count; i++) {
+								str_allMember_info += mbrArr[i].showInfo() + "\n";
+							}
+							System.out.println(str_allMember_info);
+						} else {
+							System.out.println(">> [경고] 먼저 로그인 하십시오. <<\n");
+						}
+						break;
+					
+					case 4:
+						if(loginMbr != null) {
+							System.out.println(loginMbr.showMyInfo()+"\n");
+						} else {
+							System.out.println(">> [경고] 메뉴에 없는 번호입니다. <<\n");
+						}
+						break;
+					
+					case 5:
+						if(loginMbr != null) {
+							System.out.println("\n=="+ loginMbr.name +" 님 회원정보 변경하기 ==");
+							
+							String passwd = "";
+							String name = "";
+							
+							for(;;) {
+								System.out.println("1. 비밀번호 : ");
+								passwd = sc.nextLine();
+								if( !MyUtil.isCheckPasswd(passwd)) {
+									System.out.println(">> [경고] 비밀번호는 8글자 이상 15글자 이하에 대, 소문자, 숫자, 특수문자가 혼합되어져야만 한다. <<\n");
+								}
+								else {
+									break;
+								}
+							}
+							
+							for(;;) {
+								System.out.println("2. 성명 : ");
+								name = sc.nextLine();
+								if( name.length() == 0 ) {
+									System.out.println(">> [경고] 성명을 입력하세요!! <<\n");
+								} else {
+									break;
+								}
+							}
+							
+							loginMbr.passwd = passwd;
+							loginMbr.name = name;
+							
+							System.out.println(">> 비밀번호 및 성명이 변경완료 되었습니다. <<\n");
+							
+						} else {
+							System.out.println(">> [경고] 메뉴에 없는 번호입니다. <<\n");
+						}
+						
+						break;
+					
+					case 6:
+						
+						break;
+						
 				}
+			} catch(NumberFormatException e) {
+				System.out.println(">> [경고] 정수만 입력하세요!! <<\n");
 			}
 			
-		}
+		} while(!(menuNo == 6));
+		
+		sc.close();
+		System.out.println("\n >> 프로그램 종료 <<");
 	}
 }
 
