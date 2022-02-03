@@ -167,9 +167,16 @@ public class Calendar_main {
 	      }
 	    
 	    System.out.println("현재는 " + today + " 입니다.");
+	    // 현재는 2021-12-20 15:16:45 월요일 입니다.
+	    
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    
+	    // === 어제시각 나타내기 === //
+	    currentDate.add(Calendar.DATE, -1); 
+	    System.out.println("현재시각 => " + dateFormat.format(currentDate.getTime()));
 	    
 	    // === 현재시각 나타내기 === //
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    currentDate = Calendar.getInstance();
 	    System.out.println("현재시각 => " + dateFormat.format(currentDate.getTime()));
 	         
 	    // === 내일시각 나타내기 === //

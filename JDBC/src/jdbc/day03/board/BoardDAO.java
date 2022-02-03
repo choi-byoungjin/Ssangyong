@@ -2,6 +2,7 @@ package jdbc.day03.board;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -365,4 +366,267 @@ public class BoardDAO implements InterBoardDAO {
 	    return commentList;
 	}// end of public List<BoardCommentDTO> commentList(String boardno)-----------------------------------------------
 
+	
+	// 최근 1주일간 일자별 게시글 작성건수를 select 되어져 나오는 결과물 메소드 구현하기
+	@Override
+	public Map<String, Integer> statisticsByWeek() {
+		
+		Map<String, Integer> resultMap = new HashMap<>();
+		
+		try {
+	         
+	       Class.forName("oracle.jdbc.driver.OracleDriver");
+	         
+	       conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
+	         
+	       String sql = "select count(*) as TOTAL "+
+	    		   "   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 6, 1, 0)) as PREVIOUS6 "+
+	    		   "   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 5, 1, 0)) as PREVIOUS5 "+
+	    		   "   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 4, 1, 0)) as PREVIOUS4 "+
+	    		   "   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 3, 1, 0)) as PREVIOUS3 "+
+	    		   "   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 2, 1, 0)) as PREVIOUS2 "+
+	    		   "   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 1, 1, 0)) as PREVIOUS1 "+
+	    		   "   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 0, 1, 0)) as TODAY "+
+	    		   "from jdbc_board "+
+	    		   "where func_midnight(sysdate) - func_midnight(writeday) < 7 ";
+	    		   
+	       pstmt = conn.prepareStatement(sql);
+	                  
+	       rs = pstmt.executeQuery();
+	         
+	       rs.next();
+	       
+	       resultMap.put("TOTAL", rs.getInt(1));
+	       resultMap.put("PREVIOUS6", rs.getInt(2));
+	       resultMap.put("PREVIOUS5", rs.getInt(3));
+	       resultMap.put("PREVIOUS4", rs.getInt(4));
+	       resultMap.put("PREVIOUS3", rs.getInt(5));
+	       resultMap.put("PREVIOUS2", rs.getInt(6));
+	       resultMap.put("PREVIOUS1", rs.getInt(7));
+	       resultMap.put("TODAY", rs.getInt(8));
+	       
+	      
+	    } catch(ClassNotFoundException e) {
+	       System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+	    } catch(SQLException e) {
+	       e.printStackTrace();
+	    } finally {
+	       close();
+	    }      
+		
+		return resultMap;
+	} // end of public Map<String, Integer> statisticsByWeek()-------------------------------------------------------
+
+	
+	// *** 저번달 및 이번달 일자별 게시글 작성건수 메소드를 구현하기 ***
+	@Override
+	public List<Map<String, String>> statisticsByPrevious_CurrentMonth() {
+		
+		List<Map<String, String>> mapList = new ArrayList<>();
+		
+		try {
+	         
+	       Class.forName("oracle.jdbc.driver.OracleDriver");
+	         
+	       conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
+	         
+	       String sql = "select decode( grouping( to_char(writeday, 'yyyy-mm-dd') ), 0, to_char(writeday, 'yyyy-mm-dd'), '전체') AS WRITEDAY\n"+
+	    		   		"     , count(*)\n"+
+	    		   		"from jdbc_board\n"+
+	    		   		"where to_char(writeday, 'yyyy-mm') = to_char(sysdate, 'yyyy-mm') OR \n"+
+	    		   		"      to_char(writeday, 'yyyy-mm') = to_char(add_months(sysdate, -1), 'yyyy-mm')\n"+
+	    		   		"group by ROLLUP( to_char(writeday, 'yyyy-mm-dd') )";
+	    		   
+	       pstmt = conn.prepareStatement(sql);
+	                  
+	       rs = pstmt.executeQuery();
+	         
+	       //결과물 복수개이므로 while문 사용
+	       while(rs.next()) {// select 된것이 있으면 hashmap 하나 만든다
+	    	   
+	    	   Map<String, String> map = new HashMap<>();
+	    	   
+	    	   map.put("WRITEDAY", rs.getString(1));
+	    	   map.put("CNT", String.valueOf(rs.getInt(2))); // 글쓴 것이 없으면 put하지않고 빈 껍데기 list만 넘어간다. // controller에서 껍데기인지 알맹이가 있는지 알아봐야 한다.
+	    	   
+	    	   mapList.add(map);
+	       }// end of while(rs.next())----------------------------------------
+	      
+	    } catch(ClassNotFoundException e) {
+	       System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+	    } catch(SQLException e) {
+	       e.printStackTrace();
+	    } finally {
+	       close();
+	    }      
+		
+		return mapList;
+	} // end of public List<Map<String, String>> statisticsByPrevious_CurrentMonth()--------------------------------------------------------
+
+	
+	
+	// *** 글수정하기 메소드 구현하기 *** //
+	@Override
+	public int updateBoard(Map<String, String> paraMap) {
+
+		int n = 0;
+		
+		try {
+	         
+	       Class.forName("oracle.jdbc.driver.OracleDriver");
+	         
+	       conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
+	         
+	       String sql = " select * "
+	       			  + " from jdbc_board "
+	       			  + " where boardno = ? ";
+	    		   
+	       pstmt = conn.prepareStatement(sql);
+	       pstmt.setString(1, paraMap.get("boardno"));
+	                  
+	       rs = pstmt.executeQuery();
+	         
+	       if(!rs.next()) {
+	    	   n = 1; // 존재하지 않는 글번호(boardno)를 가지고 글을 수정하려는 경우
+	       }
+	       else {
+	    	   // 존재하는 글번호(boardno)를 가지고 글을 수정하려는 경우
+	    	   sql += " and fk_userid = ? "; // 본인이 쓴 글인지 확인
+	    	   pstmt = conn.prepareStatement(sql);
+	    	   pstmt.setString(1, paraMap.get("boardno"));
+	    	   pstmt.setString(2, paraMap.get("userid")); // 키 값 userid // paraMapt.get("userid") 이 로그인 되어진 사용자의 아이디 값이다.
+	    	   
+	    	   rs = pstmt.executeQuery(); // 돌린다
+	    	   
+	    	   if(!rs.next()) {
+	    		   // 다른 사용자의 글을 수정하려고 한 경우
+	    		   n = 2;
+	    	   }
+	    	   else {
+	    		   // 로그인 되어진 사용자가 자신이 쓴 글을 수정하려고 한 경우
+	    		   sql += " and boardpasswd = ? ";
+	    		   pstmt = conn.prepareStatement(sql);
+	    		   pstmt.setString(1, paraMap.get("boardno"));
+		    	   pstmt.setString(2, paraMap.get("userid"));
+	    		   pstmt.setString(3, paraMap.get("boardpasswd"));
+	    		   
+	    		   rs = pstmt.executeQuery(); // 돌린다.
+	    		   
+	    		   if(!rs.next()) {
+	    			   // 수정하려는 글의 글암호가 글수정시 입력받은 글암호와 일치하지 않는 경우
+	    			   n = 3;
+	    		   }
+	    		   else {
+	    			   // 수정하려는 글의 글암호가 글수정시 입력받은 글암호와 일치하는 경우
+	    			   
+	    			   sql = " update jdbc_board set subject = ?, contents = ? "
+	    			   	   + " where boardno = ? ";
+	    			   pstmt = conn.prepareStatement(sql);
+	    			   pstmt.setString(1, paraMap.get("subject"));
+	    			   pstmt.setString(2, paraMap.get("contents"));
+	    			   pstmt.setString(3, paraMap.get("boardno"));
+
+	    			   
+	    			   int m = pstmt.executeUpdate();
+	    			   if(m==1) {
+	    				   n = 4;
+	    			   }
+	    		   }
+	    	   }
+	       }
+	      
+	    } catch(ClassNotFoundException e) {
+	       System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+	    } catch(SQLException e) {
+	       // e.printStackTrace();
+	       n = 5;
+	    } finally {
+	       close();
+	    }      
+		
+		return n;
+	}// end of public int updateBoard(Map<String, String> paraMap)----------------------------------------------------------
+
+	
+
+	
+	// *** 글삭제하기 메소드 구현하기 *** //
+	@Override
+	public int deleteBoard(Map<String, String> paraMap) {
+
+		int n = 0;
+		
+		try {
+	         
+	       Class.forName("oracle.jdbc.driver.OracleDriver");
+	         
+	       conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "cclass");
+	         
+	       String sql = " select * "
+	       			  + " from jdbc_board "
+	       			  + " where boardno = ? ";
+	    		   
+	       pstmt = conn.prepareStatement(sql);
+	       pstmt.setString(1, paraMap.get("boardno"));
+	                  
+	       rs = pstmt.executeQuery();
+	         
+	       if(!rs.next()) {
+	    	   n = 1; // 존재하지 않는 글번호(boardno)를 가지고 글을 삭제하려는 경우
+	       }
+	       else {
+	    	   sql += " and fk_userid = ? "; // 본인이 쓴 글인지 확인
+	    	   pstmt = conn.prepareStatement(sql);
+	    	   pstmt.setString(1, paraMap.get("boardno"));
+	    	   pstmt.setString(2, paraMap.get("userid")); // 키 값 userid // paraMapt.get("userid") 이 로그인 되어진 사용자의 아이디 값이다.
+	    	   
+	    	   rs = pstmt.executeQuery(); // 돌린다
+	    	   
+	    	   if(!rs.next()) {
+	    		   // 다른 사용자의 글을 삭제하려고 한 경우
+	    		   n = 2;
+	    	   }
+	    	   else {
+	    		   // 로그인 되어진 사용자가 자신이 쓴 글을 삭제하려고 한 경우
+	    		   sql += " and boardpasswd = ? ";
+	    		   pstmt = conn.prepareStatement(sql);
+	    		   pstmt.setString(1, paraMap.get("boardno"));
+		    	   pstmt.setString(2, paraMap.get("userid"));
+	    		   pstmt.setString(3, paraMap.get("boardpasswd"));
+	    		   
+	    		   rs = pstmt.executeQuery(); // 돌린다.
+	    		   
+	    		   if(!rs.next()) {
+	    			   // 삭제하려는 글의 글암호가 글삭제시 입력받은 글암호와 일치하지 않는 경우
+	    			   n = 3;
+	    		   }
+	    		   else {
+	    			   // 삭제하려는 글의 글암호가 글삭제시 입력받은 글암호와 일치하는 경우
+	    			   
+	    			   sql = " delete from jdbc_board "
+	    			   	   + " where boardno = ? ";
+	    			   pstmt = conn.prepareStatement(sql);
+	    			   pstmt.setString(1, paraMap.get("boardno"));
+	    			   
+	    			   int m = pstmt.executeUpdate();
+	    			   if(m==1) {
+	    				   n = 4;
+	    			   }
+	    		   }
+	    	   }
+	       }
+	      
+	    } catch(ClassNotFoundException e) {
+	       System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+	    } catch(SQLException e) {
+	       // e.printStackTrace();
+	       n = 5;
+	    } finally {
+	       close();
+	    }      
+		
+		return n;
+	} // end of public int deleteBoard(Map<String, String> paraMap)-----------------------------------------------------------------------
+
+	
 }

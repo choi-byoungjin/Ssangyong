@@ -205,3 +205,128 @@ LEFT JOIN (select fk_boardno, count(*) as commentcnt
            group by fk_boardno) C
 ON B.boardno = C.fk_boardno
 order by 1 desc
+
+
+--- *** 최근 일주일간 일자별 게시글 작성건수 *** ---
+select boardno, fk_userid, writeday, to_char(writeday, 'yyyy-mm-dd hh24:mi:ss'),
+       sysdate - writeday,
+       to_date( to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') - to_date(to_char(writeday, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+from jdbc_board
+order by boardno desc;
+-- 시분초를 똑같이 맞춰서(0시0분0초) 계산해야 며칠 전인지 나온다.
+
+select *
+from jdbc_board
+where to_date( to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd') - to_date(to_char(writeday, 'yyyy-mm-dd'), 'yyyy-mm-dd') < 7;
+
+
+--- *** 특정 날짜를 입력받아서 그 날짜의 자정의 값을 반환시켜주는 함수를 생성하봅니다. *** ---
+create or replace function func_midnight
+(p_date IN date)
+return date
+is
+begin
+    return to_date( to_char(p_date, 'yyyy-mm-dd'), 'yyyy-mm-dd');
+end func_midnight;
+-- Function FUNC_MIDNIGHT이(가) 컴파일되었습니다.
+
+
+
+-- *** 생성되어진 함수의 원본소스를 조회해본다. *** ---
+select text
+from user_source
+where type = 'FUNCTION' and name = 'FUNC_MIDNIGHT';
+
+
+select *
+from jdbc_board
+where func_midnight(sysdate) - func_midnight(writeday) < 7;
+
+/*
+  -----------------------------------------------------------------------------------------
+    TOTAL   PREVIOUS6   PREVIOUS5   PREVIOUS4   PREVIOUS3   PREVIOUS2   PREVIOUS1   TODAY
+  -----------------------------------------------------------------------------------------
+      3         3           0           0           0           0           0         0
+*/
+
+select writeday
+   , decode(func_midnight(sysdate) - func_midnight(writeday), 6, 1)
+   , decode(func_midnight(sysdate) - func_midnight(writeday), 5, 1)
+   , decode(func_midnight(sysdate) - func_midnight(writeday), 4, 1)
+   , decode(func_midnight(sysdate) - func_midnight(writeday), 3, 1)
+   , decode(func_midnight(sysdate) - func_midnight(writeday), 2, 1)
+   , decode(func_midnight(sysdate) - func_midnight(writeday), 1, 1)
+   , decode(func_midnight(sysdate) - func_midnight(writeday), 0, 1)
+from jdbc_board
+where func_midnight(sysdate) - func_midnight(writeday) < 7;
+
+
+select count(*) as TOTAL
+   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 6, 1, 0)) as PREVIOUS6 -- alias의 시작이 숫자이면 큰따옴표 필수이다.
+   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 5, 1, 0)) as PREVIOUS5
+   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 4, 1, 0)) as PREVIOUS4
+   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 3, 1, 0)) as PREVIOUS3
+   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 2, 1, 0)) as PREVIOUS2
+   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 1, 1, 0)) as PREVIOUS1
+   , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 0, 1, 0)) as TODAY
+from jdbc_board
+where func_midnight(sysdate) - func_midnight(writeday) < 7;
+
+
+
+--- *** 저번달 및 이번달 일자별 게시글 작성건수 *** ---
+select * 
+from jdbc_board
+
+update jdbc_board set writeday = add_months(writeday, -1)
+where boardno = 1;
+-- 1 행 이(가) 업데이트되었습니다.
+
+commit;
+
+select *
+from jdbc_board
+where to_char(writeday, 'yyyy-mm') = to_char(sysdate, 'yyyy-mm') OR 
+      to_char(writeday, 'yyyy-mm') = to_char(add_months(sysdate, -1), 'yyyy-mm');
+
+
+select decode( grouping( to_char(writeday, 'yyyy-mm-dd') ), 0, to_char(writeday, 'yyyy-mm-dd'), '전체') AS WRITEDAY
+     , count(*)
+from jdbc_board
+where to_char(writeday, 'yyyy-mm') = to_char(sysdate, 'yyyy-mm') OR 
+      to_char(writeday, 'yyyy-mm') = to_char(add_months(sysdate, -1), 'yyyy-mm')
+group by ROLLUP( to_char(writeday, 'yyyy-mm-dd') );
+
+
+--------------------------------------------------------------------------------
+select *
+from jdbc_board;
+
+delete from jdbc_board
+where boardno = 'asdfasdf'; -- 삭제하려는 글번호에 문자를 입력한 경우
+/*
+오류 보고 -
+ORA-01722: invalid number
+*/
+
+delete from jdbc_board
+where boardno = 337; -- 존재하지 않는 글번호를 삭제하려는 경우
+-- 0개 행 이(가) 삭제되었습니다.
+
+
+delete from jdbc_board
+where boardno = 1 and fk_userid = 'leess'; -- 존재하지 글번호 이지만 다른사용자가 작성한 글을 삭제하려는 경우
+-- 0 행 이(가) 삭제되었습니다.
+
+delete from jdbc_board
+where boardno = 1 and fk_userid = 'eomjh' and boardpasswd = '234234'; -- 존재하는 글번호 이면서 자신이 작성한 글이지만 글암호가 틀린경우
+-- 0 행 이(가) 삭제되었습니다.
+
+delete from jdbc_board
+where boardno = 1 and fk_userid = 'eomjh' and boardpasswd = '1234'; -- 존재하는 글번호 이면서 자신이 작성한 글이고 글암호가 올바른경우
+-- 1 행 이(가) 삭제되었습니다.
+
+rollback;
+-- 롤백 완료.
+
+

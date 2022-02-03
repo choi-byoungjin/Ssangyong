@@ -1,6 +1,9 @@
 package jdbc.day03.board;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
+
+import jdbc.util.MyUtil;
 
 public class TotalController {
 
@@ -167,7 +170,7 @@ public class TotalController {
 			System.out.println("---------------------- 게시판 메뉴[ "+ member.getName() +"님(Point "+ member.getPoint() +") 로그인중..]-----------------------\n"
 							 + " 1.글목록보기    2.글내용보기    3.글쓰기    4.댓글쓰기 \n"
 							 + " 5.글수정하기    6.글삭제하기    7.최근 일주일간 일자별 게시글 작성건수 \n"
-							 + " 8.이번달 일자별 게시글 작성건수	9.나가기    "+ adminOnly_menu +"\n"
+							 + " 8.저번달 및 이번달 일자별 게시글 작성건수	9.나가기    "+ adminOnly_menu +"\n"
 							 + "------------------------------------------------------------------------------------------");
 			
 			System.out.print("▷ 메뉴번호 선택 : ");
@@ -196,22 +199,66 @@ public class TotalController {
 				
 				
 				case "5": // 글수정하기
+					int n = updateBoard(sc, member); // 로그인 되어진 사람이 누구인지를 넘겨야 함
 					
+					if(n==0) {
+						System.out.println(">> [경고] 수정할 글번호 입력값은 숫자만 가능합니다. <<");
+					}
+					else if(n==1) {
+						System.out.println(">> [경고] 수정할 글번호는 존재하지 않는 글번호 입니다. << \n");
+					}
+					else if(n==2) {
+						System.out.println(">> [경고] 다른 사용자의 글은 수정 불가합니다. << \n");
+					}
+					else if(n==3) {
+						System.out.println(">> [경고] 입력하신 글 암호가 글작성시 입력한 것과 일치하지 않습니다. << \n");
+					}
+					else if(n==4) {
+						System.out.println(">> 글수정이 성공되었습니다. << \n");
+					}
+					else if(n==5) {
+						System.out.println(">> [장애발생] DB에 장애가 발생하여 글수정가 불가 합니다. << \n");
+					}
+					else if(n==6) {
+						System.out.println(">> 글수정를 취소하였습니다. << \n");
+					}
 					break;
 				
 				
 				case "6": // 글삭제하기
+					n = deleteBoard(sc, member); // 로그인 되어진 사람이 누구인지를 넘겨야 함
 					
+					if(n==0) {
+						System.out.println(">> [경고] 삭제할 글번호 입력값은 숫자만 가능합니다. <<");
+					}
+					else if(n==1) {
+						System.out.println(">> [경고] 삭제할 글번호는 존재하지 않는 글번호 입니다. << \n");
+					}
+					else if(n==2) {
+						System.out.println(">> [경고] 다른 사용자의 글은 삭제 불가합니다. << \n");
+					}
+					else if(n==3) {
+						System.out.println(">> [경고] 입력하신 글 암호가 글작성시 입력한 것과 일치하지 않습니다. << \n");
+					}
+					else if(n==4) {
+						System.out.println(">> 글삭제 성공되었습니다. << \n");
+					}
+					else if(n==5) {
+						System.out.println(">> [장애발생] DB에 장애가 발생하여 글삭제가 불가 합니다. << \n");
+					}
+					else if(n==6) {
+						System.out.println(">> 글삭제를 취소하였습니다. << \n");
+					}
 					break;
 				
 				
 				case "7": // 최근 일주일간 일자별 게시글 작성건수
-					
+					statisticsByWeek();
 					break;
 				
 				
-				case "8": // 이번달 일자별 게시글 작성건수
-					
+				case "8": // 저번달 및 이번달 일자별 게시글 작성건수
+					statisticsByPrevious_CurrentMonth();
 					break;
 				
 				
@@ -363,7 +410,7 @@ public class TotalController {
 				
 		System.out.println("\n>>> 글쓰기 <<<");
 		
-		System.out.print("1. 작성자명 : " + member.getName());
+		System.out.print("1. 작성자명 : " + member.getName() + "\n");
 		
 		System.out.print("2. 글제목 : ");
 		String subject = sc.nextLine();
@@ -474,8 +521,222 @@ public class TotalController {
 		}
 		
 	}// end of private void write_comment(Scanner sc, MemberDTO member)------------------------------------
-		
+	
+	
+	
+	// *** 글수정하기 메소드 생성하기 *** //
+		private int updateBoard(Scanner sc, MemberDTO member) {
+			
+			int n = 0;
+			
+			System.out.println("\n>>> 글 수정하기 <<<");
+			
+			System.out.print("▷ 수정할 글번호 : ");
+			String boardno = sc.nextLine();
+			
+			try {
+				Integer.parseInt(boardno);
+				
+				System.out.print("▷ 수정할 글제목 : ");
+				String subject = sc.nextLine();
+				
+				System.out.print("▷ 수정할 글내용 : ");
+				String contents = sc.nextLine();
+				
+				System.out.print("▷ 수정할 글의 글암호 : ");
+				String boardpasswd = sc.nextLine();
+				
+				do {
+					System.out.print(">> 정말로 글을 수정하시겠습니까?[Y/N] : ");
+					String yn = sc.nextLine();
+					
+					if("n".equalsIgnoreCase(yn)) {
+						n = 6;
+					//	n ==> 6 이라면 글 수정를 사용자가 취소한 경우
+						
+						break;
+					}
+					else if("y".equalsIgnoreCase(yn)) {
+					
+						Map<String, String> paraMap = new HashMap<>();
+						paraMap.put("boardno", boardno);
+						paraMap.put("boardpasswd", boardpasswd);
+						paraMap.put("userid", member.getUserid());
+						
+						paraMap.put("subject", subject);
+						paraMap.put("contents", contents);
+						
+						n = bdao.updateBoard(paraMap);
+					
+					/*
+					 	n ==> 1 이라면 존재하지 않는 글번호(boardno)를 가지고 글을 수정하려는 경우
+					 	n ==> 2 이라면 다른 사용자의 글을 수정하려고 한 경우
+					 	n ==> 3 이라면 수정하려는 글의 글암호가 글수정시 입력받은 글암호와 일치하지 않는 경우
+					 	n ==> 4 이라면 수정하려는 글의 글암호가 글수정시 입력받은 글암호와 일치하는 경우
+					 	n ==> 5 이라면 SQL문에 장애가 발생한 경우
+					 */
+						
+						break;
+					
+					}
+					else {
+						System.out.println(">> [경고] Y 또는 N 만 입력하세요!! << \n");
+					}
+				} while(true);
+				
+			} catch(NumberFormatException e) {
+				// str_boardno 값이 숫자로 될 수 없는 경우
+				n = 0; 
+				
+			}
+			
+			return n;
+		}// end of private int updateBoard(Scanner sc, MemberDTO member)----------------------------------------------------------
+	
+	
 
+	// *** 글삭제하기 메소드 생성하기 *** //
+	private int deleteBoard(Scanner sc, MemberDTO member) {
+		
+		int n = 0;
+		
+		System.out.println("\n>>> 글 삭제하기 <<<");
+		
+		System.out.print("▷ 삭제할 글번호 : ");
+		String boardno = sc.nextLine();
+		
+		try {
+			Integer.parseInt(boardno);
+			
+			System.out.print("▷ 삭제할 글의 글암호 : ");
+			String boardpasswd = sc.nextLine();
+			
+			do {
+				System.out.print(">> 정말로 글을 삭제하시겠습니까?[Y/N] : ");
+				String yn = sc.nextLine();
+				
+				if("n".equalsIgnoreCase(yn)) {
+					n = 6;
+				//	n ==> 6 이라면 글 삭제를 사용자가 취소한 경우
+					
+					break;
+				}
+				else if("y".equalsIgnoreCase(yn)) {
+				
+					Map<String, String> paraMap = new HashMap<>();
+					paraMap.put("boardno", boardno);
+					paraMap.put("boardpasswd", boardpasswd);
+					paraMap.put("userid", member.getUserid()); // 세가지 키 값
+					
+					n = bdao.deleteBoard(paraMap);
+				
+				/*
+				 	n ==> 1 이라면 존재하지 않는 글번호(boardno)를 가지고 글을 삭제하려는 경우
+				 	n ==> 2 이라면 다른 사용자의 글을 삭제하려고 한 경우
+				 	n ==> 3 이라면 삭제하려는 글의 글암호가 글삭제시 입력받은 글암호와 일치하지 않는 경우
+				 	n ==> 4 이라면 삭제하려는 글의 글암호가 글삭제시 입력받은 글암호와 일치하는 경우
+				 	n ==> 5 이라면 SQL문에 장애가 발생한 경우
+				 */
+					
+					break;
+				
+				}
+				else {
+					System.out.println(">> [경고] Y 또는 N 만 입력하세요!! << \n");
+				}
+			} while(true);
+			
+		} catch(NumberFormatException e) {
+			// str_boardno 값이 숫자로 될 수 없는 경우
+			n = 0; 
+			
+		}
+		
+		return n;
+	}// end of private int deleteBoard(Scanner sc, MemberDTO member)----------------------------------------------------------
+
+
+	
+	// *** 최근 1주일간 일자별 게시글 작성건수 *** //
+	private void statisticsByWeek() {
+		
+		System.out.println("\n----------------------[최근 1주일간 일자별 게시글 작성건수]----------------------");
+		
+		String title = "전체\t";
+		
+		// 만약 오늘이 2022-02-03 이라면
+		// 전체 2022-01-28    2022-01-29    2022-01-30    2022-01-31    2022-02-01    2022-02-02   2022-02-03
+		// 와 같이 제목을 나타내고지 한다.
+		for (int i = 0; i < 7; i++) {
+			title += MyUtil.addDay(i-6) + "   "; // -6  -5  -4  -3  -2  -1  0
+		}// end of for ---------------------------------------------------
+		
+		System.out.println(title);
+		// 전체 2022-01-28    2022-01-29    2022-01-30    2022-01-31    2022-02-01    2022-02-02   2022-02-03
+		
+		System.out.println("----------------------------------------------------------------------------");
+		
+		Map<String, Integer> resultMap = bdao.statisticsByWeek(); // 최근 1주일간 일자별 게시글 작성건수를 select 되어져 나오는 결과물 
+		
+		String result = resultMap.get("TOTAL")+ "\t" +
+						resultMap.get("PREVIOUS6")+ "\t" + 
+						resultMap.get("PREVIOUS5")+ "\t" + 
+						resultMap.get("PREVIOUS4")+ "\t" + 
+						resultMap.get("PREVIOUS3")+ "\t" + 
+						resultMap.get("PREVIOUS2")+ "\t" + 
+						resultMap.get("PREVIOUS1")+ "\t" + 
+						resultMap.get("TODAY");
+		
+		System.out.println(result);
+		System.out.println("");
+		
+		
+	}// end of private void statisticsByWeek()-------------------------------------------------------
+
+	
+	// *** 저번달 및 이번달 일자별 게시글 작성건수 *** //
+	private void statisticsByPrevious_CurrentMonth() {
+		
+		Calendar currentDate = Calendar.getInstance();
+		// 현재날짜와 시간을 얻어온다.
+		
+		currentDate.add(Calendar.MONTH, -1); // currentDate 가 1달전으로 변경되어진다.
+		
+		SimpleDateFormat sdateFmt = new SimpleDateFormat("yyyy년 MM월");
+		String previous_1_month = sdateFmt.format(currentDate.getTime());
+		
+		currentDate = Calendar.getInstance();
+		// 현재날짜와 시간을 얻어온다.
+		
+		String current_month = sdateFmt.format(currentDate.getTime());
+		
+		System.out.println("\n>>>> [ "+previous_1_month+", "+current_month+" 일자별 게시글 작성건수 ] <<<<");
+	//	System.out.println("\n>>>> [ 2022년 01월, 2022년 02월 일자별 게시글 작성건수 ] <<<<");
+		
+		System.out.println("-----------------------------");
+		System.out.println(" 작성일자\t 작성건수");
+		System.out.println("-----------------------------");
+		
+		List<Map<String, String>> mapList = bdao.statisticsByPrevious_CurrentMonth(); // 컬럼의 한행한행이 맵이기때문에 맵의 복수인 list
+
+		if(mapList.size() > 0) {
+			
+			StringBuilder sb = new StringBuilder();
+			
+			for(Map<String, String> map : mapList) {
+				sb.append( map.get("WRITEDAY") + "\t" + map.get("CNT")  + "\n" );
+			}// end of for------------------------------------
+			
+			System.out.println(sb.toString());
+		}
+		else {
+			System.out.println("작성된 게시글이 없습니다.");
+		}
+		
+	}// end of private void statisticsByPrevious_CurrentMonth()------------------------------------------------
+	
+
+	
 	// *** 관리자를 제외한 모든 회원들을 선택한 정렬기준으로 보여주는 메소드 생성하기 *** //
 	private void selectAllMember(String sortChoice) {
 

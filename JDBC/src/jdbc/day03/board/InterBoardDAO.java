@@ -16,6 +16,14 @@ public interface InterBoardDAO {
 
 	List<BoardCommentDTO> commentList(String boardno); // 원글번호에 딸린 댓글보여주기
 
+	Map<String, Integer> statisticsByWeek(); // 최근 1주일간 일자별 게시글 작성건수를 select 되어져 나오는 결과물 
+
+	List<Map<String, String>> statisticsByPrevious_CurrentMonth(); // 저번달 및 이번달 일자별 게시글 작성건수
+
+	int deleteBoard(Map<String, String> paraMap); // 글 삭제하기
+
+	int updateBoard(Map<String, String> paraMap); // 글 수정하기
+
 	
 	
 }
