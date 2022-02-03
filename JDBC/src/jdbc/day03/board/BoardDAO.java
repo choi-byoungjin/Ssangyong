@@ -511,7 +511,7 @@ public class BoardDAO implements InterBoardDAO {
 	    		   pstmt.setString(3, paraMap.get("boardpasswd"));
 	    		   
 	    		   rs = pstmt.executeQuery(); // 돌린다.
-	    		   
+	    		     
 	    		   if(!rs.next()) {
 	    			   // 수정하려는 글의 글암호가 글수정시 입력받은 글암호와 일치하지 않는 경우
 	    			   n = 3;
