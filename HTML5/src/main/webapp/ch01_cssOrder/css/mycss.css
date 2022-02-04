@@ -1,0 +1,7 @@
+@charset "UTF-8";
+
+div{
+	font-size: 20pt;			/* 글자 크기 */
+/*	color: blue !important;*/	/* 글자색 파랑 강제로 최우선한다. */
+	color: blue;				/* 글자색 */
+}

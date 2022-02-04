@@ -1,0 +1,30 @@
+@charset "UTF-8";
+
+body{
+	font-family: Arial, "MS Trebuchet", sans-serif;
+	
+	border: solid 1px gray;
+	
+	/* === 여백 설정 === */
+	/* == margin 은 바깥여백이다. == */
+	
+	/* margin: 100px 100px 50px 20px;  /* 상 우 하 좌    시계방향 */
+	/* margin: 50px; 				   /* 상 우 하 좌 모두 바깥여백을 50px; 을 준것이다. */
+	/* margin: 100px 50px;			   /* 상 하는 바깥여백을 100px; 을 주고 우 좌는 바깥여백을 50px; 을 준것이다. 시계방향 */
+	
+	margin: 0;						   /* 상 우 하 좌 모두 바깥여백을 0px; 을 준것이다. 즉, 바깥여백을 없는 것으로 하겠다. */
+	
+	/* == padding 은 안쪽여백이다. == */
+	/* padding: 100px 100px 50px 20px; /* 상 우 하 좌    시계방향 */
+	/* padding: 50px; 				   /* 상 우 하 좌 모두 안쪽여백을 50px; 을 준것이다. */
+	/* padding: 100px 50px;			   /* 상 하는 안쪽여백을 100px; 을 주고 우 좌는 안쪽여백을 50px; 을 준것이다. 시계방향 */
+	
+	padding: 0;						   /* 상 우 하 좌 모두 안쪽여백을 0px; 을 준것이다. 즉, 안쪽여백을 없는 것으로 하겠다. */
+	
+}
+
+div#container {
+	border: solid 1px navy;
+	width: 80%;
+	margin: 20px auto;
+}
