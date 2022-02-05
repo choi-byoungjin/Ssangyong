@@ -24,7 +24,42 @@ body{
 }
 
 div#container {
-	border: solid 1px navy;
+	border: solid 0px navy;
 	width: 80%;
 	margin: 20px auto;
+}
+
+div#header {
+	border: solid 0px red;
+	height: 100px;
+	background-color: #ccc; /* #ccc; 는 #cccccc; 이다. */ 
+	margin-top: 50px; /* margin: 50px 0 0 0; 와 같은 것이다. 상 우 하 좌 시계방향 */
+	
+}
+
+div#side {
+	border: solid 0px green;
+	/* display: inline-block;
+	height: 600px; */
+	width: 30%;
+	background-color: #888;
+}
+
+div#contents {
+	border: solid 0px blue;
+	/* display: inline-block;
+	height: 600px; */
+	width: 69.3%;
+	background-color: #eee;
+}
+
+div#footer {
+	border: solid 0px red;
+	height: 80px;
+	background-color: #ddd;
+}
+
+.customDisplay{ /* 클래스 일괄처리 */
+	display: inline-block;
+	height: 600px;
 }
