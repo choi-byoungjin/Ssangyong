@@ -29,7 +29,7 @@ public class Member {
 	// >>> 파라미터가 있는 생성자
 	// !!! 파라미터가 있는 생성자를 만들면 자동적으로 생략되어져 있던 기본생성자가 삭제가 되어져 버린다.!!!
 	public Member(String userid, String passwd, String name, int age, int point) {
-		// String userid, String passwd, String name, int age, int point 을 파라미터(parameter) 또는 매개변수 또는 인자라고 부른다.
+	// String userid, String passwd, String name, int age, int point 을 파라미터(parameter) 또는 매개변수 또는 인자라고 부른다.
 		
 	/*	
 		this.userid = userid;
