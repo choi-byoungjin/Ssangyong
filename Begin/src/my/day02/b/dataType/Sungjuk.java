@@ -104,83 +104,83 @@ public class Sungjuk {
 		// double avg = total/3.0;	// 정수/실수 ==> 실수
 		   							// 실수/정수 ==> 실수
 		   							// 실수/실수 ==> 실수
-		   double avg_double = (double)total/3;
-		   
-		   float avg_float = (float)total/3;
+	   double avg_double = (double)total/3;
+	   
+	   float avg_float = (float)total/3;
 
-		   float avg_float2 = total/3.0F;
-		   
-		   if(avg_double >= 90) {
-			   hakjum = 'A';
-		   }
-		   else if (avg_double >= 80) {
-			   hakjum = 'B';
-		   }
-		   else if (avg_double >= 70) {
-			   hakjum = 'C';
-		   }
-		   else if (avg_double >= 60) {
-			   hakjum = 'D';
-		   }
-		   else {
-			   hakjum = 'F';
-		   }
-		   
-		   String star = "";
-		   
-		   switch (hakjum) {
-				case 'A':	
-					star = "☆☆☆☆☆";
-					break;	// switch문을 빠져나오는 것이다.
+	   float avg_float2 = total/3.0F;
+	   
+	   if(avg_double >= 90) {
+		   hakjum = 'A';
+	   }
+	   else if (avg_double >= 80) {
+		   hakjum = 'B';
+	   }
+	   else if (avg_double >= 70) {
+		   hakjum = 'C';
+	   }
+	   else if (avg_double >= 60) {
+		   hakjum = 'D';
+	   }
+	   else {
+		   hakjum = 'F';
+	   }
+	   
+	   String star = "";
+	   
+	   switch (hakjum) {
+			case 'A':	
+				star = "☆☆☆☆☆";
+				break;	// switch문을 빠져나오는 것이다.
+			
+			case 'B':	
+				star = "☆☆☆☆";
+				break;
 				
-				case 'B':	
-					star = "☆☆☆☆";
-					break;
-					
-				case 'C':	
-					star = "☆☆☆";
-					break;
-					
-				case 'D':	
-					star = "☆☆";
-					break;
-					
-				default:
-					star = "☆";
-					break;
-			}
-		   
-		   
-		   String diamond = "";
-		   
-		   switch (total/3/10) {
-		   
-		   		// 주의할 점은 switch(어떤식) 에서 어떤식에는 byte, short, int, char, String 타입만 들어올 수 있다.
-		   		// 			위의 어떤식(total/3/10)에는 long, float, double 이 들어올 수 없다.!!!
-				case 10:
-				case 9:
-					diamond = "◆◆◆◆◆";
-					break;	
+			case 'C':	
+				star = "☆☆☆";
+				break;
 				
-				case 8:
-					diamond = "◆◆◆◆";
-					break;
-					
-				case 7:
-					diamond = "◆◆◆";
-					break;
+			case 'D':	
+				star = "☆☆";
+				break;
+				
+			default:
+				star = "☆";
+				break;
+		}
+	   
+	   
+	   String diamond = "";
+	   
+	   switch (total/3/10) {
+	   
+	   		// 주의할 점은 switch(어떤식) 에서 어떤식에는 byte, short, int, char, String 타입만 들어올 수 있다.
+	   		// 			위의 어떤식(total/3/10)에는 long, float, double 이 들어올 수 없다.!!!
+			case 10:
+			case 9:
+				diamond = "◆◆◆◆◆";
+				break;	
+			
+			case 8:
+				diamond = "◆◆◆◆";
+				break;
+				
+			case 7:
+				diamond = "◆◆◆";
+				break;
 
-				case 6:
-					diamond = "◆◆";
-					break;
-					
-				default:
-					diamond = "◆";
-					break;
-			}
+			case 6:
+				diamond = "◆◆";
+				break;
+				
+			default:
+				diamond = "◆";
+				break;
+		}
 		   
-		   // === 문자형 타입 === //
-		   // 자바는 char타입을 표현할 때 unicode를 사용한다.
+	   // === 문자형 타입 === //
+	   // 자바는 char타입을 표현할 때 unicode를 사용한다.
 		   
 	   char ch1 = 'k';
 	   char ch2 = 107;
