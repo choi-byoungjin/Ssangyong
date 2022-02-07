@@ -70,9 +70,11 @@ div#div_second > ul > li {
 
 section#sidebar {
 	border: solid 0px blue;
+	border-left : solid 1px gray;
 	float: right;  /* 가로방향으로 표시하는데 출발점은 오른쪽에서 출발한다. */
 	width: 24%;
-	height: 400px;
+	height: 500px;
+	padding-left: 1%;
 }
 
 footer#page_footer {
