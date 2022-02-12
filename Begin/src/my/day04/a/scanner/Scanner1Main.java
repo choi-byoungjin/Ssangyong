@@ -51,7 +51,7 @@ public class Scanner1Main {
 	     */
 		sc.nextLine();	// 스캐너 버퍼에 남아있던 찌꺼기를 싹 비우는 것이 목적이다.
 		
-		System.out.println("입력한 정수 : " + inputDbl);
+		System.out.println("입력한 실수 : " + inputDbl);
 		
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
 		
