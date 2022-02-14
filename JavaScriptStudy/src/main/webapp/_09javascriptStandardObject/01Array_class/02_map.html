@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>배열명.map() 메소드의 대해서 알아봅니다.</title>
+</head>
+<body>
+	<div id="result-1"></div>
+	<div id="result-2"></div>
+	
+<script type="text/javascript">
+
+	const v_1 = 10;
+	const v_2 = "10";
+	const v_3 = 20;
+	const v_4 = "10";
+	
+	// == 은 값만 일치(같으면)하면 true, 값이 틀리면 false
+	console.log(v_1 == v_2); // true
+	console.log(v_1 == v_3); // false
+	
+	// === 은 데이터타입도 같고 값도 일치(같으면)해야만 true, 값은 같지만 데이터타입이 틀리면 false
+	console.log(v_1 === v_2); // false
+	console.log(v_1 === v_3); // false
+	console.log(v_2 === v_4); // true
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	
+	const pointArr = [100, 85, 93, 64, 76, 50];
+	
+	// === 배열의 메소드인 map()메소드는 반복문을 돌며 배열 안의 요소들을 1대1로 짝지어 새로운 배열을 만들어 주는 것이다. ===
+	let boolArr = pointArr.map(function(item, index, array) {
+	return item > 70;
+		
+	}); // [true, true, true, false, true, false]
+	
+	console.log(boolArr);
+	// (6) [true, true, true, false, true, false]
+	
+//	pointArr.map( item => {return item > 70;} );
+//	또는	
+	pointArr.map( item => item > 70 );
+	
+	console.log(boolArr);
+	// (6) [true, true, true, false, true, false]
+	
+</script>
+
+</body>
+</html>

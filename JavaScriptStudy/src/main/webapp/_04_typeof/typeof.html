@@ -175,6 +175,9 @@
             <td id="val28">30</td>
             <td>20*30=<span id="result28"></span><br/>
                 20*30=<span id="result29"></span><br/>
+                20*30=<span id="result30"></span><br/>
+                20*5=<span id="result31"></span><br/>
+                20*10=<span id="result32"></span><br/>
             &nbsp;&nbsp;변수 func_multiply 의 타입은 <span id="typeval28"></span></td>
          </tr>
          
@@ -356,31 +359,42 @@
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
 		// ==== !!! 자바스크립트에서는 함수도 변수에 넣을 수 있다. !!! ==== //
-		// 자바스크립트에서 함수를 선언하는 방법 : 람다 표현식(Lambda Declaration) 또는 다른말로 "화살표 함수" 라고 부른다.
-		// 람다 표현식(Lambda Declaration) 또는 화살표 함수는 ES6(ECMAScript 6)에서 나오는 것이다.
+		// "화살표 함수" 란?
+	    // ES6(ECMAScript 6) 에서 처음으로 소개된 것으로써 화살표(=>)를 사용하여 함수를 선언하는 방법이다. 
+	    // 다른말로 람다 표현식(lambda expression) 부른다. 
+	    // 이것은 function 과 return 을 생략하기 위해서 개발한 것이다.
 		const func_multiply = (num1, num2) => {
 			
 			let num_1 = num1;
 			let num_2 = num2;
 			
-			if(typeof(num1)=='String') {
+			if(typeof(num1)=='string') {
 				num_1 = Number(num1);
 			}
 			
-			if(typeof(num2)=='String') {
+			if(typeof(num2)=='string') {
 				num_2 = Number(num2);
 			}
 			
-			return `${num_1 * num_2}`;
+			return `${num_1 * num_2}`; // 앞뒤에 백틱 ``을 쓰고 ${} 달러 중괄호를 차례로 넣고 그 안쪽에 변수를 넣어준다.
 		};
 		
-		const func_multiply_2 = (num1, num2) => `${num1*num2}`;
+		const func_multiply_2 = (num1, num2) => { return `${num1*num2}` }; // + 라면 문자열 결합으로 판단할 수도 있어 Number 로 바꾸어주어야하지만 나머지 사칙연산은 자동형변환 된다.
+		
+		const func_multiply_3 = (num1, num2) => `${num1*num2}`; // 함수의 내용물이 return 값만 있을 경우에는 {} 와 return 을 생략할 수 있다.
+		
+		const func_multiply_4 = num => `${num*5}`; // 매개변수가 1개만 있을 경우 매개변수의 ()를 생략할 수 있다. 
+		
+		const func_multiply_5 = () => {return 200}; // 매개변수가 없을 경우에는 () 를 사용해야 하며 return 이 있을 경우에는 {}를 사용해야 한다.
 		
 		const val27 = document.getElementById("val27").innerText; // "20"
 		const val28 = document.getElementById("val28").innerText; // "30"
 		
 		document.getElementById("result28").innerHTML = func_multiply(val27, val28);
 		document.getElementById("result29").innerHTML = func_multiply_2(val27, val28);
+		document.getElementById("result30").innerHTML = func_multiply_3(val27, val28);
+		document.getElementById("result31").innerHTML = func_multiply_4(val27);
+		document.getElementById("result32").innerHTML = func_multiply_5();
 		document.getElementById("typeval28").innerHTML = typeof(func_multiply);	// function 
    </script>
 </body>
