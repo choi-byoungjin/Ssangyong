@@ -448,18 +448,32 @@
 	
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////
-	
+	/*
+	const fruit_Arr_6 = [ {name:'사과',  price:1000},
+		                  {name:'딸기',  price:2000},
+		                  {name:'오렌지', price:1500},
+		                  {name:'포도',  price:2500},
+		                  {name:'키위',  price:3000} ];
+	*/
 	
 	// ---- ***** 배열명.some() ***** ---- //
 	// 배열명에서 판별함수의 조건에 만족하는 배열요소가 하나라도 있으면 true 를 리턴 시켜주고 조건검사를 중지한다.
 	// 배열명에서 판별함수의 조건에 만족하는 배열요소가 하나라도 없으면 false 를 리턴 시켜준다.
 	
 	// 배열 fruit_Arr_6 에서 price 가 2000 이상인 배열요소가 있는지 검사한다.  
-	let bool = fruit_Arr_6.some( item => { if(item.price >= 2000) {
-                                              console.log(item.name); // 딸기
-                                              return true;
-	                                         } 
-	                                     });
+	let bool = fruit_Arr_6.some(function(item, index, array) {   // index, array 은 생략 가능하다.
+		                              if(item.price >= 2000) {
+                                         console.log(item.name); // 딸기
+                                         return true;
+	                                  } 
+	                             });
+	
+	// 또는
+	bool = fruit_Arr_6.some(item => { if(item.price >= 2000) {
+						                 console.log(item.name); // 딸기
+						                 return true;
+						               } 
+						            });
 	
 	console.log(bool); // true
 	
@@ -467,12 +481,54 @@
 	console.log(bool); // true
 	
 	
+	
 	// ---- ***** 배열명.every() ***** ---- //
 	// 배열명에서 판별함수의 조건에 만족하는 배열요소가 하나라도 없으면 false 를 리턴 시켜주고 조건검사를 중지한다.
 	// 배열명에서 판별함수의 조건에 만족하는 배열요소가 모두 존재해야만 true 를 리턴 시켜준다.
 	
-	// 배열 fruit_Arr_6 에서 price 가 모두 1000 이상인지 검사한다.  
+	console.log("=== 배열명.every() 알아보기 ===");
 	
+	// 배열 fruit_Arr_6 에서 price 가 모두 1000 이상인지 검사한다.
+	bool = fruit_Arr_6.every(function(item, index, arrary) {  // index, array 은 생략 가능하다.
+		                           if(item.price >= 1000) {
+                                       console.log(item.name); // 사과 딸기 오렌지 포도 키위
+                                       return true;
+	                               }
+	                               else {
+	                                   	 console.log(item.name+"의 가격은 1000 미만 입니다.");
+	                               }
+	                         });
+	
+	// 또는 
+	bool = fruit_Arr_6.every( item => { if(item.price >= 1000) {
+									        console.log(item.name); // 사과 딸기 오렌지 포도 키위
+									        return true;
+									    }
+									    else {
+									       	 console.log(item.name+"의 가격은 1000 미만 입니다.");
+									    }
+								});
+	
+	console.log(bool); // true
+	
+	bool = fruit_Arr_6.every(item => item.price >= 1000);
+	console.log(bool); // true
+	
+	
+	// 배열 fruit_Arr_6 에서 price 가 모두 9000 이상인지 검사한다.
+	bool = fruit_Arr_6.every( item => { if(item.price >= 9000) {
+                                            console.log(item.name);  
+                                            return true;
+	                                    }
+	                                    else {
+	                                       	 console.log(item.name+"의 가격은 9000 미만 입니다."); // 사과의 가격은 9000 미만 입니다. 
+	                                        }
+	                                  });
+	
+	console.log(bool); // false
+	
+	bool = fruit_Arr_6.every(item => item.price >= 9000);
+	console.log(bool); // false
 	
 </script>
 
