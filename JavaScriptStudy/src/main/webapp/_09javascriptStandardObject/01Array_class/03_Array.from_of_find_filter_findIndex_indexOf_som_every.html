@@ -76,7 +76,7 @@
 </div> 
 
 <br/>
-<button type="button" id="btnPass">합격자명단</button>
+<button type="button" id="btnPass">합격자명단_1</button>&nbsp;<button type="button" id="btnPass_2">합격자명단_2</button>
 <div id="pass"></div>
 
 <hr style="background-color: gold; height: 2px; border: none;">
@@ -244,7 +244,7 @@
 	
 	////////////////////////////////////////////////////////////////////////////////////////
 	
-	// ===== 점수가 80 이상인 사람들만 가져와서 웹브라우저 화면에 출력해봅니다. ===== //
+	// ===== 점수가 80 이상인 사람들만 가져와서 웹브라우저 화면에 출력해봅니다 -1 첫번째 방법. ===== //
 	
 	const td_list_jumsu = document.querySelectorAll("table#tbl > tbody > tr > td:last-child");
 	
@@ -337,6 +337,26 @@
 	
 	btnPass.addEventListener('click', ()=>{
 		document.getElementById("pass").innerHTML = `<table>${tr_arr_pass.join("")}</table>`;
+	});
+	
+	
+	// ===== 점수가 80 이상인 사람들만 가져와서 웹브라우저 화면에 출력해봅니다 -2 두번째 방법. (children 을 사용한 것) ===== //
+	
+	document.getElementById("btnPass_2").addEventListener('click', ()=>{
+		
+		 const tr_list = document.querySelectorAll("#tbl > tbody > tr");
+		 
+		 let html = ``;
+		 tr_list.forEach(item => {
+			  html += "<tr>";
+			  if( item.children[1].innerText >= 80 ) {
+				html += "<td>"+item.children[0].innerHTML+"</td>" + "<td>"+item.children[1].innerHTML+"</td>"; 
+			  }
+			  html += "</tr>"
+		 } );// end of tr_list.forEach(item => {})---------------------
+		 
+		 // console.log(html);
+		 document.getElementById("pass").innerHTML = `<table>${html}</table>`;
 	});
 	
 	
