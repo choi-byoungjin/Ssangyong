@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>체크박스에 대해서 알아봅니다. -1</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+</head>
+<body>
+	<div id="container" align="center">
+		<h2>거래처등록1</h2>
+		<table>
+			<tr>
+				<td>거래처명</td>
+				<td><input type="text" size="20" /></td>
+			</tr>
+			<tr>
+				<td>주소</td>
+				<td><input type="text" size="50" /></td>
+			</tr>
+			<tr>
+				<td>전화번호</td>
+				<td>
+					<input type="text" size="5" maxlength="3"/>&nbsp;-&nbsp;
+					<input type="text" size="5" maxlength="4"/>&nbsp;-&nbsp;
+					<input type="text" size="5" maxlength="4"/>
+				</td>
+			</tr>
+			<tr>
+				<td>품명(국산)</td>
+				<td>
+					<input type="checkbox" name="product_kor" id="product_kor1"/><label for="product_kor1">메인보드</label>&nbsp;
+					<input type="checkbox" name="product_kor" id="product_kor2"/><label for="product_kor2">모니터</label>&nbsp;
+					<input type="checkbox" name="product_kor" id="product_kor3"/><label for="product_kor3">프린터</label>&nbsp;
+					<input type="checkbox" name="product_kor" id="product_kor4"/><label for="product_kor4">하드디스크</label>&nbsp;
+					<input type="checkbox" name="product_kor" id="product_kor5"/><label for="product_kor5">메모리</label>&nbsp;
+					<input type="checkbox" name="product_kor" id="product_kor6"/><label for="product_kor6">CPU</label>&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>품명(중고품)</td>
+				<td>
+					<input type="checkbox" name="product_old" id="product_old1"/><label for="product_old1">메인보드</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old2"/><label for="product_old2">모니터</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old3"/><label for="product_old3">프린터</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old4"/><label for="product_old4">하드디스크</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old5"/><label for="product_old5">메모리</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old6"/><label for="product_old6">CPU</label>&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="allCheck">모두선택/해제</label><input type="checkbox" id="allCheck"/>
+					<br/>품명(베트남산)
+				</td>
+				<td>
+					<input type="checkbox" name="product_vietnam" id="product_vietnam1"/><label for="product_vietnam1">메인보드</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam2"/><label for="product_vietnam2">모니터</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam3"/><label for="product_vietnam3">프린터</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam4"/><label for="product_vietnam4">하드디스크</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam5"/><label for="product_vietnam5">메모리</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam6"/><label for="product_vietnam6">CPU</label>&nbsp;
+				</td>
+			</tr>			
+			<tr>
+				<td colspan="2">
+					<button type="button">쓰기</button>&nbsp;&nbsp;
+					<button type="button">취소</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

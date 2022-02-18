@@ -70,18 +70,7 @@
    
 	<script type="text/javascript">
 		
-		function func_encodeURI_decodeURI(value) {
-			
-			document.querySelector("#endoce_1").innerHTML = encodeURI(value);
-														//  encodeUIR("문자열"); ==> "문자열"을 UTF-8 로 변환시켜준다.
-														
-			document.querySelector("#decode_1").innerHTML = decodeURI(encodeURI(value));
-														//	decodeURI("인코딩된값"); ==> "인코딩됭값"을 원래의 글자로 되돌려 준다.
-		}
-	
-		document.querySelector("#inputText").focus();
-		
-		document.querySelector("#btnOK_1").addEventListener('click', ()=>{
+		function func_encodeURI_decodeURI() {
 			
 			const inputText = document.querySelector("#inputText").value;
 			const encodeVal = encodeURI(inputText);
@@ -91,7 +80,22 @@
 			
 			document.querySelector("#decode_1").innerHTML = decodeURI(encodeVal);
 														//	decodeURI("인코딩된값"); ==> "인코딩됭값"을 원래의 글자로 되돌려 준다.
+		}
+	
+		document.querySelector("#inputText").focus();
+		
+		document.querySelector("#btnOK_1").addEventListener('click', ()=>{
+		/*	
+			const inputText = document.querySelector("#inputText").value;
+			const encodeVal = encodeURI(inputText);
+							//encodeUIR("문자열"); ==> "문자열"을 UTF-8 로 변환시켜준다.
+							
+			document.querySelector("#encode_1").innerHTML = encodeVal;
 			
+			document.querySelector("#decode_1").innerHTML = decodeURI(encodeVal);
+														//	decodeURI("인코딩된값"); ==> "인코딩됭값"을 원래의 글자로 되돌려 준다.
+		*/
+			func_encodeURI_decodeURI(); // 함수로 따로 뺌
 		});
 		
 		document.querySelector("#btnReset_1").addEventListener('click', ()=>{
@@ -103,7 +107,6 @@
 			
 		});
 		
-		///////////////////////////////////////////////////////////////////////////
 	/*	
 		document.querySelector("#inputText").addEventListener('keyup', () => {
 			console.log(event.keyCode);
@@ -119,8 +122,32 @@
 		
 		document.querySelector("#inputText").addEventListener('keyup', (e) => {
 			if(e.keyCode == 13) {	// 13 이 엔터이다.
-				
+				func_encodeURI_decodeURI();
 			}
+		});
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////////////
+		
+		function func_decodeURI() {			
+			const encodeVal = document.querySelector("#encode_2").value; // 크롬에서 copy select
+			document.querySelector("#decode_2").innerHTML = decodeURI(encodeVal);	
+		}
+		
+		document.querySelector("#btnOK_2").addEventListener('click', ()=>{
+			func_decodeURI();
+		});
+		
+		document.querySelector("#encode_2").addEventListener('keyup', (e)=>{
+			if(e.keyCode == 13) {	// 엔터라면 함수 호출한다.
+				func_decodeURI();
+			}
+		});
+		
+		document.querySelector("#btnReset_2").addEventListener('click', ()=>{
+			document.querySelector("#encode_2").value = "";
+			document.querySelector("#decode_2").innerHTML = "";
+			document.querySelector("#encode_2").focus();
 		});
 	</script>
 </body>
