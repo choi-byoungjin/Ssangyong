@@ -41,12 +41,12 @@
 			<tr>
 				<td class="title">품명(중고품)</td>
 				<td>
-					<input type="checkbox" name="product_old" id="product_old1" onclick="onlyOneCheck(this)" /><label for="product_old1">메인보드</label>&nbsp;
-					<input type="checkbox" name="product_old" id="product_old2" onclick="onlyOneCheck(this)" /><label for="product_old2">모니터</label>&nbsp;
-					<input type="checkbox" name="product_old" id="product_old3" onclick="onlyOneCheck(this)" /><label for="product_old3">프린터</label>&nbsp;
-					<input type="checkbox" name="product_old" id="product_old4" onclick="onlyOneCheck(this)" /><label for="product_old4">하드디스크</label>&nbsp;
-					<input type="checkbox" name="product_old" id="product_old5" onclick="onlyOneCheck(this)" /><label for="product_old5">메모리</label>&nbsp;
-					<input type="checkbox" name="product_old" id="product_old6" onclick="onlyOneCheck(this)" /><label for="product_old6">CPU</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old1" /><label for="product_old1">메인보드</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old2" /><label for="product_old2">모니터</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old3" /><label for="product_old3">프린터</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old4" /><label for="product_old4">하드디스크</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old5" /><label for="product_old5">메모리</label>&nbsp;
+					<input type="checkbox" name="product_old" id="product_old6" /><label for="product_old6">CPU</label>&nbsp;
 				</td>
 			</tr>
 			
@@ -70,12 +70,12 @@
 					<br/>품명(베트남산)
 				</td>
 				<td>
-					<input type="checkbox" name="product_vietnam" id="product_vietnam1" onclick="vietnamCheck()"/><label for="product_vietnam1">메인보드</label>&nbsp;
-					<input type="checkbox" name="product_vietnam" id="product_vietnam2" onclick="vietnamCheck()"/><label for="product_vietnam2">모니터</label>&nbsp;
-					<input type="checkbox" name="product_vietnam" id="product_vietnam3" onclick="vietnamCheck()"/><label for="product_vietnam3">프린터</label>&nbsp;
-					<input type="checkbox" name="product_vietnam" id="product_vietnam4" onclick="vietnamCheck()"/><label for="product_vietnam4">하드디스크</label>&nbsp;
-					<input type="checkbox" name="product_vietnam" id="product_vietnam5" onclick="vietnamCheck()"/><label for="product_vietnam5">메모리</label>&nbsp;
-					<input type="checkbox" name="product_vietnam" id="product_vietnam6" onclick="vietnamCheck()"/><label for="product_vietnam6">CPU</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam1"/><label for="product_vietnam1">메인보드</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam2"/><label for="product_vietnam2">모니터</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam3"/><label for="product_vietnam3">프린터</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam4"/><label for="product_vietnam4">하드디스크</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam5"/><label for="product_vietnam5">메모리</label>&nbsp;
+					<input type="checkbox" name="product_vietnam" id="product_vietnam6"/><label for="product_vietnam6">CPU</label>&nbsp;
 				</td>
 			</tr>			
 			<tr>	<!-- 외부파일(css)의 스타일에 있는 정렬이 우선순위 -->
@@ -90,57 +90,71 @@
 	<script type="text/javascript">
 		
 		//	==== 체크박스 여러개중 라디오 처럼 1개만 선택되도록 하는 함수 만들기 ==== //
-		function onlyOneCheck(checkbox) {
-			
-			const old_checkBox_list = document.getElementsByName("product_old");
-			
-			for( let old_checkBox of old_checkBox_list) { // 리스트중 하나씩
-				if(checkbox != old_checkBox) {
-					// checkbox != old_checkBox 는 체크박스에 클릭을 하지 않은 나머지 모든 체크박스를 말한다.
-					old_checkBox.checked = false;						
-				}				
-			}						
-		}// end of function onlyOneCheck(checkbox)--------------------------
+		const old_checkBox_List = document.getElementsByName("product_old");
 		
-		// == 체크박스 전체선택 / 전체해제 == // 		
-		function allCheck(bool) {
+		for(let old_checkBox of old_checkBox_List) {
 			
-			const vietnam_checkBox_List = document.getElementsByName("product_vietnam");
+			old_checkBox.addEventListener('click', ()=>{
+				for ( let chkbox of old_checkBox_List ) {
+					if(old_checkBox != chkbox) {
+						// old_checkBox 가 현재 클릭한 체크박스이다.
+						chkbox.checked = false;
+					}
+				}// end of for------------------
+			});
+			
+		}// end of for----------------------------
+		
+		// == 체크박스 전체선택 / 전체해제 == //
+		const allCheck = document.getElementById("allCheck");
+		const vietnam_checkBox_List = document.getElementsByName("product_vietnam")
+		
+		allCheck.addEventListener('click', ()=>{
+			const bool = allCheck.checked;	// true OR false;
 			
 			for(let vietnam_checkBox of vietnam_checkBox_List) {
 				vietnam_checkBox.checked = bool;
-			}// end of for------------------------------------
-			
-		}// end of function allCheck()---------------------------------------------
+			}
+		});
 		
 		//	== 체크박스 전체선택 / 전체해제 에서
 		//	   하위 체크박스에 체크가 1개라도 체크가 해제되면 체크박스 전체선택/전체해제 체크박스도 체크가 해제되고
 		//	   하위 체크박스에 체크가 모두 체크가 되어지지면  체크박스 전체선택/전체해제 체크박스도 체크가 되어지도록 하는 것 == //
-		function vietnamCheck() {
+		for(let vietnam_checkBox of vietnam_checkBox_List) {
 			
-			const vietnam_checkBox_List = document.getElementsByName("product_vietnam");
-			
-			let bFlag = false;
-			for ( let vietnam_checkBox of vietnam_checkBox_List ) {
+			vietnam_checkBox.addEventListener('click', ()=>{
+				const bool = vietnam_checkBox.checked;
 				
-				if( !vietnam_checkBox.checked ) {
-					// 하위 체크박스(베트남산 체크박스)에 체크가 1개라도 체크가 해제되었더라면
-					bFlag = true;
-					break;
+				if(!bool) {
+					// vietnam_checkBox 체크박스의 체크를 해제한 경우
+					allCheck.checked = false;	// allCheck 는 전체선택/전체해제 에 해당하는 체크박스이다.
 				}
-				
-			}// end of for-----------------------------------------
+				else {
+					// vietnam_checkBox 체크박스의 체크를 한 경우
+					// ==> 나머지 모든 하위체크박스가 체크가 되어진 경우이라면 전체선택/전체해제 에 해당하는 체크박스도 체크를 하도록 만든다.
+					
+					// 나머지 모든 하위체크박스가 체크가 되어진 경우인지 아닌지 알아보도록 한다.
+					let bFlag = false;
+					for(let chkbox of vietnam_checkBox_List) {
+						if(chkbox.checked) {
+							// 체크박스가 체크가 되어진 경우
+							bFlag = true;
+						}
+						else {
+							// 체크박스가 체크가 안되어진 경우
+							bFlag = false;
+							break;
+						}						
+					}// end of for------------------------------
+					
+					if(bFlag) {
+						// 모든 하위체크박스에 체크가 되어진 경우이다.
+						allCheck.checked = true;	// allCheck 는 전체선택/전체해제 에 해당하는 체크박스이다.
+					}
+				}
+			});
 			
-			if(bFlag) {
-				// 하위 체크박스(베트남산 체크박스)에 체크가 1개라도 체크가 해제되었더라면
-				document.getElementById("allCheck").checked = false;
-			}
-			else {
-				// 하위 체크박스(베트남산 체크박스)에 체크가 모두가 체크가 되었더라면
-				document.getElementById("allCheck").checked = true;
-			}
-			
-		}// end of function vietnamCheck()-------------------------------
+		}// end of for--------------------------------------------------
 	</script>
 	
 </body>

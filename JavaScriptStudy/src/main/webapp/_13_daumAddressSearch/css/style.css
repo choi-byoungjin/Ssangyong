@@ -13,7 +13,7 @@ h2 {color: green;
 }
 
 table {
-	width: 60%;
+	width: 65%;
 	border: solid 1px gray;
 	border-collapse: collapse;
 }
@@ -39,7 +39,7 @@ button {
 	cursor: pointer;
 }
 
-#container > table > tbody > tr:nth-child(7) {
+#container > table > tbody > tr:nth-child(8) {
 	text-align: center;	/* html파일보다 외부파일의 스타일에 있는 정렬이 우선순위 */
 }
 
@@ -48,9 +48,10 @@ button {
 	color: #ff6600;
 	text-align: right;
 	font-weight: bold;
+	width: 15%;
 }
 
-#container > table > tbody > tr:nth-child(6) > td:nth-child(1) > label {
+#container > table > tbody > tr:nth-child(7) > td:nth-child(1) > label {
 	font-size: 8pt;
 	font-weight: normal;
 	font-style:italic ;
