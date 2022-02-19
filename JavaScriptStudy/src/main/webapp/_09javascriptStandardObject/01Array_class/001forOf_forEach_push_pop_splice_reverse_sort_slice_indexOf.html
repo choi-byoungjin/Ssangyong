@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<div>
+	<div class="display" id="numberDisplay"></div>
+	
+	<button type="button" onclick="javascript:history.go(0)">새로고침</button>
+	<button type="button" onclick="javascript:location.reload()">새로고침2</button>
+	<br/><br/>
+	
+	추가할 숫자 : <input type="text" id="addVal"/>
+	<br/><br/>
+	<button type="button" id="btnLastAdd">맨 마지막에 추가</button>
+	<br/><br/>
+	<button type="button" id="btnLastDel">마지막 숫자 삭제</button>
+	<br/><br/>
+	<button type="button" id="btnFirstAdd">맨 처음에 추가</button>
+</div>
+
+<script type="text/javascript">
+
+	const arrNumber = new Array();
+	arrNumber.push("1");
+	arrNumber.push("2");
+	arrNumber.push("3");
+	arrNumber.push("4");
+	arrNumber.push("5");
+	
+	console.log("배열의 길이 : " + arrNumber.length);
+
+	let html = `<ol>`;
+		
+	for(let item of arrNumber) {
+		html += `<li>${item}</li>`;
+	}
+	
+	html += `<ol>`;
+	
+	document.getElementById("numberDisplay").innerHTML = html;
+	
+	
+	function func_display(arr, displayid) {
+		
+		let html = `<ol>`;
+		
+		for(let item of arr) {
+			html += `<li>${item}</li>`;
+		}
+		html += `</ol>`;
+		
+		displayid.innerHTML = html;
+		
+	}
+	
+	
+	const btnLastAdd = document.getElementById("btnLastAdd");
+	
+	btnLastAdd.addEventListener('click', ()=>{
+		
+		const addVal = document.getElementById("addVal").value;
+		
+		if(addVal.trim() == "") {
+			alert("숫자를 입력하시오");
+			return;
+		}
+		else{
+			arrNumber.push(addVal);			
+			func_display(arrNumber, document.getElementById("numberDisplay"));
+		}
+	});
+	
+	
+	const btnLastDel = document.getElementById("btnLastDel");
+	
+	btnLastDel.addEventListener('click', ()=>{
+		
+		let delNumber = arrNumber.pop();
+		alert(`배열에서 "${delNumber}"를 삭제했습니다.`);
+		func_display(arrNumber, document.getElementById("numberDisplay"));		
+	});
+	
+	
+	const btnFirstAdd = document.getElementById("btnFirstAdd");
+	
+	btnFirstAdd.addEventListener('click', ()=>{
+		const addVal = document.getElementById("addVal").value;
+		
+		arrNumber.unshift(addVal);
+	});
+</script>
+
+</body>
+</html>
