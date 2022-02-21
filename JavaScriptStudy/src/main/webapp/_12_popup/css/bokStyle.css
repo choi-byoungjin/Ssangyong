@@ -1,0 +1,43 @@
+@charset "UTF-8";
+
+div#container {
+	display: flex;
+	width: 80%;
+	margin: 20px auto;
+}
+
+div#container > div#display {
+	width: 80%;
+	margin: auto;
+}
+
+table#tbl {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th, td {
+	border: solid 1px gray;
+}
+
+th {
+	padding: 1%;
+}
+
+table#tbl > thead:nth-child(1) > tr:nth-child(1) > th {
+	color: tomato;
+	font-size: 20pt;
+	border: none;
+	line-height: 250%;
+}
+
+#tbl > tbody > tr > td:nth-child(1) > img {
+	width: 30%;
+	cursor: pointer;
+}
+
+#tbl > tbody > tr > td:last-child {
+	color: blue;
+	fond-size: 12pt;
+	text-align: right;
+}

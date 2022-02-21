@@ -99,7 +99,7 @@
 			popupwin.document.writeln("<html>");
 			popupwin.document.writeln("<head><title>제품이미지 확대보기</title></head>");
 			popupwin.document.writeln("<body align='center'>");			
-			popupwin.document.writeln("<img src=`${src}` />");
+			popupwin.document.writeln(`<img src=${src} />`);
 			popupwin.document.writeln("<br/><br/>");
 			popupwin.document.writeln("<button type='button' onclick='javascript:window.close()'>팝업창닫기</button>");
 			popupwin.document.writeln("</body>");
@@ -116,9 +116,9 @@
 			popupwin.document.writeln("<html>");
 			popupwin.document.writeln("<head><title>제품이미지 확대보기</title></head>");
 			popupwin.document.writeln("<body align='center'>");			
-			popupwin.document.writeln("<img src=`${src}` />"); /* 또는 ("<img src='"+src+"' />"); */
-			popupwin.document.writeln("<br/><br/>");
-			popupwin.document.writeln("<button type='button' onclick='javascript:window.close()'>팝업창닫기</button>");
+			popupwin.document.writeln(`<img src=${src} />`); /* 또는 ("<img src='"+src+"' />"); */
+			popupwin.document.writeln("<br/><br/><br/>");
+			popupwin.document.writeln("<button type='button' onclick='window.close()'>팝업창닫기</button>");
 			popupwin.document.writeln("</body>");
 			popupwin.document.writeln("</html>");
 		};
@@ -151,7 +151,7 @@
 		const checkbox_list = document.querySelectorAll("table#tbl input[type='checkbox']");
 		
 		// 주문수량 이벤트 처리하기
-		input_number_list.forEach(function(elt, i, array) {
+		input_number_list.forEach(function(elt) {
 			
 			elt.addEventListener('change', () => {
 			//	console.log(elt.value);	// 1 2 3 0 <-- 주문수량
