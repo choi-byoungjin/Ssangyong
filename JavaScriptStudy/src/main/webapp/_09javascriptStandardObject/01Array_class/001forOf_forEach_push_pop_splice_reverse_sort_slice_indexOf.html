@@ -303,6 +303,7 @@
 	
 	<h2>데이터배열</h2>
 	<div id="dataDisplay"></div>
+	<div id="javaIndexDisplay"></div>
 	<br/>
 	<div>
 		<button type="button" id="btnIndexOf">배열요소의 index값 알아오기</button>
@@ -335,6 +336,7 @@
 			console.log(java_index_arr);
 			console.log(java_index_arr.join());
 			
+			document.getElementById("javaIndexDisplay").innerHTML = java_index_arr.join();
 		});
 		
 		

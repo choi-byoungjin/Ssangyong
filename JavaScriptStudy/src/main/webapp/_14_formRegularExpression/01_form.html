@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>자바스크립트 폼 유효성 검사하기</title>
+
+<style type="text/css">
+
+	body {
+	 /* border: solid 1px gray; */
+		margin: 0;
+		padding: 0;
+		font-family: Arial, "MS Trebuchet", sans-serif;
+		word-break: break-all;  /* 공백없이 영어로만 되어질 경우 해당구역을 빠져나가므로 이것을 막기위해서 사용한다. */
+	}
+
+	div#container {
+	 /* border: solid 1px gray; */
+		width: 40%;
+		margin: 0 auto;
+	}
+	
+	form {
+		margin-top: 100px;
+	}
+	
+	legend {
+		font-size: 20pt;
+	}
+	
+	label.title {
+		display: inline-block;
+		width: 150px;
+		color: navy;
+		font-weight: bold; 
+	}
+	
+	ul {
+	 /* border: solid 1px red; */
+		list-style-type: none;
+		padding-left: 0;
+	}
+	
+	li {
+		line-height: 40px;
+	}
+
+    input.myinput {
+    	height: 20px; 
+    }
+
+
+  /* 
+    input[type="radio"] {
+    	margin-right: 50px; 
+    } 
+  */
+
+    /* 라디오 요소에 체크를 했을 경우 라디오 요소의 테두리를 오렌지색으로 주겠다.  */
+    input[type="radio"]:checked { 
+    	box-shadow: 0 0 0 3px orange;
+    }
+    
+    
+    /* 체크박스 요소에 체크를 했을 경우 체크박스 요소의 테두리를 분홍색으로 주겠다.  */
+    input[type="checkbox"]:checked {
+    	box-shadow: 0 0 0 3px pink;
+    }
+    
+
+    label[for="female"] {
+    	padding-left: 50px; 
+    }
+    
+     
+    select {
+    	width: 150px;
+    }  
+    
+    select.myselect {
+    	height: 25px;
+    }
+
+    input.btn {
+    	width: 100px;
+    	height: 40px;
+    	margin: 20px 0 0 40px; 
+    	font-size: 14pt;
+    	cursor: pointer;
+    	color: #fff; 
+    	border: none;
+    	
+    	border-radius: 10%;  /* 사각형을 깍어서 둥근사각형으로 만들어 주는 것  */
+    }
+    
+    input[type="submit"] {
+    	background-color: #001a66;
+    }
+    
+    input[type="reset"] {
+    	background-color: #990000; 
+    } 
+    
+
+</style>
+
+</head>
+<body>
+	<div id="container">
+	   
+	   <form name="registerForm" action="register.do">
+	   		<!-- fieldset 태그는 폼을 그룹핑(묶어주는 것)하는 역할 -->
+	   		<fieldset>
+	   		
+	   		    <!-- legend 태그는 fieldset 에 대한 제목을 지정하는 것이다. -->
+	   			<legend>회원가입정보</legend>
+	   			
+	   			<ul>
+	   				<li>
+	   				    <label for="userid" class="title">아이디</label>
+	   				    <input type="text" name="userid" id="userid" class="myinput" size="20" maxlength="20" autofocus required />
+	   				</li>
+	   				
+	   				<li>
+	   				    <label for="passwd1" class="title">암호</label>
+	   				    <input type="password" id="passwd1" class="myinput" size="20" maxlength="20" required />
+	   				</li>
+	   				
+	   				<li>
+	   				    <label for="passwd2" class="title">암호확인</label>
+	   				    <input type="password" name="irum" id="passwd2" class="myinput" size="20" maxlength="20" required />
+	   				</li>
+	   				
+	   				<li>
+	   				    <label for="name" class="title">성명</label>
+	   				    <input type="text" name="name" id="name" class="myinput" size="20" maxlength="20" required />
+	   				</li>
+	   				
+	   				<li>
+	   				    <label for="email" class="title">이메일</label>
+	   				    <input type="email" id="email" class="myinput" size="20" maxlength="40" required placeholder="예: hongkd@gmail.com" /> 
+	   				</li>
+	   				
+	   				<li>
+	   				    <label class="title">성별</label>
+	   				    <label for="male">남자</label><input type="radio" name="gender" id="male" /> 
+	   				    <label for="female">여자</label><input type="radio" name="gender" id="female" checked /> 
+	   				</li>
+	   				
+	   				<li>
+	   				    <label class="title">취미</label>
+	   				    <label for="hobby1">게임</label><input type="checkbox" name="hobby" id="hobby1" checked /> 
+	   				    <label for="hobby2">영화감상</label><input type="checkbox" name="hobby" id="hobby2" /> 
+	   				    <label for="hobby3">글쓰기</label><input type="checkbox" name="hobby" id="hobby3" checked />
+	   				    <label for="hobby4">음악감상</label><input type="checkbox" name="hobby" id="hobby4" />
+	   				</li>
+	   				
+	   				<li>
+	   				    <label class="title">출생년도</label>
+	   				    <select class="myselect" id="birthYear1"></select>
+	   				    <select class="myselect" id="birthYear2"></select>
+	   				    <select class="myselect" id="birthYear3"></select>
+	   				</li>
+	   				
+	   				<li>
+	   					<label class="title">현재나이</label>
+	   					<span id="age" style="font-size: 12pt; color: red;"></span>세
+	   				</li>
+	   				
+	   				
+	   				<li>
+	   				    <label class="title">최종학력</label>
+	   				    <select class="myselect">
+	   				        <option>고졸</option>
+	   				        <option>초대졸</option>
+	   				        <option selected>대졸</option>
+	   				        <option>대학원졸</option>
+	   				    </select>
+	   				</li>
+	   				
+	   				<li>
+	   				    <label class="title">선호음식</label>
+	   				    <select size="3" multiple>
+	   				        <option>짜장면</option>
+	   				        <option>파스타</option>
+	   				        <option>파타이</option>
+	   				        <option>부대찌게</option>
+	   				        <option>떡볶이</option>
+	   				        <option>치킨</option>
+	   				    </select>
+	   				</li>
+	   				
+	   				<li>
+	   				    <label class="title">선호프로그램</label>
+	   				    <select class="myselect">
+	   				        <optgroup label="데이터베이스">
+		   				        <option>Oracle</option>
+		   				        <option>MSSQL</option>
+		   				        <option>MySql</option>
+	   				        </optgroup>
+	   				        
+	   				        <optgroup label="개발언어">
+		   				        <option>Java</option>
+		   				        <option>JSP</option>
+		   				        <option>Spring</option>
+		   				        <option>C/C++</option>
+	   				        </optgroup>
+	   				    </select>
+	   				</li>
+	   				
+	   				<li>
+	   				    <label for="browsername" class="title">웹브라우저</label>
+	   				    <input list="browserType" id="browsername" />
+	   				    <datalist id="browserType">
+	   				          <option value="Chrome" />
+	   				          <option value="Internet Explore" />
+	   				          <option value="Firefox" />
+	   				          <option value="Opera" />
+	   				          <option value="Safari" />
+	   				    </datalist>
+	   				</li>
+	   				
+	   				<li>
+	   				    <label for="addFile" class="title">파일첨부</label>
+	   				    <input type="file" id="addFile" /> 
+	   				</li>
+	   				
+	   				<li>
+	   				    <label for="registerComment" class="title">가입인사말</label>
+	   				    <textarea rows="5" cols="30" id="registerComment"></textarea> 
+	   				</li>
+	   				
+	   				<li>
+	   				    <input type="submit" value="확인" class="btn" />
+	   				    <input type="reset" value="취소"  class="btn" />
+	   				</li>
+	   			</ul>
+	   			
+	   		</fieldset>
+	   </form>
+	</div>
+	
+<script type="text/javascript">
+
+	const now = new Date(); // 자바스크립트에서 현재날짜시각을 알려주는 것
+	const currentYear = now.getFullYear(); // 현재년도
+
+	let sOption_1 = "<option>출생년도1</option>"
+	for(let i=0; i<currentYear-1950+1; i++) {
+		sOption_1 += "<option>"+(1950+i)+"</option>";
+	}// end of for-------------------------------------------
+	
+	document.querySelector("select#birthYear1").innerHTML = sOption_1;
+	
+	
+	let sOption_2 = "<option>출생년도2</option>"
+	for(let i=0; i<currentYear-1950+1; i++) {
+		sOption_2 += "<option>"+(1950+i)+"</option>";
+	}// end of for-------------------------------------------
+	
+	document.querySelector("select#birthYear2").innerHTML = sOption_2;
+	
+	
+	let sOption_3 = "<option>출생년도3</option>"
+	for(let i=0; i<currentYear-1950+1; i++) {
+		sOption_3 += "<option>"+(1950+i)+"</option>";
+	}// end of for-------------------------------------------
+	
+	document.querySelector("select#birthYear3").innerHTML = sOption_3;
+	
+	/////////////////////////////////////////////////////////////////////////
+	
+	const select1 = document.querySelector("select#birthYear1");
+	
+	select1.addEventListener("change", ()=>{
+		
+		const val = select1.value;
+		
+	//	console.log(isNaN(val));
+		// NaN 은 Not a Number
+		/*
+			isNaN(값); ==> 값이 숫자가 아니라면 true
+			isNaN(값); ==> 값이 숫자라면 false
+		*/
+		// 현재나이 구하기
+		if(isNaN(val)) { // "출생년도1" 을 선택한 경우임.
+			alert("태어나신 년도를 선택하세요");
+			document.querySelector("span#age").innerHTML = "";
+		}
+		else {	// 올바른 숫자년도를 선택한 경우임.
+			const age = currentYear - val + 1;
+			document.querySelector("span#age").innerHTML = age;	
+		}
+	});
+	
+	const select2 = document.querySelector("select#birthYear2");
+	
+	select2.onchange = function(){	// onChange는 불가능
+		
+		const val = select2.value;
+		
+		// 현재나이 구하기
+		if(isNaN(val)) { // "출생년도2" 을 선택한 경우임.
+			alert("태어나신 년도를 선택하세요");
+			document.querySelector("span#age").innerHTML = "";
+		}
+		else {	// 올바른 숫자년도를 선택한 경우임.
+			const age = currentYear - val + 1;
+			document.querySelector("span#age").innerHTML = age;
+		}
+	};
+	
+	const select3 = document.querySelector("select#birthYear3");
+	
+	select3.onchange = ()=> {
+		
+		const val = select3.value;
+		
+		// 현재나이 구하기
+		if(isNaN(val)) { // "출생년도3" 을 선택한 경우임.
+			alert("태어나신 년도를 선택하세요");
+			document.querySelector("span#age").innerHTML = "";
+		}
+		else {	// 올바른 숫자년도를 선택한 경우임.
+			const age = currentYear - val + 1;
+			document.querySelector("span#age").innerHTML = age;
+		}
+	};
+	
+	/////////////////////////////////////////////////////////////////
+	
+	// === submit 버튼을 클릭하면 해야할 일들을 기술하기 === //
+	const frm = document.registerForm; // 폼에 있는 name이 userid가 된다
+	
+	frm.onsubmit = () => {
+		
+		alert(frm.userid.value);
+		
+	};
+	
+</script>
+
+</body>
+</html>
