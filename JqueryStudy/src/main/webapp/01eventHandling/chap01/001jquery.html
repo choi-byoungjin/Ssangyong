@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>jQuery 시작 1</title>
+
+<style type="text/css">
+	
+	span#test {
+		color: red;
+	}
+	
+	span.example {
+		color: blue;
+	}
+	
+</style>
+
+<script type="text/javascript" src="../../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+	/* $(document).ready(function(){ */
+	$(function(){
+		window.open("popup/popupContents.html","myPopup","left=100px, top=100px, width=400px, height=350px");
+		$("span#test").html("안녕하세요?<br/>jQuery~~~");
+		$("span.example").html("반갑습니다^^<br/>제이쿼리~~~");
+	});
+</script>
+
+</head>
+
+<body>
+	<span id="test"></span>
+	<br/><br/>
+	<span class="example"></span>
+	<br/><br/>
+	<span class="example"></span>	
+</body>
+</html>
