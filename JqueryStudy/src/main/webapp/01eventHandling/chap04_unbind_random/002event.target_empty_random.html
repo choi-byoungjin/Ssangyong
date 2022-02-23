@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html oncontextmenu="return false" ondragstart="return false" onselectstart="return false" onkeydown="return keydowncheck();">
+<head>
+<meta charset="UTF-8">
+<title>event.target 및 unbind</title>
+
+<style type="text/css">
+	div#firstdiv, div#result {           
+      width: 80%;
+      margin: 0 auto;
+      text-align: center;
+   }
+   
+	div#result {
+	   margin: 20px 0 0 0;
+	   padding-left: 100px;
+	   font-size: 16pt;
+   }
+	
+	span.buttons {
+      display: inline-block;
+      border: solid 2px orange;
+      width: 100px;
+      margin: 20px;
+      padding: 5px;
+      background-color: yellow;
+      color: #ff0000;
+      font-size: 15pt;
+      cursor: pointer;
+   }
+</style>
+
+<script type="text/javascript" src="../../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		
+		$("div#result").hide();
+		
+		$("span.buttons").bind("click", function(){
+			
+			const nRandom = Math.floor(Math.random()*(5-1+1)) + 1;
+			
+			const userChoice = $(event.target).text();
+			
+			if(userChoice == nRandom) {
+				
+				$("div#result").html("<span style='color: blue;'>당첨!! 축하합니다~~</span>")
+				
+			}
+			$("div#result").show();
+			
+			$("div#firstdiv").empty();
+				
+		});
+			
+	});
+	
+	function keydowncheck(){
+		
+		let result = true;
+		let keycode = event.keyCode;
+		
+		if(keycode == 17) {
+			alert("Ctrl 은 사용불가 합니다.");
+			result = false;
+		}
+		else if(keycode == 123) {
+			alert("F12 는 사용불가 합니다.");
+			result = false;
+		}
+		return result;
+		
+	}
+	
+</script>
+
+</head>
+<body>
+	<h2>행운의 숫자를 클릭하세요~~(오로지 기회는 1번만!!)</h2>
+	<div id="firstdiv">
+		<span class="buttons">1</span>
+		<span class="buttons">2</span>
+		<span class="buttons">3</span>
+		<span class="buttons">4</span>
+		<span class="buttons">5</span>
+	</div>
+	<div id="result">다음기회에...</div>
+</body>
+</html>

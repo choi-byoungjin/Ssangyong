@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<style type="text/css">
+	button#btn {
+		width: 100px;
+		height: 40px;
+		border-radius: 50%;
+		background-color: #000080;
+		color: white;	
+	}
+</style>	
+
+<script type="text/javascript" src="../../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		$("div#photo").hide();
+		
+		$("button#btn").text("보이기");
+		
+		$("button#btn").bind("click", function(){
+			
+			const text = $(this).text();
+			
+			if(text == "보이기") {
+				$(this).text("감추기");
+				$(this).css({"background-color":"red", "color":"yellow"});
+			}
+			else {
+				$(this).text("보이기");
+				$(this).css({"background-color":"", "color":""});
+			}
+			
+			$("div#photo").toggle();
+		});
+		
+	});
+</script>
+
+</head>
+<body>
+	<div style="display: flex; margin: 50px 0 20px 0;">
+		<div style="margin: auto;">
+			<button id="btn" style='cursor:pointer;'></button>
+		</div>
+	</div>
+	<div style="display: flex;">
+		<div style="margin: auto;">
+			<div id="photo"><img src="images/iyou.jpg" /></div>
+		</div>
+	</div>
+</body>
+</html>
