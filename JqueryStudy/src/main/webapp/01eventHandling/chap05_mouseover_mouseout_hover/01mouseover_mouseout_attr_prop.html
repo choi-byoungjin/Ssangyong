@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>인물 사진 보이기/감추기( mouseover, moseout, 선택자.attr("속성"), 선택자.prop("속성") )</title>
+
+<style type="text/css">
+	div#container {
+		/* border: solid 1px gray; */
+		width: 80%;
+		margin: 0 auto;
+	}
+	
+	span.buttons {
+		display: inline-block;
+		width: 100px;
+		border: solid 2px orange;
+		margin: 20px;
+		padding: 5px;
+		background-color: yellow;
+		color: #ff0000;
+		font-size: 15pt;
+		cursor: pointer;
+	}
+	
+	div#comment {
+		/* border: solid 1px gray; */
+		width: 250px;
+		margin-top: 10px;
+	}
+	
+	div#face > img {
+		width: 119px;
+		height: 149px;
+		border-radius: 50%;
+	}
+</style>
+
+<script type="text/javascript" src="../../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		const arrPerson = [{name:"김태희", filename:"kimth.jpg", address:"서울 강동구", email:"kimth@gmail.com"}  
+						  ,{name:"아이유", filename:"iyou.jpg", address:"서울 강서구", email:"iyou@gmail.com"}
+						  ,{name:"박보영", filename:"parkby.jpg", address:"서울 강남구", email:"parkby@gmail.com"}];
+		let html = ``;
+		
+		arrPerson.forEach((item, index) =>{
+			html += `<span class='buttons' id='${index}'>${item.name}</span>`;
+		});
+		
+		$("div#firstdiv").html(html);
+		
+		$("span.buttons").mouseover(function(){
+		//	선택자.mouseover(function(event){}); 은 선택자에서 마우스 포인터가 올라가기만 하면 발생되는 이벤트이다. // event 생략가능
+		
+			const $target = $(event.target);
+	
+		//	console.log($target.text() + "마우스가 올라갔군요");			
+			
+		/*
+				===== 선택자의 class 명 알아오기 =====
+			선택자.attr('class')  또는  선택자.prop('class')  
+				
+				===== 선택자의 id 명 알아오기 =====
+			선택자.attr('id')  또는  선택자.prop('id')
+				      
+				===== 선택자의 name 명 알아오기 =====   
+			선택자.attr('name')  또는  선택자.prop('name')
+		*/
+		
+		//	==== 선택자의 id 알아오기 ==== //
+		//	console.log("확인용 id : " + $target.attr('id'));	// 확인용 id : 0  확인용 id : 1  확인용 id : 2
+		//	또는
+		//	console.log("확인용 id : " + $target.prop('id'));
+			
+		//	console.log( arrPerson[$target.attr('id')].filename );
+		/*
+			const i = $target.prop('id');
+			$("div#face").html(`<img src='images/${arrPerson[i].filename}' />`);
+		*/
+		//	또는
+			const filename = arrPerson[$target.attr('id')].filename;
+			$("div#face").html("<img src='images/"+filename+"'/>");
+			
+			const i = $target.prop('id');
+		/*
+			html = "<ol>"+
+						"<li>성명 : &nbsp;"+ arrPerson[i].name +" </li>"+
+						"<li>주소 : &nbsp; "+ arrPerson[i].address +" </li>"+
+						"<li>e메일 : &nbsp; "+ arrPerson[i].email +" </li>"+
+				   "</ol>";
+			
+			$("div#comment").html(html);
+		*/
+		//	또는
+			html = `<ol>
+						<li>성명 : &nbsp;${arrPerson[i].name}</li>
+						<li>주소 : &nbsp;${arrPerson[i].address}</li>
+						<li>e메일 : &nbsp;${arrPerson[i].email}</li>
+						
+				   </ol>`;
+
+			$("div#comment").html(html);
+			
+			$target.css({'background-color':'navy', 'color':'white'});
+			
+			$("div#seconddiv").show()
+	
+		});
+		
+		$("span.buttons").mouseout(()=>{
+		//	선택자.mouseout(function(event){}); 은 선택자에서 마우스 포인터가 올라갔다가 포인터가 빠지는 경우에 발생되는 이벤트이다. // event 생략가능
+			const $target = $(event.target);	// 실제로 마우스가 올라갔다가 빠지는 곳
+			$target.css({'background-color':'', 'color':''});
+			
+			$("div#seconddiv").hide();
+		});
+	});
+</script>
+</head>
+<body>
+
+<div id="container" align="center">
+	<div id="firstdiv"></div>
+	
+	<div id="seconddiv">
+		<div id="face"></div>
+		<div id="comment" align="left"></div>
+	</div>
+</div>
+
+</body>
+</html>

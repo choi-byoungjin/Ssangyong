@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>toggle()에 대해서 알아봅니다.</title>
+
+<style type="text/css">
+	
+	button#btn {
+		width: 100px;
+		height: 40px;
+		border-radius: 50%;
+		border: none;
+		background-color: #000080;
+		color: white;
+	}
+	
+</style>
+
+<script type="text/javascript" src="../../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		$("div#photo").hide();
+		
+		$("button#btn").text("보이기");	/* 자바스크립트의 innerText 와 비슷함 */
+		
+		$("button#btn").bind("click", function(){
+			
+			const text = $(this).text();
+			
+			if(text == "보이기") {
+				$(this).text("감추기");
+				$(this).css({"background-color":"red", "color":"yellow"});				
+			}
+			else {
+				$(this).text("보이기");
+				$(this).css({"background-color":"", "color":""});			
+			}
+			
+			$("div#photo").toggle();
+		//	선택자요소.toggle(); 은 선택자요소가 현재 hide 되어진 상태라면 .show() 메소드의 동작을 수행해주고,
+		//	현재 show 되어진 상태라면 .hide() 메소드의 동작을 수행해주는 것이다. 
+		});
+	});
+</script>
+
+</head>
+<body>
+	<div style="display: flex; margin: 50px 0 20px 0;">
+		<div style="margin: auto;">
+			<button id="btn"></button>
+		</div>
+	</div>
+	<div style="display: flex;">
+		<div style="margin: auto;">
+			<div id="photo"><img src="images/iyou.jpg" /></div>
+		</div>
+	</div>
+</body>
+</html>
