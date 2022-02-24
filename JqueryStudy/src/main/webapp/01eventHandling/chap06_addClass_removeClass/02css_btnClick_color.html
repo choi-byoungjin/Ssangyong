@@ -51,16 +51,27 @@
 		let html = `<span>버튼을 눌러보세요</span>`;
 		
 		arrBtn.forEach((item) => {
-			html += `<button type='button'>${item.color}</button>`;
+			html += `<button type='button' style='cursor:pointer;'>${item.color}</button>`;
 		});
 		
 		$("div#btnsDiv").html(html);
 		
-		$("div#btnsDiv > button[type='button']").click(()=>{
+		$("div#btnsDiv > button[type='button']").click((event)=>{	// 버튼을 가리키는게 하나라 div#btnsDiv 생략 가능	// trigger 사용시 버튼이 있어야 하고 event가 필수로 입력되어야 한다.!!
 			const $target = $(event.target);
 			$("div#colorDiv").css({'width':'200px','height':'200px','background-color':$target.text()});
-			$("div#hangulDiv").html(arrBtn[$target.index()-1].hangul).css({'color':$target.text(),'font-size':'60pt'});
+			
+			// !!!! 중요 !!!! //
+			// === 7개 버튼중에서 클릭한 버튼의 index 값을 알아오고자 한다. === //
+			const i = $("div#btnsDiv > button[type='button']").index($target);
+		//	console.log($target.text() + " " + i);	//$target.index()-1 을 i 로
+			
+		//	console.log($target.text() + " " +($target.index()-1));
+			$("div#hangulDiv").html(arrBtn[i].hangul).css({'font-size':'60pt','color':$target.text()});	// "div#hangulDiv"선택자로 들어옴
+		//	$("div#hangulDiv").html(arrBtn[$target.index()-1].hangul).css({'color':$target.text(),'font-size':'60pt'});
 		});
+		
+		$("div#btnsDiv > button[type='button']").eq(0).trigger("click");
+		
 
 	});
 </script>
