@@ -54,7 +54,7 @@
 	  
 	  $("div#firstdiv").html(html);
 	  
-	  $("div#firstdiv > span.buttons").click((event)=>{
+	  $("div#firstdiv > span.buttons").click((event)=>{ // "div#firstdiv > span.butotns"에서 div# firstdiv > 는 생략 가능
 		  // !!!!!! 중요 !!!!!!
 		  // 아래의 trigger()함수를 작동시키기 위해서는 파라미터에 반드시 event 를 넣어주어야만 $(event.target); 을 통해 타겟을 잡게된다.  
 		  // 파라미터에 event 를 안넣어주면 $(event.target); 을 쓰면 타켓을 올바르게 못잡는다.
@@ -73,7 +73,7 @@
 		          
 		  $("div#comment").html(html); 
 		  
-		  $("div#firstdiv > span.buttons").css({'background-color':'', 'color':''});
+		  $("div#firstdiv > span.buttons").css({'background-color':'', 'color':''}); // "div#firstdiv > span.butotns"에서 div# firstdiv > 는 생략 가능
 		  $target.css({'background-color':'navy', 'color':'white'});
 		  
 		  

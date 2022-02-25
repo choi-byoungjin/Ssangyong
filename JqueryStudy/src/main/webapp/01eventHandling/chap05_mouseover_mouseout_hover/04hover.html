@@ -68,7 +68,7 @@
 	       왜냐하면 hover 는 이벤트가 아니라 jQuery 에서 제공해주는 함수(메소드)
 	  */    
 	  
-	  $("span.buttons").hover(function(){
+	  $("span.buttons").hover(function(){	// mouseover
 		  const $target = $(event.target);
 			 // console.log($target.text()+"에 마우스가 올라갔군요");
 	          
@@ -105,7 +105,7 @@
 			   
 			   $("div#seconddiv").show();
 	  }, 
-	  function(){
+	  function(){	// mouseout
 		  const $target = $(event.target);
 		  $target.css({'background-color':'', 'color':''});
 		

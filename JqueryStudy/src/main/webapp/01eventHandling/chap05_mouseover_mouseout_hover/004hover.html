@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>인물 사진 보이기/감추기(hover)</title>
+
+<style type="text/css">
+
+	div#container {
+		width: 80%;
+		margin: 0 auto;
+	}
+	
+	span.buttons {
+		display: inline-block;
+		width: 100px;
+		border: solid 2px orange;
+		margin: 20px;
+		padding: 5px;
+		background-color: yellow;
+		color: #ff0000;
+		font-size: 15pt;
+		cursor: pointer;
+	}
+	
+	div#comment {
+		width: 250px;
+		margin-top: 10px;
+	}
+	
+	div#face > img {
+		width: 119px;
+		height: 149px;
+		border-radius: 50%;
+	}
+	
+</style>
+
+<script type="text/javascript" src="../../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		const arrPerson = [{name:"김태희", filename:"kimth.jpg", address:"서울 강동구", email:"kimth@gmail.com"}
+						  ,{name:"아이유", filename:"iyou.jpg", address:"서울 강서구", email:"iyou@gmail.com"}
+						  ,{name:"박보영", filename:"parkby.jpg", address:"서울 강남구", email:"parkby@gmail.com"}];
+		
+		let html = ``;
+		
+		arrPerson.forEach((item, index)=>{
+			html += `<span class='buttons'>${item.name}</span>`;
+		});
+		
+		$("div#firstdiv").html(html);		
+		
+		$("span.buttons").hover(
+				
+		function() {	
+			const $target = $(event.target);
+			
+			const i = $target.index();
+			
+			const filename = arrPerson[i].filename;
+			
+			$("div#face").html("<img src='images/"+filename+"'/>");
+			
+			html = `<ol>
+						<li>성명 : &nbsp;${arrPerson[i].name}</li>
+						<li>주소 : &nbsp;${arrPerson[i].address}</li>
+						<li>email : &nbsp;${arrPerson[i].email}</li>
+					</ol>`;
+			
+			$("div#comment").html(html);
+						
+			$target.css({'background-color':'navy', 'color':'white'});
+			
+			$("div#seconddiv").show();
+		},
+		
+		function() {
+			const $target = $(event.target);
+			$target.css({'background-color':'', 'color':''});
+			$("div#seconddiv").hide();			
+		});						
+	});
+
+</script>
+
+</head>
+<body>
+	<div id="container" align="center">
+		<div id="firstdiv"></div>
+		<div id="seconddiv">
+			<div id="face"></div>
+			<div id="comment" align="left"></div>
+		</div>
+	</div>
+</body>
+</html>
