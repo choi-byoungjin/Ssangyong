@@ -20,7 +20,7 @@
       	  <!-- Large(lg) ==> 992px 이상  1200px미만. navbar-expand-lg 은 width 가 991px 되어지는 순간 nav 이 축소되어진다. -->
       
 	  <!-- Brand/logo -->
-	  <a class="navbar-brand" href="#"><i class="fab fa-windows fa-2x"></i></a> <!-- 아이콘은 윈도우라 함. -->
+	  <a class="navbar-brand" href="#"><i class="fas fa-keyboard fa-2x"></i></a> <!-- 아이콘은 윈도우라 함. -->
 	
 	  <!-- 디바이스 크기가 휴대폰 크기로 되었을 경우에는 아코디언 같은 Navigation Bar 만들기 -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
@@ -29,12 +29,15 @@
       
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav"> <!-- .mr-auto 는 css 의  margin-right: auto; 임. 즉, 가로축 미사용 공간 너비를 우축 바깥 여백에 할당한다는 것임. -->
-            <li class="nav-item active">
-              <a class="nav-link h5" href="#">Home</a>
-            </li>
             <li class="nav-item">
-              <a class="nav-link h5" href="#">Link</a>
-            </li>
+		        <a class="nav-link menufont-size" href="index.html">Home</a>
+		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link menufont-size" href="login.html">로그인</a>
+		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link menufont-size" href="register.html">회원가입</a>
+		      </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle h5" href="#" id="navbarDropdown" data-toggle="dropdown">
                 Dropdown
@@ -65,11 +68,9 @@
 		
 			<!-- 점보트론 시작 -->
 		      <div class="jumbotron">
-		         <h1>Hello, world!</h1>
-		         <p>This is an example to show the potential of an offcanvas
-		            layout pattern in Bootstrap. Try some responsive-range viewport
-		            sizes to see it in action.</p>
-		         <p><a class="btn btn-primary btn-lg">Learn more &raquo;</a></p>   
+		         <h1>PC키보드</h1>
+		         <p>키보드 판매순위</p>
+		         <p><a class="btn btn-primary btn-lg" href="rank.html">랭킹보기 &raquo;</a></p>   
 		      </div>
 	      	<!-- 점보트론 끝 -->
 	      
@@ -77,86 +78,83 @@
 	      <div class="row" style="margin-top: -20px; margin-bottom: 100px;">
 	      	<div class="col-sm-6 col-lg-3 mb-3">	<!-- mb-(1~5) 마진 -->
 		      	<div class="card" >
-				  <img src="../images/Koala.jpg" class="card-img-top" alt="코알라"/>
+				  <img src="./images/gaming.jpg" class="card-img-top" alt="게이밍키보드"/>
 				  <div class="card-body">
-				    <h5 class="card-title">Card title</h5>
-				    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-				    <a href="#" class="btn btn-primary">Go somewhere</a>
+				    <h5 class="card-title">게이밍키보드</h5>
+				    <p class="card-text"></p>
+				    <a href="#" class="btn btn-primary">상품보기</a>
 				  </div>
 				</div>
 	      	</div>
 	      	
 	      	<div class="col-sm-6 col-lg-3 mb-3">
 		      	<div class="card" >
-				  <img src="../images/Koala.jpg" class="card-img-top" alt="코알라"/>
+				  <img src="./images/wireless.jpg" class="card-img-top" alt="무선키보드"/>
 				  <div class="card-body">
-				    <h5 class="card-title">Card title</h5>
-				    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-				    <a href="#" class="btn btn-primary">Go somewhere</a>
+				    <h5 class="card-title">무선키보드</h5>
+				    <p class="card-text"></p>
+				    <a href="#" class="btn btn-primary">상품보기</a>
 				  </div>
 				</div>
 	      	</div>
 	      	
 	      	<div class="col-sm-6 col-lg-3 mb-3">
 		      	<div class="card" >
-				  <img src="../images/Koala.jpg" class="card-img-top" alt="코알라"/>
+				  <img src="./images/office.jpg" class="card-img-top" alt="사무용키보드"/>
 				  <div class="card-body">
-				    <h5 class="card-title">Card title</h5>
-				    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-				    <a href="#" class="btn btn-primary">Go somewhere</a>
+				    <h5 class="card-title">사무용키보드</h5>
+				    <p class="card-text"></p>
+				    <a href="#" class="btn btn-primary">상품보기</a>
 				  </div>
 				</div>
 	      	</div>
+	      	
 	      	<div class="col-sm-6 col-lg-3 mb-3">
 		      	<div class="card" >
-				  <img src="../images/Koala.jpg" class="card-img-top" alt="코알라"/>
+				  <img src="./images/part.jpg" class="card-img-top" alt="키보드부품"/>
 				  <div class="card-body">
-				    <h5 class="card-title">Card title</h5>
-				    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-				    <a href="#" class="btn btn-primary">Go somewhere</a>
+				    <h5 class="card-title">키보드부품</h5>
+				    <p class="card-text"></p>
+				    <a href="#" class="btn btn-primary">상품보기</a>
+				  </div>
+				</div>
+	      	</div>
+	      	</div>
+	      	<div class="row" style="margin-top: -20px; margin-bottom: 100px;">
+	      	<div class="col-sm-6 col-lg-4 mb-3">	      		
+		      	<div class="card border-primary" >
+		      	  <div class="card-header">회사정보</div>				
+				  <div class="card-body">
+				    <h5 class="card-title"></h5>
+				    <p class="card-text">주소 (우) 12345 서울특별시 00구 00로 </br> 
+				    					대표이사: 김00 </br>
+				    					사업자번호: 123-23-12345</p>				    
 				  </div>
 				</div>
 	      	</div>
 	      	
-	      	<div class="col-sm-6 col-lg-3 mb-3">	      		
+	      	<div class="col-sm-6 col-lg-4 mb-3">	      		
 		      	<div class="card border-primary" >
-		      	  <div class="card-header">Header</div>				
+		      	  <div class="card-header">고객센터</div>				
 				  <div class="card-body">
-				    <h5 class="card-title">Secondary card title</h5>
-				    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>				    
+				    <h5 class="card-title"></h5>
+				    <p class="card-text">전화번호: 02-123-1234 </br>
+				    					 이메일: abcd1234@gmail.com </p>				    
 				  </div>
 				</div>
 	      	</div>
 	      	
-	      	<div class="col-sm-6 col-lg-3 mb-3">	      		
+	      	<div class="col-sm-6 col-lg-4 mb-3">	      		
 		      	<div class="card border-primary" >
-		      	  <div class="card-header">Header</div>				
+		      	  <div class="card-header">SNS</div>				
 				  <div class="card-body">
-				    <h5 class="card-title">Secondary card title</h5>
-				    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>				    
+				    <h5 class="card-title"></h5>
+				    <p class="card-text"><i class="fab fa-instagram"></i> 인스타그램: @abcd1234 </br>
+				    					 <i class="fab fa-facebook"></i> 페이스북: www.facebook.com/abcd1234 </br>
+				    					 <i class="fas fa-coffee"></i> 네이버카페: cafe.naver.com/abcd1234</p>
 				  </div>
 				</div>
-	      	</div>
-	      	
-	      	<div class="col-sm-6 col-lg-3 mb-3">	      		
-		      	<div class="card border-primary" >
-		      	  <div class="card-header">Header</div>				
-				  <div class="card-body">
-				    <h5 class="card-title">Secondary card title</h5>
-				    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>				    
-				  </div>
-				</div>
-	      	</div>
-	      	
-	      	<div class="col-sm-6 col-lg-3">
-		      	<div class="card border-primary" >
-		      	  <div class="card-header">Header</div>				
-				  <div class="card-body">
-				    <h5 class="card-title">Secondary card title</h5>
-				    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>				    
-				  </div>
-				</div>
-	      	</div>
+	      	</div>	      
 	      </div>
 	      <!-- 중앙 컨텐츠 끝 -->
 	      
