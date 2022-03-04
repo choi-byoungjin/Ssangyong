@@ -365,3 +365,5 @@ java 버전 1.8로 변경
 오라클이 8080포트를 사용하고 있기 때문에 톰캣 설치시 포트 9090으로 변경해야한다.
 
 jsp
+배치서술자 = deployment descriptor
+apache - 서버종류, tomcat - 컨테이너종류
