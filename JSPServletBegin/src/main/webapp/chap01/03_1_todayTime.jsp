@@ -11,7 +11,7 @@
 	SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
     String today = sdformat.format(now);
     
-    String currentTime = String.format("%tF %tT %tA %tZ", now, now, now, now); 
+    String currentTime = String.format("%tF %tT %tA", now, now, now); 
     
 %>
 

@@ -17,16 +17,24 @@ public class GetMethod_01 extends HttpServlet {
 		String color = request.getParameter("color");
 		
 		String[] arrFood = request.getParameterValues("food");
-		String food = String.join(",", arrFood);
+		String food = "";
 		
-		/*
-			// === 8. String.join("구분자", 문자열배열명) ===
-		    //        문자열배열을 "구분자"로 합쳐서 String 타입으로 돌려주는 것이다.
-		    String[] nameArr = {"한석규","두석규","세석규","네석규","오석규"};  
-		    String names = String.join("-", nameArr);
-		    System.out.println(names);
-		    // "한석규","두석규","세석규","네석규","오석규"
-	    */
+		if(arrFood != null) {
+			food = String.join(",", arrFood);
+		}
+		else {
+			// 좋아하는 음식이 1개도 없을 경우
+			food = "좋아하는 음식이 없습니다.";
+		}				
+		
+	/*
+		// === 8. String.join("구분자", 문자열배열명) ===
+	    // 문자열배열을 "구분자"로 합쳐서 String 타입으로 돌려주는 것이다.
+		   String[] nameArr = {"한석규","두석규","세석규","네석규","오석규"};  
+		   String names = String.join("-", nameArr);
+		   System.out.println(names);
+	    // "한석규","두석규","세석규","네석규","오석규"
+    */
 		
 		// *** 콘솔에 출력하기 시작 *** //
 		System.out.println("name => " + name);
@@ -41,7 +49,7 @@ public class GetMethod_01 extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 			
-		System.out.println("### 확인용 : doPost 메소드가 호출됨 ~~~");
+		System.out.println("### 확인용 : doPost 메소드가 호출됨 ###");
 		
 	}
 }

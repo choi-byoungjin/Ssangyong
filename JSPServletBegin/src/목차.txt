@@ -1,0 +1,17 @@
+chap01
+
+	01oneToTenSum.jsp : 1부터 10까지의 합을 자바에서 구한 다음 그 결과를 HTML로 보여준다
+					주석문 설명, 스크립틀릿 설명, .java•.class 파일 저장경로, 코드수정시 반영 안 될 때 해결방법 설명
+				
+	02dateTime.jsp : 현재시각 알아오기, 페이지 지시어 사용해 import, 날짜 타입 format
+
+	03_1_todayTime.jsp : 현재시각 알아오기
+
+	03_2_todayMenu.jsp, 03_3_todaySchedule.jsp : 03_1_todayTime.jsp을 지시어로 불러와 사용
+	
+
+chap02
+	
+	01_getMethod.jsp : GET 방식으로 데이터 전송하기, .jsp•.html 파일 URL, xml 읽는 순간, 개인성향 테스트
+	
+	GetMethod_01.java : 전송되어져온 데이터 처리, doGet, 콘솔에 결과 출력
