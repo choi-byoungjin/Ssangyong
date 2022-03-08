@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>JSP 표준액션 중 include 에 대해서 알아봅니다.</title>
+<title>JSP 표준액션 중 include 에 대해서 알아봅니다.</title> <!-- execute는 실행한다는 의미이다. -->
 </head>
 <body>
 	<h3>책소개</h3>

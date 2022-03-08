@@ -319,23 +319,3 @@
  <jsp:useBean id="객체명" class="패키지명.클래스명" scope="session" />
  <jsp:useBean id="객체명" class="패키지명.클래스명" scope="application" />  
  
-  
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-       
-          
-  
-  
-  
-  
-  
-      

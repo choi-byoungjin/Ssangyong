@@ -6,8 +6,8 @@
 
 	System.out.println("ctxPath => " + ctxPath);
 	// ctxPath => /JSPServletBegin     <== WAS(톰캣서버) Document Base Path 설정의 기본값임.
-    // ctxPath => /aaa                 <== WAS(톰캣서버) Document Base Path 설정을  /aaa 으로 변경한 경우임. 
-    // ctxPath =>    (아무글자도 없는 것임) <== WAS(톰캣서버) Document Base Path 설정을  / 으로 변경한 경우임.
+	// ctxPath => /aaa                 <== WAS(톰캣서버) Document Base Path 설정을  /aaa 으로 변경한 경우임. 
+	// ctxPath =>    (아무글자도 없는 것임) <== WAS(톰캣서버) Document Base Path 설정을  / 으로 변경한 경우임.
 %>
 
 <!DOCTYPE html>
@@ -28,7 +28,7 @@
 		확장자가 .jsp 또는 .html 인 파일에서 URL경로를 나타낼때 맨 앞에 / 가 오면
 		그 앞에는  http://ip주소:포트번호 가 자동으로 붙게 된다.
               
-    <%= ctxPath%> 이  /JSPServletBegin 이다.
+	<%= ctxPath%> 이  /JSPServletBegin 이다. ctxPath(=contextPath)
 		즉, 우리는  http://localhost:9090/JSPServletBegin/01_getMethod.do 으로 된다.
   	--%>
   	
