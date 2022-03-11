@@ -15,3 +15,22 @@ chap02
 	01_getMethod.jsp : GET 방식으로 데이터 전송하기, .jsp•.html 파일 URL, xml 읽는 순간, 개인성향 테스트
 	
 	GetMethod_01.java : 전송되어져온 데이터 처리, doGet, 콘솔에 결과 출력
+	
+
+chap05_ok
+
+	personRegister.jsp : 회원가입, 데이터에 인원 추가
+	
+	personRegister_fail.jsp : 회원가입 실패시 호출할 페이지
+	
+	personRegister_success.jsp : 회원가입 성공시 호출할 페이지
+	
+	personSelectAll.jsp : 회원 목록 전체 보기
+	
+	personUpdate.jsp : 회원 정보 수정
+	
+	personDetail.jsp : 특정 회원 정보
+	
+	personDetail_funStop : 사용자가 잘못 입력했을 경우
+	
+	personDelete_success : 회원 정보 삭제 성공시	
