@@ -2,7 +2,6 @@ package chap05;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,8 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/personSelectAll.do")
-public class PersonSelectAll_05 extends HttpServlet {
+@WebServlet("/personDetail.do")
+public class PersonDetail_06 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -20,26 +19,32 @@ public class PersonSelectAll_05 extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		// tbl_person_interest 테이블에 저장되어진 행(데이터)을 읽어다가(select) 웹페이지에 보여주어야 한다.
+		String seq = request.getParameter("seq"); /* personSelectAll 에서 넘겨준 seq */
 		
-		String pathName = "";
+		String path = "";
 		
-		try {
-			List<PersonDTO_02> personList = dao.selectAll();
-			request.setAttribute("personList", personList);
+		try { // dao에서 예외 던졌으므로 예외처리 필요하다.
+			PersonDTO_02 psdto = dao.selectOne(seq);
+			request.setAttribute("psdto", psdto);
 			
-			pathName = "/WEB-INF/chap05_ok/personSelectAll.jsp";
-			
-		} catch(SQLException e) {
+			if(psdto != null) {
+				path = "/WEB-INF/chap05_ok/personDetail.jsp";
+			}
+			else {
+				path = "/WEB-INF/chap05_ok/personDetail_funStop.jsp";
+			}
+				
+		} catch (SQLException e) {			
 			e.printStackTrace();
-			pathName = "/WEB-INF/chap05_ok/personRegister_fail.jsp";
+			path = "/WEB-INF/chap05_ok/personRegister_fail.jsp"; /* fail 따로 만들어두기 */
 		}
 		
-		RequestDispatcher dispatcher = request.getRequestDispatcher(pathName);
+		RequestDispatcher dispatcher = request.getRequestDispatcher(path);
 		dispatcher.forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		doGet(request, response);
 	}
 

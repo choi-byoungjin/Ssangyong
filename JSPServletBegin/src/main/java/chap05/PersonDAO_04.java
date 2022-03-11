@@ -20,7 +20,7 @@ public class PersonDAO_04 implements InterPersonDAO_03 {
 		try {		
 			Context initContext = new InitialContext();
 		    Context envContext  = (Context)initContext.lookup("java:/comp/env");
-		    ds = (DataSource)envContext.lookup("jdbc/myoracle"); 		    
+		    ds = (DataSource)envContext.lookup("jdbc/myoracle");
 		} catch(NamingException e) {
 			e.printStackTrace();
 		}		
@@ -122,6 +122,78 @@ public class PersonDAO_04 implements InterPersonDAO_03 {
 		
 		return personList;
 	}// end of public List<PersonDTO_02> selectAll()------------------------------------------------
+
+	
+	// tbl_person_interest 테이블에 저장되어진 특정 1개 행만 select 해주는 메소드 구현하기
+	@Override
+	public PersonDTO_02 selectOne(String seq) throws SQLException {
+		
+		PersonDTO_02 psdto = null;
+		
+		try {
+			
+			conn = ds.getConnection();
+			
+			String sql = " select seq, name, school, color, food, to_char(registerday, 'yyyy-mm-dd hh24:mi:ss') AS registerday "
+					   + " from tbl_person_interest "
+					   + " where seq = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, seq);
+			
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) { /* 특정 행 하나이므로 while이 아닌 if */
+				
+				psdto = new PersonDTO_02();
+				psdto.setSeq(rs.getInt(1));
+				psdto.setName(rs.getString(2));
+				psdto.setSchool(rs.getString(3));
+				psdto.setColor(rs.getString(4));
+				
+				String food = rs.getString(5);
+				if(food != null) {
+					psdto.setFood( food.split("\\,"));
+				}
+				else {
+					psdto.setFood(null);
+				}
+				
+				psdto.setRegisterday(rs.getString(6));							
+								
+			}// end of while----------------------------------------------------------
+			
+		} finally {
+			close();
+		}
+		
+		return psdto;
+	}// end of public PersonDTO_02 selectOne()-----------------------------------------------------------
+
+	
+	// tbl_person_interest 테이블에 저장되어진 특정 1개 행만 delete 해주는 추상메소드(미완성메소드)
+	@Override
+	public int deletePerson(String seq) throws SQLException {
+		
+		int n = 0;
+		
+		try {			
+			conn = ds.getConnection();
+			
+			String sql = " delete from tbl_person_interest "
+					   + " where seq = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, seq);
+			
+			n = pstmt.executeUpdate();
+						
+		} finally {
+			close();
+		}
+		
+		return n;
+	}// end of public int deletePerson(String seq)------------------------------------------------
 	
 	
 	

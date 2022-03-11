@@ -21,9 +21,54 @@
 	li {line-height: 200%;}
 </style>
 
+<script type="text/javascript" src="<%= ctxPath%>/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		// === 유효성 검사하기 시작 === //
+		$("form[name='myFrm']").submit(function(){
+		
+			const name_length = $("input#name").val().trim().length;
+			
+			if(name_length == 0) {
+				alert("성명을 입력하세요!!");
+				return false;	// submit 을 하지 않고 종료한다.
+			}
+			
+			const school_value = $("select#school").val();
+			
+			if(school_value == "") {
+				alert("학력을 입력하세요!!");
+				return false;	// submit 을 하지 않고 종료한다.
+			}
+			
+			const color_checked_length = $("input:radio[name='color']:checked").length;
+			
+			if(color_checked_length == 0) {
+				alert("좋아하는 색상을 입력하세요!!");
+				return false;	// submit 을 하지 않고 종료한다.
+			}
+		
+		/* 
+			const food_checked_length = $("input:radio[name='color']:checked").length;
+			
+			if(food_checked_length == 0) {
+				alert("좋아하는 음식을 입력하세요!!");
+				return false;	// submit 을 하지 않고 종료한다.
+			}
+		 */
+		 
+		});
+		// === 유효성 검사하기 끝 === //
+		
+	}); // end of $(document).ready(function(){})---------------------------------------
+
+</script>
+
 </head>
 <body>
-	<form action="<%= ctxPath %>/personRegister.do" method="post">	
+	<form name="myFrm" action="<%= ctxPath %>/personRegister.do" method="post">	
 		<fieldset>
 	      <legend>개인성향 데이터를 DB로 전송하기</legend>
 	      <ul>
@@ -34,10 +79,10 @@
 	         <li>
 	            <label for="school">학력</label>
 	            <select name="school" id="school">
-	               <option value="고졸">고졸</option> <%-- value 값을 빼도 무관하다 --%>
-	               <option value="초대졸">초대졸</option>
-	               <option value="대졸">대졸</option>
-	               <option value="대학원졸">대학원졸</option>
+	               <option value="">선택하세요</option> <%-- value 값을 빼도 무관하다 --%>
+	               <option>고졸</option>
+	               <option>대졸</option>
+	               <option>대학원졸</option>
 	            </select>
 	         </li>
 	         <li>
