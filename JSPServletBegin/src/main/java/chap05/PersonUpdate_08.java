@@ -37,7 +37,7 @@ public class PersonUpdate_08 extends HttpServlet {
 								
 			} catch (SQLException e) {
 				e.printStackTrace();
-				path = "/WEB-INF/chap05_ok/personRegister_fail.jsp";
+				path = "/WEB-INF/chap05_ok/personRegister_fail.jsp"; /* 업데이트 실패시 페이지 따로 만들어야함 */
 			}
 			
 		}
