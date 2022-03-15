@@ -9,6 +9,6 @@
 <body>
 	<h3>${requestScope.delInfo}</h3>
 	<br/>
-	<button type="button" onclick="javascript:location.href='personSelectAll.do'">회원목록</button>
+	<button type="button" onclick="javascript:location.href='personSelectAll.do'">회원목록</button>  
 </body>
 </html>
