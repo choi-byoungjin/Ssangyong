@@ -11,4 +11,4 @@
 	<br/>
 	<button type="button" onclick="javascript:location.href='personSelectAll.do'">회원목록</button>  
 </body>
-</html>
+</html> 
