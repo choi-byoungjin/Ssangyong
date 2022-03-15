@@ -43,13 +43,13 @@
 		cursor: pointer;
 	}
 	
-	tbody > tr > td:nth-child(1) > span { 
-		color: blue; 
-		display: none; /* 있지만 안보이게 */
+	tbody > tr > td:nth-child(1) > span  { 
+	   color: blue; 
+	   display: none;  	
 	}
 	
 	div.container > table > tbody > tr:hover {
-		cursor: pointer;
+		cursor: pointer; 
 	}
 
 </style>
@@ -58,21 +58,20 @@
 <script type="text/javascript" src="<%= ctxPath%>/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
 
-	$(document).ready(function(){
+   $(document).ready(function(){
 	   
-		$("tbody > tr").click(function(){
+	   $("tbody > tr").click(function(){
 		   
-			const $target = $(event.target);  // <td>태그이다.
-		//	console.log("확인용 $target.html() => " + $target.html());
+		   const $target = $(event.target);  // <td>태그이다.
+		// console.log("확인용 $target.html() => " + $target.html());
 		   
-			const seq = $target.parent().find("span").text();
-		//	console.log("확인용 seq => " + seq);
-			
-			location.href="personDetail.do?seq=" + seq; <%-- 암기 자바스크립트에서 url 이동 "/"가 있으면 절대경로, 없으면 상대경로 --%> <%-- ?는 get방식 --%>
-			
-		});
+		   const seq = $target.parent().find("span").text();
+		// console.log("확인용 seq => " + seq);
+		   
+		   location.href="personDetail.do?seq="+seq; 
+	   });
 	   
-	});
+   });
 
 </script>
 
@@ -99,7 +98,7 @@
     	     <tbody>
     	 <%  for(PersonDTO_02 psdto : personList) { %>
     	        <tr>
-    	           <td><span><%= psdto.getSeq()%></span> <%= psdto.getName() %></td>
+    	           <td><span><%= psdto.getSeq()%></span><%= psdto.getName() %></td>
     	           <td><%= psdto.getSchool() %></td>
     	           <td><%= psdto.getColor() %></td>
     	           <td><%= psdto.getStrFood() %></td>
@@ -135,20 +134,26 @@
                  <c:if test="${not empty requestScope.personList}">
                     <c:forEach var="psdto" items="${requestScope.personList}">
                        <tr>
-		    	           <td><span>${psdto.seq}</span> ${psdto.name}</td>
+		    	           <td><span>${psdto.seq}</span>${psdto.name}</td>
 		    	           <td>${psdto.school}</td>
 		    	           <td>${psdto.color}</td>
 		    	           <td>${psdto.strFood}</td>
-		    	           <td>${psdto.registerday}</td> <%-- DTO에 있는 것 --%>
+		    	           <td>${psdto.registerday}</td>
 		    	       </tr>
                     </c:forEach>
                  </c:if> 
                  
-                 <c:if test="${empty requestScope.personList}"> <%-- 입력한 데이터가 없다. --%>
+                 <c:if test="${empty requestScope.personList}">
                     <span style="color: red;">데이터가 존재하지 않습니다.</span>
                  </c:if> 
              </tbody>
          </table>
+    </div>
+    
+    <div style="width: 80%; margin: 0 auto;">
+    	<p class="text-center">
+    		<button type="button" class="btn btn-info" onclick="javascript:location.href='personRegister.do'">개인성향 입력페이지 가기</button>
+    	</p>
     </div>
 
 </body>

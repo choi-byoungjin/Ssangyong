@@ -129,6 +129,7 @@
 			<legend>${requestScope.psdto.name}님 성향 정보 수정하기</legend>
 			<ul>
 				<li>
+					<input type="hidden" name="seq" value="${requestScope.psdto.seq}" readonly /> <%-- 회원번호는 안 보이며 읽기전용 --%>
 					<label for="name">성명</label>
 					<input type="text" name="name" id="name" placeholder="성명입력"/> 
 				</li>
@@ -182,7 +183,7 @@
 					</div>
 				</li>
 				<li>
-					<input type="submit" value="전송" />
+					<input type="submit" value="수정" />
 					<input type="reset" value="취소" />
 				</li>
 			</ul>

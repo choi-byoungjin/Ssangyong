@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 @WebServlet("/personDetail.do")
 public class PersonDetail_06 extends HttpServlet {
 	
@@ -17,34 +18,35 @@ public class PersonDetail_06 extends HttpServlet {
 	
 	private InterPersonDAO_03 dao = new PersonDAO_04();
 	
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String seq = request.getParameter("seq"); /* personSelectAll 에서 넘겨준 seq */
+		String seq = request.getParameter("seq");
 		
 		String path = "";
 		
-		try { // dao에서 예외 던졌으므로 예외처리 필요하다.
-			PersonDTO_02 psdto = dao.selectOne(seq);
-			request.setAttribute("psdto", psdto);
-			
-			if(psdto != null) {
-				path = "/WEB-INF/chap05_ok/personDetail.jsp";
-			}
-			else {
-				path = "/WEB-INF/chap05_ok/personDetail_funStop.jsp";
-			}
-				
-		} catch (SQLException e) {			
+		try {
+			  PersonDTO_02 psdto = dao.selectOne(seq);
+			  request.setAttribute("psdto", psdto);
+			  
+			  if(psdto != null) {
+				  path = "/WEB-INF/chap05_ok/personDetail.jsp";
+			  }
+			  else {
+				  path = "/WEB-INF/chap05_ok/personDetail_funStop.jsp";
+			  }
+			  
+		} catch (SQLException e) {
 			e.printStackTrace();
-			path = "/WEB-INF/chap05_ok/personRegister_fail.jsp"; /* fail 따로 만들어두기 */
-		}
+			path = "/WEB-INF/chap05_ok/personRegister_fail.jsp";
+		} 
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(path);
 		dispatcher.forward(request, response);
 	}
 
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		doGet(request, response);
 	}
 

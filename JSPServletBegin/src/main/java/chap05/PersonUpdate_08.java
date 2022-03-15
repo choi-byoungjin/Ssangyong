@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 @WebServlet("/personUpdate.do")
 public class PersonUpdate_08 extends HttpServlet {
 	
@@ -17,28 +18,29 @@ public class PersonUpdate_08 extends HttpServlet {
 
 	private InterPersonDAO_03 dao = new PersonDAO_04();
 	
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String method = request.getMethod();	// "GET" 또는 "POST"
+		String method = request.getMethod();  // "GET" 또는 "POST"
 		
 		String path = "";
 		
 		if("POST".equalsIgnoreCase(method)) {
 			// 정상적인 POST 방식으로 들어오면
 			
-			String seq = request.getParameter("seq");			
+			String seq = request.getParameter("seq");
 			
 		//	System.out.println("~~~ 확인용 제거할 seq => " + seq);
 			
 			try {
-				PersonDTO_02 psdto = dao.selectOne(seq);
-				request.setAttribute("psdto", psdto);				
-				path = "/WEB-INF/chap05_ok/personUpdate.jsp";
-								
+				  PersonDTO_02 psdto = dao.selectOne(seq);
+				  request.setAttribute("psdto", psdto); 
+				  path = "/WEB-INF/chap05_ok/personUpdate.jsp";
+
 			} catch (SQLException e) {
 				e.printStackTrace();
-				path = "/WEB-INF/chap05_ok/personRegister_fail.jsp"; /* 업데이트 실패시 페이지 따로 만들어야함 */
-			}
+				path = "/WEB-INF/chap05_ok/personRegister_fail.jsp";
+			} 
 			
 		}
 		
@@ -48,12 +50,12 @@ public class PersonUpdate_08 extends HttpServlet {
 		}
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(path);
-		dispatcher.forward(request, response);
+		dispatcher.forward(request, response);		
 		
 	}
 
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		doGet(request, response);
 	}
 
