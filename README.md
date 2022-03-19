@@ -382,3 +382,17 @@ MVC
 Model 	 ==> 데이터베이스와 관련된 클래스 DAO, VO, DTO
 View 	 ==> JSP파일 .jsp --> HTML, CSS, JS 가 포함됨
 Controller ==> Servlet java
+
+
+추상클래스
+제네릭
+예외처리
+다형성
+forward, url
+커넥션풀
+DAO, DTO
+MVC
+return 값
+DBCP
+다형성
+MVC패턴작성필요
