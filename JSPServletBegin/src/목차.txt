@@ -34,3 +34,5 @@ chap05_ok
 	personDetail_funStop : 사용자가 잘못 입력했을 경우
 	
 	personDelete_success : 회원 정보 삭제 성공시	
+	
+	  
