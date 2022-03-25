@@ -1,0 +1,49 @@
+게시글 정보를 담을 수 있는 클래스 정의
+BoardVo.java (VO가 아닌 DTO를 비슷한 의미로 사용하기도 한다.)
+
+데이터베이스에 접근하는 클래스 정의
+BoardDao.java
+
+JSP파일(/board/)
+ - 메인페이지(index.jsp)
+ 	게시판링크(목록요청)
+ - 게시글 목록(list.jsp)
+ 	글쓰기링크
+ - 게시글 등록
+ 	입력폼 응답(registerForm.jsp)
+ 	데이터베이스에 등록 후 list.jsp 리다이렉트(regist.jsp)
+ - 게시글 보기(boardDetail.jsp?num=10)
+ 	데이터베이스에서 해당 게시글을 찾아 브라우저에 응답
+
+#삽입
+insert into "BOARD" ("NUM", "TITLE", "WRITER", "CONTENT", "REGDATE", "CNT") 
+values ("BOARD_SEQ".nextval, '제목1', '작성자1', '내용', sysdate, 0); 
+
+#조회
+select "NUM", "TITLE", "WRITER", "CONTENT", "REGDATE", "CNT" from "BOARD";
+
+select "NUM", "TITLE", "WRITER", "CONTENT", "REGDATE", "CNT" from "BOARD" where "NUM"=?;
+
+#수정
+update "BOARD" set "TITLE"='제목수정', "CONTENT"='내용수정'where "NUM"=1;
+
+#삭제
+delete from "BOARD" where "NUM"=1;
+
+1. web.xml, context.xml, 오라클 테이블 만들기
+2. 부트스트랩, js, css, jquery 필요 파일 넣어두기
+3. index.jsp 생성
+4. JdbcUtil.java
+5. VO.java 생성
+6. DAO.java 생성
+7. list.jsp 생성
+8. boardDetail.jsp 생성
+9. registForm.jsp 생성
+10. regist.jsp 생성
+11. boardDetail.jsp에서 수정,삭제 버튼 생성
+12. editform.jsp 생성, boardDetail.jsp 처럼 정보 불러오기
+13. edit.jsp 생성
+14. dao에 update 기능 추가 
+15. deleteform.jsp 생성
+16. delete.jsp 생성
+17. dao에 delete 기능 추가
