@@ -1,4 +1,4 @@
-package board;
+package board.model;
 
 import java.util.Date;
 
@@ -8,13 +8,13 @@ public class BoardVo {
 	private String title;
 	private String writer;
 	private String content;
-	private Date regdate;
+	private String regdate;
 	private int cnt;
 	
 	
 	public BoardVo() {}
 	
-	public BoardVo(int num, String title, String writer, String content, Date regdate, int cnt) {
+	public BoardVo(int num, String title, String writer, String content, String regdate, int cnt) {
 		super();
 		this.num = num;
 		this.title = title;
@@ -48,10 +48,10 @@ public class BoardVo {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public Date getRegdate() {
+	public String getRegdate() {
 		return regdate;
 	}
-	public void setRegdate(Date regdate) {
+	public void setRegdate(String regdate) {
 		this.regdate = regdate;
 	}
 	public int getCnt() {
