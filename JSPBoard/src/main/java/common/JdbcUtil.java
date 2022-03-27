@@ -1,4 +1,4 @@
-package common;
+package common; // dao에 들어가지 않고 따로 빼둔 것
 
 import java.sql.Connection;
 import java.sql.SQLException;
