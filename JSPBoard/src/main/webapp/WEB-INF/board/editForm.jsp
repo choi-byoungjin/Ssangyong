@@ -3,7 +3,7 @@
     
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<jsp:useBean id="o d" class="w board.model.BoardD"/>
+<jsp:useBean id="dao" class="board.model.BoardDao"/>
 
 <%
 	int num = Integer.parseInt(request.getParameter("num"));

@@ -163,6 +163,8 @@ public class BoardDao implements InterBoardDao {
 		return ret;
 	}
 	
+	// 조회수 증가
+	@Override
 	public int updateCnt(int num) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -195,41 +197,23 @@ public class BoardDao implements InterBoardDao {
 	}
 	
 	// 삭제(D)
-	public int delete(int num) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String query = "delete from BOARD where NUM = ? ";
-		int ret = -1; // 예외 발생시 리턴값
+	@Override
+	public int delete(int num) throws SQLException {
+
+		int result = 0;
+		
 		try {
-		//	con = ju.getConnection();
-			pstmt = con.prepareStatement(query);			
+			conn = ds.getConnection();
+			
+			String sql = " delete from BOARD where NUM = ? ";
+			
+			pstmt = conn.prepareStatement(sql);			
 			pstmt.setInt(1, num);
-			ret = pstmt.executeUpdate(); // 잘 들어가면 숫자가 바뀔 것이다
-		} catch(SQLException e) {
-			e.printStackTrace();
+			result = pstmt.executeUpdate(); // 잘 들어가면 숫자가 바뀔 것이다
 		} finally {
-			if(pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {					
-					e.printStackTrace();
-				} // 풀에 반환
-			}
-			if(con != null) {
-				try {
-					con.close();
-				} catch (SQLException e) {					
-					e.printStackTrace();
-				} // 풀에 반환
-			}
+			close();
 		}
-		return ret;
+		return result;
 	}
 
-	// 조회수 증가
-	@Override
-	public boolean updateCount(int noticeNo) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
