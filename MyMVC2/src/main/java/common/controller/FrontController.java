@@ -116,7 +116,7 @@ public class FrontController extends HttpServlet {
 			
 			
 		} catch (FileNotFoundException e) {
-			System.out.println(">>> C:/NCS/workspace(jsp)/MyMVC/src/main/webapp/WEB-INF/Command.properties 파일이 없습니다. <<<");
+			System.out.println(">>> C:/Users/choib/git/Ssangyong/MyMVC2/src/main/webapp/WEB-INF/Command.properties 파일이 없습니다. <<<");
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
