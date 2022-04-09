@@ -26,12 +26,12 @@
 	
 	$(document).ready(function(){
 		
-	//	$("span#totalHITCount").hide();
-	//	$("span#countHIT").hide();
+		$("span#totalHITCount").hide();
+		$("span#countHIT").hide();
 	
 	    // HIT상품 게시물을 더보기 위하여 "스크롤" 이벤트에 대한 초기값 호출하기 
 		// 즉, 맨처음에는 "스크롤" 을 하지 않더라도 스크롤한 것 처럼 8개의 HIT상품을 게시해주어야 한다는 말이다.
-	//	displayHIT(start);
+		displayHIT(start);
 	    
 	    const web_browser_height = $(window).height()
 	    
@@ -50,8 +50,35 @@
 	    //	console.log( "web_browser_height =>" + web_browser_height )
 	    
 	    	// 아래는 이벤트가 발생되는 숫자를 만들기 위해서 스크롤탑의 위치값에 +1 을 더해서 보정해준 것이다.
-	    	console.log( "$(window).scrollTop() + 1 => " + ( $(window).scrollTop() + 1 ) );
-	    	
+	    //	console.log( "$(window).scrollTop() + 1 => " + ( $(window).scrollTop() + 1 ) );
+	    //	console.log( "$(document).height() - $(window).height() => " + ($(document).height() - $(window).height()) );
+	    	// 또는
+	    //	console.log( "$(document).height() - web_browser_height => " + ($(document).height() - web_browser_height );
+	    
+	    //	if( $(window).scrollTop() + 1 >= $(document).height() - $(window).height() ) {
+	    //	또는
+	    	if( $(window).scrollTop() + 1 >= $(document).height() - web_browser_height ) {	
+	    		
+	    	//	alert("확인용 : 새로이 8개 제품을 더 보여주어야 함.");
+	    		const totalHITCount = $("span#totalHITCount").text();
+	    		const countHIT = $("span#countHIT").text();
+	    		
+	    		if( totalHITCount != countHIT ) {	    			
+	    			start = start + lenHIT;
+	    			displayHIT(start);	    		
+	    		}	    			    		
+	    	}
+	    
+	    	if( $(window).scrollTop() == 0 ) {
+	    		// 다시 처음부터 시작하도록 한다.
+	    		$("div#displayHIT").empty();
+	    		$("span#end").empty();
+	    		$("span#countHIT").text("0");
+	    		
+	    		start = 1;
+	    		displayHIT(start);
+	    	}
+	    
 	    });	    
 	    // ==== 스크롤 이벤트 발생시키기 끝 ==== //
 		    
@@ -140,24 +167,14 @@
 					});// end of $.each(json, function(index, item){})-------------------------------------- 
 					
 					// HIT 상품 결과를 출력하기
-					$("div#displayHIT").append(html);
-					
-					// >>> !!! 중요 더보기... 버튼의 value 속성에 값을 지정하기 !!! <<< //
-					$("button#btnMoreHIT").val( Number(start) + lenHIT );
-					// 더보기... 버튼의 value 값이 9 로 변경된다.
-					// 더보기... 버튼의 value 값이 17 로 변경된다.
-					// 더보기... 버튼의 value 값이 25 로 변경된다.
-					// 더보기... 버튼의 value 값이 33 로 변경된다.
-					// 더보기... 버튼의 value 값이 41 로 변경된다. (존재하지 않는 것이다.)
+					$("div#displayHIT").append(html);									
 					
 					// countHIT 에 지금까지 출력된 상품의 개수를 누적해서 기록한다.
 					$("span#countHIT").text( Number($("span#countHIT").text()) + json.length );
 					
-					// 더보기... 버튼을 계속해서 클릭하여 countHIT 값과 totalHITCount 값이 일치하는 경우
+					// 스크롤을 계속해서 클릭하여 countHIT 값과 totalHITCount 값이 일치하는 경우
 					if( $("span#countHIT").text() == $("span#totalHITCount").text() ) {
-						$("span#end").html("더이상 조회할 제품이 없습니다.");
-						$("button#btnMoreHIT").text("처음으로");
-						$("span#countHIT").text("0");
+						$("span#end").html("더이상 조회할 제품이 없습니다.");												
 					}
 					
 				}

@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import common.controller.AbstractController;
+import member.model.MemberVO;
 
 public class LogoutAction extends AbstractController {
 
@@ -15,14 +16,41 @@ public class LogoutAction extends AbstractController {
 		
 		HttpSession session = request.getSession(); // 세션불러오기
 		
-		// 첫번째 방법 : 세션을 그대로 존재하게끔 해두고 세션에 저장되어진 어떤 값(지금은 로그인 되어진 회원객체)을 삭제하기
-	//	session.removeAttribute("loginuser"); // 키 값이 loginuser
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		// 로그아웃을 하면 시작페이지로 가는 것이 아니라 방금 보았던 그 페이지로 그대로 가기 위한 것임.
+		String goBackURL = (String)session.getAttribute("goBackURL");
+				
+		if(goBackURL != null) {
+			goBackURL = request.getContextPath()+goBackURL;
+		}
 		
-		// 두번째 방법 : WAS 메모리 상에서 세션을 아예 삭제해버리기 
-		session.invalidate();
+		///////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		super.setRedirect(true);
-		super.setViewPage(request.getContextPath()+"/index.up");
+		
+		if(goBackURL != null && !"admin".equals( ((MemberVO)session.getAttribute("loginuser")).getUserid() )) {
+			// 관리자가 아닌 일반 사용자로 들어와서 돌아갈 페이지가 있다라면 돌아갈 페이지로 돌아간다.
+			
+			// 첫번째 방법 : 세션을 그대로 존재하게끔 해두고 세션에 저장되어진 어떤 값(지금은 로그인 되어진 회원객체)을 삭제하기
+			// session.removeAttribute("loginuser"); // 키 값이 loginuser
+				
+			// 두번째 방법 : WAS 메모리 상에서 세션을 아예 삭제해버리기 
+			session.invalidate();
+			super.setViewPage(goBackURL);
+		}
+		else {
+			// 돌아갈 페이지가 없거나 또는 관리자로 로그아웃을 하면 /MyMVC/index.up 페이지로 돌아간다.
+			
+			// 첫번째 방법 : 세션을 그대로 존재하게끔 해두고 세션에 저장되어진 어떤 값(지금은 로그인 되어진 회원객체)을 삭제하기
+			// session.removeAttribute("loginuser"); // 키 값이 loginuser
+				
+			// 두번째 방법 : WAS 메모리 상에서 세션을 아예 삭제해버리기
+			session.invalidate();
+			
+			super.setViewPage(request.getContextPath()+"/index.up");
+		}
+		
+
 	}
 
 }

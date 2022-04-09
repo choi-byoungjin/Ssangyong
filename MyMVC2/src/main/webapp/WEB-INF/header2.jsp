@@ -37,6 +37,8 @@
 	
 	$(document).ready(function(){
 		
+		
+		
 	});
 
 </script>
@@ -109,6 +111,18 @@
 			        </div>
 			     </li>			
 		     </c:if> 
+		     
+		     <c:if test="${not empty sessionScope.loginuser && sessionScope.loginuser.userid != 'admin'}"> <%-- 관리자가 아닌 일반사용자로 로그인했을 경우 --%>
+			     <li class="nav-item dropdown">
+			        <a class="nav-link dropdown-toggle menufont_size text-info" href="#" id="navbarDropdown" data-toggle="dropdown"> 
+			                      장바구니/주문                     <%-- .text-info 는 글자색으로 청록색임 --%>  
+			        </a>
+			        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+			           <a class="dropdown-item text-info" href="<%= ctxPath%>/shop/cartList.up">장바구니</a>
+			           <a class="dropdown-item text-info" href="<%= ctxPath%>/shop/orderList.up">나의주문내역</a>			           
+			        </div>
+			     </li>			
+		     </c:if> 
 		  </ul>
 		</div>
 	</nav>
@@ -128,6 +142,13 @@
 				</div>
 			</div>
 		 
+		 	<div style="height: 200px; text-align: left; padding: 20px;">
+				로그인/Tree/View
+				
+				<%@ include file="/WEB-INF/login/login.jsp" %>
+				
+			</div>
+		 	
 			<%-- == 쇼핑몰 카테고리목록만을 보여주는 부분 == --%>
 			<div id="sidecontent" style="text-align: left; padding: 20px; margin-top: 250px;">
 				<%@ include file="/WEB-INF/myshop/categoryList.jsp" %>	

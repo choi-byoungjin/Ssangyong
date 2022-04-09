@@ -354,8 +354,8 @@ insert into tbl_category(cnum, code, cname) values(seq_category_cnum.nextval, '3
 commit;
 
 -- 나중에 넣습니다.
---insert into tbl_category(cnum, code, cname) values(seq_category_cnum.nextval, '400000', '식품');
---commit;
+-- insert into tbl_category(cnum, code, cname) values(seq_category_cnum.nextval, '400000', '식품');
+-- commit;
 
 -- insert into tbl_category(cnum, code, cname) values(seq_category_cnum.nextval, '500000', '신발');
 -- commit;
@@ -631,3 +631,172 @@ select pnum, pname, code, pcompany, pimage1, pimage2, pqty, price, saleprice, sn
         where S.sname = 'HIT'
      ) V
      where V.RNO between 1 and 8; --1페이지
+
+----- >>> 하나의 제품속에 여러개의 이미지 파일 넣어주기 <<< ------ 
+select *
+from tbl_product
+order by pnum;  
+
+create table tbl_product_imagefile
+(imgfileno     number         not null   -- 시퀀스로 입력받음.
+,fk_pnum       number(8)      not null   -- 제품번호(foreign key)
+,imgfilename   varchar2(100)  not null   -- 제품이미지파일명
+,constraint PK_tbl_product_imagefile primary key(imgfileno)
+,constraint FK_tbl_product_imagefile foreign key(fk_pnum) references tbl_product(pnum) on delete cascade 
+);
+
+
+create sequence seqImgfileno
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+select imgfileno, fk_pnum, imgfilename
+from tbl_product_imagefile
+order by imgfileno desc;
+
+seq_tbl_product_pnum.nextval
+
+--- *** 시퀀스 seq_tbl_product_pnum 이 다음번에 사용될 번호를 알아오고자 한다. *** ---
+
+select *
+from tbl_product;
+
+select last_number
+from user_sequences
+where sequence_name = 'SEQ_TBL_PRODUCT_PNUM';
+
+--- *** 시퀀스 seq_tbl_product_pnum 에서 채번 한다. *** ---
+select SEQ_TBL_PRODUCT_PNUM.nextval
+from dual;
+
+--- *** 시퀀스 seq_tbl_product_pnum 이 현재 사용중인 번호를 알아오고자 한다. *** ---
+select SEQ_TBL_PRODUCT_PNUM.currval
+from dual;
+
+
+select *
+from tbl_product
+order by pnum desc;
+
+select imgfileno, fk_pnum, imgfilename
+from tbl_product_imagefile
+order by imgfileno desc;
+
+
+select *
+from tbl_product
+where pnum = 63;
+
+
+select *
+from tbl_product_imagefile
+where fk_pnum = 63;
+
+select *
+from tbl_product P JOIN tbl_product_imagefile I
+ON P.pnum = I.fk_pnum
+where p.pnum = 63;
+
+
+select *
+from tbl_product
+where pnum = 36;
+
+select *
+from tbl_product_imagefile
+where fk_pnum = 36;
+
+
+select S.sname, pnum, pname, pcompany, price, saleprice, point, pqty, pcontent, pimage1, pimage2, prdmanual_systemFileName, nvl(prdmanual_orginFileName, '없음') as prdmanual_orginFileName
+from
+(
+select fk_snum, pnum, pname, pcompany, price, saleprice, point, pqty, pcontent, pimage1, pimage2, prdmanual_systemFileName, prdmanual_orginFileName
+from tbl_product
+where pnum = 63
+) P JOIN tbl_spec S
+ON P.fk_snum = S.snum;
+
+select imgfilename
+from tbl_product_imagefile
+where fk_pnum = 63;
+
+
+select *
+from tbl_product
+order by pnum desc;
+
+select prdmanual_systemFileName, prdmanual_orginFileName
+from tbl_product
+where pnum = 63;
+
+
+-------- **** 장바구니 테이블 생성하기 **** ----------
+ desc tbl_member;
+ desc tbl_product;
+
+ create table tbl_cart
+ (cartno        number               not null   --  장바구니 번호             
+ ,fk_userid     varchar2(20)         not null   --  사용자ID            
+ ,fk_pnum       number(8)            not null   --  제품번호                
+ ,oqty          number(8) default 0  not null   --  주문량                   
+ ,registerday   date default sysdate            --  장바구니 입력날짜
+ ,constraint PK_shopping_cart_cartno primary key(cartno)
+ ,constraint FK_shopping_cart_fk_userid foreign key(fk_userid) references tbl_member(userid) 
+ ,constraint FK_shopping_cart_fk_pnum foreign key(fk_pnum) references tbl_product(pnum)
+ );
+
+ create sequence seq_tbl_cart_cartno
+ start with 1
+ increment by 1
+ nomaxvalue
+ nominvalue
+ nocycle
+ nocache;
+
+ comment on table tbl_cart
+ is '장바구니 테이블';
+
+ comment on column tbl_cart.cartno
+ is '장바구니번호(시퀀스명 : seq_tbl_cart_cartno)';
+
+ comment on column tbl_cart.fk_userid
+ is '회원ID  tbl_member 테이블의 userid 컬럼을 참조한다.';
+
+ comment on column tbl_cart.fk_pnum
+ is '제품번호 tbl_product 테이블의 pnum 컬럼을 참조한다.';
+
+ comment on column tbl_cart.oqty
+ is '장바구니에 담을 제품의 주문량';
+
+ comment on column tbl_cart.registerday
+ is '장바구니에 담은 날짜. 기본값 sysdate';
+ 
+ select *
+ from user_tab_comments;
+
+ select column_name, comments
+ from user_col_comments
+ where table_name = 'TBL_CART';
+ 
+ select cartno, fk_userid, fk_pnum, oqty, registerday 
+ from tbl_cart
+ order by cartno asc;
+ 
+select cartno, fk_userid, fk_pnum, oqty, registerday 
+from tbl_cart
+order by cartno asc;
+
+commit
+
+select A.cartno, A.fk_userid, A.fk_pnum, 
+        B.pname, B.pimage1, B.price, B.saleprice, B.point, A.oqty 
+ from tbl_cart A join tbl_product B 
+ on A.fk_pnum = B.pnum 
+ where A.fk_userid = 'choibj'
+ order by A.cartno desc ;
+ 
+ 

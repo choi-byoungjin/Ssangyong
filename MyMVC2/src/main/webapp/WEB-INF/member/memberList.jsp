@@ -9,7 +9,7 @@
     //     /MyMVC
 %>   
 
-<jsp:include page="../header.jsp" />   
+<jsp:include page="../header.jsp" />   `
 
 <style type="text/css">
 	tr.memberInfo:hover {

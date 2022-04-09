@@ -81,7 +81,7 @@ public class MallDisplayJSONAction extends AbstractController {
 	    	  
 	    	  String json = jsonArr.toString(); // 문자열로 변환
 	    	  
-	    	  System.out.println("~~~~ 확인용 json => " + json);
+	    //	  System.out.println("~~~~ 확인용 json => " + json);
 	    	  /*
 	    	  	~~~~ 확인용 json => [{"pnum":56,"code":"100000","discountPercent":17,"pname":"노트북30","pcompany":"삼성전자","saleprice":1000000,"point":60,"pinputdate":"2022-04-04","pimage1":"59.jpg","pqty":100,"pimage2":"60.jpg","pcontent":"30번 노트북","price":1200000,"sname":"HIT"}
 	    	  					  ,{"pnum":55,"code":"100000","discountPercent":17,"pname":"노트북29","pcompany":"레노버","saleprice":1000000,"point":60,"pinputdate":"2022-04-04","pimage1":"57.jpg","pqty":100,"pimage2":"58.jpg","pcontent":"29번 노트북","price":1200000,"sname":"HIT"}

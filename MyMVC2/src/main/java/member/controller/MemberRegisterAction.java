@@ -14,6 +14,9 @@ public class MemberRegisterAction extends AbstractController {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
+		// 로그인 또는 로그아웃을 하면 시작페이지로 가는 것이 아니라 방금 보았던 그 페이지로 그대로 가기 위한 것임.
+		super.goBackURL(request);
+		
 	   String method = request.getMethod();	
 	   
 	   if("GET".equalsIgnoreCase(method)) {
@@ -42,7 +45,7 @@ public class MemberRegisterAction extends AbstractController {
 		   String mobile = hp1+hp2+hp3;
 		   String birthday = birthyyyy+"-"+birthmm+"-"+birthdd;
 		   
-		   MemberVO member = new MemberVO(userid, pwd, name, email, mobile, postcode, address, detailaddress, extraaddress, gender, birthday); 
+		   MemberVO member = new MemberVO(userid, p wd, name, email, mobile, postcode, address, detailaddress, extraaddress, gender, birthday); 
 		   
 	/*	   
 		   String message = "";

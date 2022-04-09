@@ -530,6 +530,7 @@ public class MemberDAO implements InterMemberDAO {
 			*/	
 				
 				if(colname != null && !"".equals(colname) && searchWord != null && !"".equals(searchWord)) {
+					
 					sql += " and "+colname+" like '%'|| ? ||'%' ";
 				/*  
 				    위치홀더(?) 에 들어오는 값은 데이터값만 들어올 수 있는 것이지
