@@ -37,8 +37,10 @@ public class CartListAction extends AbstractController {
 			
 			InterProductDAO pdao = new ProductDAO();
 			List<CartVO> cartList = pdao.selectpProductCart(loginuser.getUserid());
+			Map<String,String> resultMap = pdao.selectCartSumPricePoint(loginuser.getUserid());
 			
 			request.setAttribute("cartList", cartList);
+			request.setAttribute("resultMap", resultMap);
 			
 		//	super.setRedirect(false);
 			super.setViewPage("/WEB-INF/myshop/cartList.jsp");
