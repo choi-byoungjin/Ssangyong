@@ -36,7 +36,7 @@ public class CartListAction extends AbstractController {
 			MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
 			
 			InterProductDAO pdao = new ProductDAO();
-			List<CartVO> cartList = pdao.selectpProductCart(loginuser.getUserid());
+			List<CartVO> cartList = pdao.selectProductCart(loginuser.getUserid());
 			Map<String,String> resultMap = pdao.selectCartSumPricePoint(loginuser.getUserid());
 			
 			request.setAttribute("cartList", cartList);

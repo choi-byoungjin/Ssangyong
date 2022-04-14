@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import member.model.MemberVO;
+
 public interface InterProductDAO {
 	
 	// 시작(메인)페이지에 보여주는 상품이미지파일명을 모두 조회(select)하는 메소드	
@@ -21,8 +23,14 @@ public interface InterProductDAO {
 	// Ajax(JSON)를 사용하여 더보기 방식(페이징처리) 으로 상품정보를 8개씩 잘라서(start ~ end) 조회해오기
 	List<ProductVO> selectBySpecName(Map<String, String> paraMap) throws SQLException;
 
+	// 페이지바를 만들기 위해서 특정카테고리의 제품개수에 대한 총페이지수 알아오기(select)  
+	int getTotalPage(String cnum) throws SQLException;
+	
 	// spec 목록을 보여주고자 한다.
 	List<SpecVO> selectSpecList() throws SQLException;
+
+	// 특정 카테고리에 속하는 제품들을 페이지바를 이용한 페이징 처리하여 조회(select)해오기 
+	List<ProductVO> selectProductByCategory(Map<String, String> paraMap) throws SQLException;
 
 	// 제품번호 채번 해오기
 	int getPnumOfProduct() throws SQLException;
@@ -48,7 +56,7 @@ public interface InterProductDAO {
 	int addCart(Map<String, String> paraMap) throws SQLException;
 
 	// 로그인한 사용자의 장바구니 목록을 조회하기 
-	List<CartVO> selectpProductCart(String userid) throws SQLException;
+	List<CartVO> selectProductCart(String userid) throws SQLException;
 
 	// 장바구니 테이블에서 특정제품을 제거하기
 	int delCart(String cartno) throws SQLException;
@@ -77,5 +85,57 @@ public interface InterProductDAO {
     // 7. **** 모든처리가 성공되었을시 commit 하기(commit) **** 
     // 8. **** SQL 장애 발생시 rollback 하기(rollback) **** 
 	int orderAdd(Map<String, Object> paraMap) throws SQLException;
+
+	// 주문한 제품에 대해 email 보내기시 email 내용에 넣을 주문한 제품번호들에 대한 제품정보를 얻어오는 것.
+	List<ProductVO> getJumunProductList(String pnumes) throws SQLException;
+
+	
+	// *** 주문내역에 대한 페이징 처리를 위해 주문 갯수를 알아오기 위한 것으로
+    //     관리자가 아닌 일반사용자로 로그인 했을 경우에는 자신이 주문한 갯수만 알아오고,
+    //     관리자로 로그인을 했을 경우에는 모든 사용자들이 주문한 갯수를 알아온다.
+	int getTotalCountOrder(String userid) throws SQLException;
+	
+	// *** 관리자가 아닌 일반사용자로 로그인 했을 경우에는 자신이 주문한 내역만 페이징 처리하여 조회를 해오고,
+    //     관리자로 로그인을 했을 경우에는 모든 사용자들의 주문내역을 페이징 처리하여 조회해온다.
+	List<Map<String, String>> getOrderList(String userid, int currentShowPageNo, int sizePerPage) throws SQLException;
+
+	// Ajax 를 이용한 제품후기를 작성하기전 해당 제품을 사용자가 실제 구매했는지 여부를 알아오는 것임. 구매했다라면 true, 구매하지 않았다면 false 를 리턴함. 
+	boolean isOrder(Map<String, String> paraMap) throws SQLException;
+
+	// 특정 회원이 특정 제품에 대해 좋아요에 투표하기(insert)
+	int likeAdd(Map<String, String> paraMap) throws SQLException;
+
+	// 특정 회원이 특정 제품에 대해 싫어요에 투표하기(insert)  
+	int dislikeAdd(Map<String, String> paraMap) throws SQLException;
+
+	// 특정 제품에 대한 좋아요,싫어요의 투표결과(select) 
+	Map<String, Integer> getLikeDislikeCnt(String pnum) throws SQLException;
+
+	// Ajax 를 이용한 특정 제품의 상품후기를 입력(insert)하기 
+	int addComment(PurchaseReviewsVO reviewsvo) throws SQLException;
+
+	// Ajax 를 이용한 특정 제품의 상품후기를 조회(select)하기 
+	List<PurchaseReviewsVO> commentList(String fk_pnum) throws SQLException;
+
+	// Ajax 를 이용한 특정 제품의 상품후기를 삭제(delete)하기 
+	int reviewDel(String review_seq) throws SQLException;
+
+	// Ajax 를 이용한 특정 제품의 상품후기를 수정(update)하기 
+	int reviewUpdate(Map<String, String> paraMap) throws SQLException;
+
+	// 영수증전표(odrcode)소유주에 대한 사용자 정보를 조회해오는 것.
+	MemberVO odrcodeOwnerMemberInfo(String odrcode) throws SQLException;
+
+	// tbl_orderdetail 테이블의 deliverstatus(배송상태) 컬럼의 값을 2(배송시작)로 변경하기
+	int updateDeliverStart(String odrcodePnum) throws SQLException;
+
+	// tbl_orderdetail 테이블의 deliverstatus(배송상태) 컬럼의 값을 3(배송시작)로 변경하기
+	int updateDeliverEnd(String odrcodePnum) throws SQLException;
+
+	
+
+	
+	
+
 
 }

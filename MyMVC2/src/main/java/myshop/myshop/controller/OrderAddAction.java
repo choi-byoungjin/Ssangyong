@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 
 import common.controller.AbstractController;
+import member.controller.GoogleMail;
 import member.model.MemberVO;
 import myshop.model.*;
 
@@ -120,15 +121,11 @@ public class OrderAddAction extends AbstractController {
 		
 		// ====== 장바구니 테이블에서 delete 하기 ====== //
 		// 1. 장바구니 번호
-		if(cartnojoin != null) {
-			String[] cartnoArr = cartnojoin.split(","); // 장바구니에서 여러개 제품을 주문한 경우		ex) "6,3,1"	==> ["6","3","1"]
-														// 장바구니에서 제품 1개만 주문한 경우		ex) "6" 		==> ["6"]
-		paraMap.put("cartnoArr", cartnoArr);
-		}
-		else {
-			// 특정제품을 바로주문하기를 한 경우			ex) null
-			paraMap.put("cartnoArr", null);
-		}
+		paraMap.put("cartnojoin", cartnojoin); // 장바구니에서 여러개 제품을 주문한 경우		ex) "6,3,1"	
+												// 장바구니에서 제품 1개만 주문한 경우		ex) "6" 		
+												// 특정제품을 바로주문하기를 한 경우			ex) null		 
+												// 데이터베이스에서 in 을 사용했기 때문에 배열로 받아올 필요가 없다.
+		// 특정제품을 바로주문하기를 한 경우라면 cartnojoin 의 값은 null 이다.
 		
 		// ====== 회원 테이블에서 로그인한 사용자의 coin 금액과 point 를 update 하기 ====== //
 		// 1. 로그인한 사용자는 이미 위에서 맵에 넣어둠.
@@ -142,8 +139,61 @@ public class OrderAddAction extends AbstractController {
 		
 		// **** 주문이 완료되었을시 세션에 저장되어져 있는 loginuser 정보를 갱신하고
 	    //      이어서 주문이 완료되었다라는 email 보내주기 시작 **** //
-		
-		
+		if(isSuccess == 1) {
+			
+			// 세션에 저장되어져 있는 loginuser 정보를 갱신
+			loginuser.setCoin(loginuser.getCoin() - Integer.parseInt(sumtotalPrice));
+			loginuser.setPoint(loginuser.getPoint() - Integer.parseInt(sumtotalPoint));
+			
+			/////////// === 주문이 완료되었다는 email 보내기 시작 === ///////////
+			GoogleMail mail = new GoogleMail();
+			
+			StringBuilder sb = new StringBuilder();
+			
+			for(int i=0; i<pnumArr.length; i++) {
+				sb.append("\' "+pnumArr[i]+" \',");
+				/*
+	               tbl_product 테이블에서 select 시
+	               where 절에 in() 속에 제품번호가 들어간다.
+	               만약에 제품번호가 문자열로 되어있어서 반드시 홑따옴표(')가 필요한 경우에는 위와같이 해주면 된다.
+	            */
+				
+			}// end of for--------------------------
+			
+			String pnumes = sb.toString().trim();
+			// "'6','3','1',"
+			
+			pnumes = pnumes.substring(0, pnumes.length()-1);
+			// 맨뒤에 콤마(,)를 제거하기 위함
+			// "'6','3','1'"
+			
+			System.out.println("~~~~ 확인용 주문한 제품번호 : " + pnumes);
+			// ~~~~ 확인용 주문한 제품번호 : '6','3','1'
+			
+			List<ProductVO> jumunProductList = pdao.getJumunProductList(pnumes);
+			// 주문한 제품에 대해 email 보내기시 email 내용에 넣을 주문한 제품번호들에 대한 제품정보를 얻어오는 것.
+			
+			sb.setLength(0);
+			// StringBuilder sb 의 초기화하기
+			
+			sb.append("주문코드번호 : <span style='color: blue; font-weight: bold;'>"+odrcode+"</span><br/><br/>");
+	        sb.append("<주문상품><br/>");
+	        
+	        for(int i=0; i<jumunProductList.size(); i++) {
+	        	
+	        	sb.append(jumunProductList.get(i).getPname()+"&nbsp;"+oqtyArr[i]+"개&nbsp;&nbsp;");
+	        	sb.append("<img src='http://127.0.0.1:9090/MyMVC/images/"+jumunProductList.get(i).getPimage1()+" '/>");
+	        	sb.append("<br/>");	        		 
+	        	
+	        }// end of for------------------------------------------
+			
+	        sb.append("<br/>이용해 주셔서 감사합니다.");
+	        
+	        String emailContents = sb.toString();
+	        
+	        mail.sendmail_OrderFinish(loginuser.getEmail(), loginuser.getName(), emailContents);	        
+			/////////// === 주문이 완료되었다는 email 보내기 끝 === ///////////
+		}
 		
 		// **** 주문이 완료되었을시 세션에 저장되어져 있는 loginuser 정보를 갱신하고
 	    //      이어서 주문이 완료되었다라는 email 보내주기 끝 **** //
