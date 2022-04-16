@@ -45,7 +45,7 @@ public class MemberRegisterAction extends AbstractController {
 		   String mobile = hp1+hp2+hp3;
 		   String birthday = birthyyyy+"-"+birthmm+"-"+birthdd;
 		   
-		   MemberVO member = new MemberVO(userid, p wd, name, email, mobile, postcode, address, detailaddress, extraaddress, gender, birthday); 
+		   MemberVO member = new MemberVO(userid, pwd, name, email, mobile, postcode, address, detailaddress, extraaddress, gender, birthday); 
 		   
 	/*	   
 		   String message = "";
