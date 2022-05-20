@@ -31,6 +31,6 @@
 
     <Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" maxIdle="10" maxTotal="20" maxWaitMillis="-1" name="jdbc/mymvc_oracle" password="cclass" type="javax.sql.DataSource" url="jdbc:oracle:thin:@127.0.0.1:1521:xe" username="mymvc_user"/>
 
-    <Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" maxIdle="10" maxTotal="20" maxWaitMillis="-1" name="jdbc/anna_oracle" password="cclass" type="javax.sql.DataSource" url="jdbc:oracle:thin:@211.238.142.76:1521:xe" username="semiorauser2"/>
+    <Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" maxIdle="10" maxTotal="20" maxWaitMillis="-1" name="jdbc/anna_oracle" password="cclass" type="javax.sql.DataSource" url="jdbc:oracle:thin:@127.0.0.1:1521:xe" username="semiorauser2"/>
     <!-- ======= MyDBCP Setting End ======= -->
 </Context>
