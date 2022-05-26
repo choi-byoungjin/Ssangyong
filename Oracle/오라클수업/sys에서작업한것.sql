@@ -40,11 +40,19 @@ grant connect, resource, unlimited tablespace, create view to semiorauser2;
 
 ---------------------------------------------------------------------------------
 
-alter user hr password expire;
-alter user hr identified by cclass;
+alter user hr password expire; -- hr 계정의 암호사용을 만료 시키는 것
+alter user hr identified by cclass; -- hr 계정의 암호사용을 만료 시키는 것
 
 alter user jspbegin_user identified by cclass;
 alter user mymvc_user identified by cclass;
-alter user semiorauser1 identified by cclass;
+alter user semiorauser2 identified by cclass;
 alter user finalorauser1 identified by cclass;
+
+-------------------------------------------------------------------------------
+
+create user finalorauser3 identified by cclass default tablespace users;
+-- User FINALORAUSER3이(가) 생성되었습니다.
+
+grant connect, resource, unlimited tablespace, create view to finalorauser3;
+-- Grant을(를) 성공했습니다.
 
